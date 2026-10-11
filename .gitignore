@@ -13,6 +13,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .venv/
+.venv-tests/
 venv/
 
 # Java / build
@@ -38,6 +39,12 @@ results/
 *.mph.lock
 *.mph.recovery
 *.mphbin
+*.mph.status
+*.class.status
+*.class.recovery
+
+# Incomplete auto-saved models from failed COMSOL batch attempts.
+models/*_Model.mph
 
 # Large local datasets; keep small reviewed fixtures under data/fixtures/
 data/raw/

@@ -1,0 +1,213 @@
+{
+  "schema_version": "desktop-smoke-0.1",
+  "window_hidden": true,
+  "visual_review": false,
+  "new_user_timing_validated": false,
+  "expert_review": false,
+  "report_views": [
+    {
+      "case_id": "baseline",
+      "headline": "当前规则未发现问题",
+      "item_count": 0,
+      "overview_available": true
+    },
+    {
+      "case_id": "missing_inlet",
+      "headline": "发现需要优先处理的问题",
+      "item_count": 1,
+      "overview_available": true
+    },
+    {
+      "case_id": "missing_outlet",
+      "headline": "发现需要优先处理的问题",
+      "item_count": 1,
+      "overview_available": true
+    },
+    {
+      "case_id": "selection_overlap",
+      "headline": "发现需要优先处理的问题",
+      "item_count": 2,
+      "overview_available": true
+    },
+    {
+      "case_id": "reversed_inlet",
+      "headline": "发现风险或待核对项",
+      "item_count": 1,
+      "overview_available": true
+    },
+    {
+      "case_id": "high_reynolds",
+      "headline": "发现风险或待核对项",
+      "item_count": 1,
+      "overview_available": true
+    }
+  ],
+  "real_checks": [
+    {
+      "case_id": "baseline",
+      "status": "completed",
+      "overview_coverage": {
+        "inlet": [
+          1
+        ],
+        "outlet": [
+          4
+        ],
+        "wall": [
+          2,
+          3
+        ]
+      },
+      "progress_stages": [
+        "snapshot",
+        "compile",
+        "inventory",
+        "diagnose",
+        "completed"
+      ],
+      "live_stages_observed": [
+        "compile",
+        "inventory",
+        "starting"
+      ],
+      "codes": [],
+      "headline": "当前规则未发现问题",
+      "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+      "ui_run_sha256": "a4533bc82a6aba62045f1eabdf294e3733a79f779f5ca3484bbde5d6cff05593"
+    },
+    {
+      "case_id": "missing_inlet",
+      "status": "completed",
+      "overview_coverage": {
+        "inlet": [],
+        "outlet": [
+          4
+        ],
+        "wall": [
+          1,
+          2,
+          3
+        ]
+      },
+      "progress_stages": [
+        "snapshot",
+        "compile",
+        "inventory",
+        "diagnose",
+        "completed"
+      ],
+      "live_stages_observed": [
+        "compile",
+        "completed",
+        "inventory",
+        "starting"
+      ],
+      "codes": [
+        "MISSING_INLET"
+      ],
+      "headline": "发现需要优先处理的问题",
+      "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+      "ui_run_sha256": "7973ccb74c5a1c6c3321f79dc669ab07eb1557d59b2cf4ef764b978d36407589"
+    }
+  ],
+  "source_sha256": {
+    "src/flowpilot/desktop.py": "bd2055c045511cae0d0c54c317e7ac641d759f22c11463e1ad1d80ada440a679",
+    "src/flowpilot/desktop_session.py": "92fb04892484330fe7e6656bc58a8a456e94ffae3b4a4a5a6f01426c4d1e2a27",
+    "src/flowpilot/check_model.py": "9cc23d496b316232522b9006fa9db886ae39015bef084ccb06a5d8cf15977c45",
+    "src/flowpilot/compare_reports.py": "d6a994f874b4f598bb30c111d437d1540db42b75d7f5c464f8544bfd0d6df1d5",
+    "src/flowpilot/report_history.py": "ab9057f6ba46d0d414cf7ed9f9ab6e5ed358c629495b82094840f8b4787c8cef",
+    "src/flowpilot/history_window.py": "f871699497748878b02266b34a7ed2df25a7db239d3f2e5190f23c620a01bba6",
+    "src/flowpilot/model_overview.py": "b1c5aa1ce2fc6f7fcba448c29160391c791f1065d1647675258ca0da57ce31bb",
+    "src/flowpilot/diagnostics.py": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+    "src/flowpilot/report_package.py": "702e499de51f024614f69af73f6ac3c4a309168254a57d3d1b55d79ec4b86d5d",
+    "src/flowpilot/package_integrity.py": "30deb890f2acbaff5b86e188de01fcc3fdc73612095862bf8170b9e4aa1c41a3",
+    "src/flowpilot/report_io.py": "63b008f8ce555bd518dcbb660ebd937649a4d59f28492fedf4762993c891b3cd",
+    "src/flowpilot/check_suite.py": "fbf87d5520f3e6b9b75edd4a4e472313a5a224e5850392c2a2ffa476ba450258",
+    "scripts/smoke_desktop.py": "3b9a25f29d8126f1e26c3908e595ebb1742072d210fae9fdf01fceeea9437acd"
+  },
+  "source_model_sha256": {
+    "baseline": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "missing_inlet": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+    "missing_outlet": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+    "selection_overlap": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+    "reversed_inlet": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+    "high_reynolds": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d"
+  },
+  "report_comparison": {
+    "status": "compared",
+    "counts": {
+      "added": 1,
+      "removed": 0,
+      "changed": 0,
+      "unchanged": 0
+    },
+    "reverse_counts": {
+      "added": 0,
+      "removed": 1,
+      "changed": 0,
+      "unchanged": 0
+    },
+    "dialog_handler_verified": true,
+    "comparison_sha256": "457820ee65f4f290addeebe44e484ac794c871f0f832b90f40fed97509f62da1",
+    "different_controlled_fixtures_not_a_repair_test": true
+  },
+  "report_reader": {
+    "valid_package_scored": true,
+    "damaged_package_unscored": true,
+    "malformed_finding_rejected_by_reader": true,
+    "malformed_finding_unscored": true,
+    "malformed_input_is_synthetic": true
+  },
+  "report_package": {
+    "dialog_handler_verified": true,
+    "reimport_verified": true,
+    "human_readable_tamper_rejected": true,
+    "model_or_log_copied": false,
+    "files": [
+      "README.md",
+      "diagnosis.json",
+      "overview.txt",
+      "report.md",
+      "run.json"
+    ],
+    "manifest_sha256": "90f7833d62b821264d3f218c5f915d6924194e318085b92e0688552286755869"
+  },
+  "synthetic_numeric_views": [
+    {
+      "synthetic_input": true,
+      "real_comsol_validation": false,
+      "reason": "above_float_range",
+      "diagnosis_status": "partial",
+      "desktop_tone": "incomplete",
+      "package_reimport_verified": true
+    },
+    {
+      "synthetic_input": true,
+      "real_comsol_validation": false,
+      "reason": "below_nonzero_float_range",
+      "diagnosis_status": "partial",
+      "desktop_tone": "incomplete",
+      "package_reimport_verified": true
+    }
+  ],
+  "real_cancellation": {
+    "status": "cancelled",
+    "requested_after_batch_console_created": true,
+    "check_run_sha256": "792e4ac79f09efb2e20b62896c6bdbcf37576b37ffd84f06871e6912c3bfafbe"
+  },
+  "history_browser": {
+    "record_counts": {
+      "completed": 2,
+      "cancelled": 1,
+      "failed": 0,
+      "invalid": 0,
+      "unconfirmed": 0
+    },
+    "verified_report_opened": "missing_inlet",
+    "cancelled_report_open_disabled": true,
+    "scan_ran_in_worker": true
+  },
+  "event_loop_heartbeat_count": 727,
+  "source_hashes_unchanged": true,
+  "passed": true
+}

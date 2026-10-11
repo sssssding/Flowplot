@@ -1,0 +1,15 @@
+{
+  "schema_version": "case-manifest-0.1",
+  "generated_date": "2026-10-11",
+  "comsol_version": "6.3.0.290",
+  "label_status": "engineering_expected_expert_review_pending",
+  "independent_acceptance_set": false,
+  "cases": [
+    {"case_id": "baseline", "model_path": "models/baseline_pipe_2d_laminar.mph", "sha256": "023D94CF9C7F2DD5B5BF1BD581B1F19AB8A38CF9304C3AF25F239A2398707E1B", "loads_verified": 10, "expected_codes": []},
+    {"case_id": "missing_inlet", "model_path": "models/cases/missing_inlet.mph", "sha256": "77DA0E23BEB61436555F5DFCB6E03E212DAA01AB07EAF373464A4424CEEEA821", "loads_verified": 5, "expected_codes": ["MISSING_INLET"]},
+    {"case_id": "missing_outlet", "model_path": "models/cases/missing_outlet.mph", "sha256": "C0C04E771321CD064DDFD2E5842156457F263B1641A338CA8BDA529FDBB9E287", "loads_verified": 5, "expected_codes": ["MISSING_OUTLET"]},
+    {"case_id": "selection_overlap", "model_path": "models/cases/selection_overlap.mph", "sha256": "699BD821A80639FF95BE271047BCA2A8B12C20FEC919FE0C89D1DB3E0760E323", "loads_verified": 5, "expected_codes": ["BC_SELECTION_OVERLAP", "MISSING_INLET"]},
+    {"case_id": "reversed_inlet", "model_path": "models/cases/reversed_inlet.mph", "sha256": "E2CA36B060BF22310EAEB3A9AEF92B1257375358B254E31237BDC5E40A68AD65", "loads_verified": 5, "expected_codes": ["INLET_DIRECTION"]},
+    {"case_id": "high_reynolds", "model_path": "models/cases/high_reynolds.mph", "sha256": "B29DFA69E29B15D790AFBAAFC2121EEF2482C0FA9F7AC45FC2C80B7CDC3DA03D", "loads_verified": 5, "expected_codes": ["REYNOLDS_RISK"]}
+  ]
+}

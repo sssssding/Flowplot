@@ -1,0 +1,283 @@
+{
+  "schema_version": "regression-family-0.1",
+  "verification_passed": true,
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "verified_loads_per_case": 2,
+  "case_count": 14,
+  "distinct_geometry_count": 3,
+  "models_solved": false,
+  "expert_review": false,
+  "independent_acceptance_set": false,
+  "baseline_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+  "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+  "builder_sha256": "c29894dd4ae0e1afdc7edfc9e0126e5e70bac2174db7158aabb1a02b3427cf8d",
+  "entry_sha256": "81ddbd448f7450665ce88d490488ae4bf35b4804287f1f40b90071379d8a36f9",
+  "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+  "cases": [
+    {
+      "case_id": "units_equivalent",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 999.9999999999999,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [],
+      "actual_codes": [],
+      "source_sha256": "053b02ccbc2db672c03995031fca310efb75b78e5a55dc46a1f0e8553522129c",
+      "diagnosis_sha256": "b33fac2a5b2efae62e5ac67e857452075022404132d695d50c71eadf3ef09206"
+    },
+    {
+      "case_id": "re_below",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.03998
+      },
+      "expected_codes": [],
+      "actual_codes": [],
+      "source_sha256": "be596c1d7cebc1da5a3a985874750d62cd75a9489743db625c8c4303fb5fc6be",
+      "diagnosis_sha256": "27f7d2fa3dce13346fb2f176e6830e40368cb298f755ce84b47397f0c73e9a0d"
+    },
+    {
+      "case_id": "re_at",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.04
+      },
+      "expected_codes": [],
+      "actual_codes": [],
+      "source_sha256": "71ff7790b0c4539eb7b55ef7c8873592d9f4dcbb0d70ea5f73d20a7c64add1bb",
+      "diagnosis_sha256": "89ce45eac16b7baa46fdd80e04f976a75adce0a1c593da0ec4db6cfb27fd7dad"
+    },
+    {
+      "case_id": "re_above",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.04002
+      },
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "source_sha256": "90714c4e64f147bd4198bfdb29e4aae5b7e8232ef137fb76511048bccf7709ff",
+      "diagnosis_sha256": "b2c88ea38f9f0ba4e3f31926def5a22913ba5b7be14fbfde7a3bf71feddfd9d9"
+    },
+    {
+      "case_id": "zero_velocity",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.0
+      },
+      "expected_codes": [
+        "INLET_DIRECTION"
+      ],
+      "actual_codes": [
+        "INLET_DIRECTION"
+      ],
+      "source_sha256": "9253cf34d817d62e08fd138790210359722aef0b7a3d3dbe9dda2814f85a887d",
+      "diagnosis_sha256": "a2cb266493f0e97b4c03301c4bfb2571925f51e69a3e72c51cda13a4574e6f7f"
+    },
+    {
+      "case_id": "reversed_fast",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": -0.1
+      },
+      "expected_codes": [
+        "INLET_DIRECTION",
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "INLET_DIRECTION",
+        "REYNOLDS_RISK"
+      ],
+      "source_sha256": "6c16c7d61e39c46eff2a4661858a523e321d0e8542db8e343ee88bbb9a513696",
+      "diagnosis_sha256": "dde2d5dcefe06e75cf12da598764437637a884f55036367b06f22304b0da2f35"
+    },
+    {
+      "case_id": "empty_inlet",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "MISSING_INLET"
+      ],
+      "source_sha256": "2ec52a6e5478dbba7c3566c3a4b74de8404d1229dfd0c10e225bdad527823660",
+      "diagnosis_sha256": "ffb256320e0ab84015bb3436116388f448d745aa5c5612827cf225c4a11f3833"
+    },
+    {
+      "case_id": "empty_outlet",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [
+        "MISSING_OUTLET"
+      ],
+      "actual_codes": [
+        "MISSING_OUTLET"
+      ],
+      "source_sha256": "1eec19f69e229c50a714df3ed95e78f391b46b040b9b9bc879e333c531ffba12",
+      "diagnosis_sha256": "a0f9e0d8e0bf9e5a13f188af2bf32d7488a7ca6ca20b69cf1dc792e58fff99c6"
+    },
+    {
+      "case_id": "both_missing",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001
+      },
+      "expected_codes": [
+        "MISSING_INLET",
+        "MISSING_OUTLET"
+      ],
+      "actual_codes": [
+        "MISSING_INLET",
+        "MISSING_OUTLET"
+      ],
+      "source_sha256": "3b0261bb30dcffe449ff57ad95f01515f137329fc1fac7ffb619d54d3125f642",
+      "diagnosis_sha256": "166ad3a257bfe3cf6eb50d7a18ff2e833593bab644f0af0cb27b82c6aac2af2d"
+    },
+    {
+      "case_id": "overlap_reversed",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": -0.1
+      },
+      "expected_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "source_sha256": "52dc2d532024dced5e9d388d379473acde6d839a8aa9760b53eab2f4195d3083",
+      "diagnosis_sha256": "24edeb238bc3925e1349068b8c8fefca2c1d09f26bfb06a48a5182572bf8870b"
+    },
+    {
+      "case_id": "zero_viscosity",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.0,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [
+        "INVALID_MATERIAL_PARAMETER"
+      ],
+      "actual_codes": [
+        "INVALID_MATERIAL_PARAMETER"
+      ],
+      "source_sha256": "8e6a68409a276eb6e706e7132a1605ab22197093d6b9579407ec031fdc0a995a",
+      "diagnosis_sha256": "22d3699f84a335f7122c52abe936a20e700e353795972225d88ac2045c72506e"
+    },
+    {
+      "case_id": "low_viscosity",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 1.0,
+        "height_m": 0.05000000000000001,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.0001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "source_sha256": "32790037f896f476493b190d38f03446da3fd9e73d88c1900ff73329d6c68b2f",
+      "diagnosis_sha256": "90e19631380c0c72ea4217b1691bd7660b82fa6fc3fa719bb98aa2c54c873ded"
+    },
+    {
+      "case_id": "short_narrow",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 0.5,
+        "height_m": 0.020000000000000004,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [],
+      "actual_codes": [],
+      "source_sha256": "5abf4d7ea0ce1609f0797cc88cbc2e54f01f8944d6f19f50002b4675d7aaf243",
+      "diagnosis_sha256": "9617cedd0b68b987c7d3350b78732fc788dd23fd44fd627a4a428358156fe1df"
+    },
+    {
+      "case_id": "long_wide",
+      "passed": true,
+      "mismatches": [],
+      "actual_values": {
+        "length_m": 2.0,
+        "height_m": 0.10000000000000002,
+        "density": 1000.0,
+        "dynamic_viscosity": 0.001,
+        "normal_velocity_m_s": 0.01
+      },
+      "expected_codes": [],
+      "actual_codes": [],
+      "source_sha256": "ef3a02bdd7e69fbf766f59359f1cf0c9fceae99d2ad7b2828334f93ad69439b3",
+      "diagnosis_sha256": "e48d926cf2280a856e0d1655555d8a6c1d7ef6c3c6f86908db569308bf084622"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sssssding/Flowplot/schema/flowpilot-model.schema.json",
+  "title": "FlowPilot canonical COMSOL model",
+  "type": "object",
+  "required": ["schema_version", "model", "geometry", "material", "boundaries"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "model": {
+      "type": "object",
+      "required": ["name", "dimension", "physics", "study"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "comsol_version": {"type": "string"},
+        "dimension": {"const": 2},
+        "physics": {"const": "laminar_flow"},
+        "study": {"const": "stationary"}
+      },
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "required": ["length_m", "height_m"],
+      "properties": {
+        "length_m": {"type": "number", "exclusiveMinimum": 0},
+        "height_m": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "material": {
+      "type": "object",
+      "required": ["name", "density_kg_m3", "dynamic_viscosity_pa_s"],
+      "properties": {
+        "name": {"type": "string"},
+        "density_kg_m3": {"type": "number", "exclusiveMinimum": 0},
+        "dynamic_viscosity_pa_s": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["feature_tag", "type", "boundary_ids", "enabled", "parameters"],
+        "properties": {
+          "feature_tag": {"type": "string", "minLength": 1},
+          "type": {"enum": ["inlet", "outlet", "wall"]},
+          "boundary_ids": {
+            "type": "array",
+            "minItems": 0,
+            "uniqueItems": true,
+            "items": {"type": "integer", "minimum": 1}
+          },
+          "enabled": {"type": "boolean"},
+          "parameters": {"type": "object"},
+          "verification_status": {"enum": ["expected", "verified"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "expected_metrics": {
+      "type": "object",
+      "properties": {
+        "reynolds_number": {"type": "number"},
+        "mass_conservation_relative_tolerance": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
