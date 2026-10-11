@@ -10,6 +10,8 @@
 | [BASELINE_MODEL.md](BASELINE_MODEL.md) | COMSOL 基准模型 Ground Truth | 基准模型变化时更新 |
 | [DECISIONS.md](DECISIONS.md) | 重要技术决策记录 | 决策被采纳时追加 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
+| [BOUNDARY_CASES.md](BOUNDARY_CASES.md) | 五类异常样本、预期标签和复核清单 | 新增或审核样本时更新 |
+| [RULES.md](RULES.md) | 规则 ID、证据、适用范围与 JSON 契约 | 规则变化时更新 |
 
 ## 文档规则
 
