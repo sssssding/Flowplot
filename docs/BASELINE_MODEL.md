@@ -2,6 +2,8 @@
 
 建议文件名：`baseline_pipe_2d_laminar.mph`
 
+基准模型的团队验证环境为 COMSOL 6.3。实测记录中请补充具体补丁/构建版本及 Java API 版本。
+
 ## 人工 Ground Truth
 
 | 项目 | 预期值 |
