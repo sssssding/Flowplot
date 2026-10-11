@@ -1,0 +1,47 @@
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.tmp
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Java / build
+*.class
+target/
+build/
+dist/
+
+# Runtime artifacts
+logs/
+outputs/
+results/
+*.log
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# COMSOL generated/lock/recovery files
+*.mph.lock
+*.mph.recovery
+*.mphbin
+
+# Large local datasets; keep small reviewed fixtures under data/fixtures/
+data/raw/
+data/generated/
+
+# Local reference documents; verify redistribution rights before publishing.
+/*.pdf

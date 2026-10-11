@@ -1,0 +1,9 @@
+*.mph filter=lfs diff=lfs merge=lfs -text
+
+# Normalize text files across Windows and Linux contributors.
+* text=auto
+*.md text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.py text eol=lf
+*.java text eol=lf
