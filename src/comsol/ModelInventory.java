@@ -6,9 +6,13 @@ import java.util.Arrays;
 /** Version-aware inventory and unsolved case builder; default main is read-only. */
 public class ModelInventory {
   public static void main(String[] args) throws Exception {
+    inspectFile("models/baseline_pipe_2d_laminar.mph", 10);
+  }
+
+  private static void inspectFile(String path, int loads) throws Exception {
     String first = null;
-    for (int iteration = 0; iteration < 10; iteration++) {
-      Model model = ModelUtil.load("Inventory", "models/baseline_pipe_2d_laminar.mph");
+    for (int iteration = 0; iteration < loads; iteration++) {
+      Model model = ModelUtil.load("Inventory", path);
       try {
         String snapshot = inspect(model);
         if (first == null) first = snapshot;
@@ -18,7 +22,7 @@ public class ModelInventory {
       }
     }
     System.out.println("FLOWPILOT_INVENTORY_JSON " + first);
-    System.out.println("FLOWPILOT_INVENTORY_VERIFIED 10");
+    System.out.println("FLOWPILOT_INVENTORY_VERIFIED " + loads);
   }
 
   public static String inspect(Model model) {
@@ -68,7 +72,13 @@ public class ModelInventory {
           if (i > 0) json.append(',');
           json.append(quote(model.component(component).geom(geometry).feature(geometryTags[i]).getType()));
         }
-        json.append("]}");
+        String rotation = null;
+        for (String geometryTag : geometryTags) {
+          if ("Rectangle".equals(model.component(component).geom(geometry).feature(geometryTag).getType())) {
+            rotation = model.component(component).geom(geometry).feature(geometryTag).getString("rot");
+          }
+        }
+        json.append("],\"rectangle_rotation_expression\":").append(quote(rotation)).append('}');
       }
       json.append("],\"materials\":[");
       innerSeparator = false;

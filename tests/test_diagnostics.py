@@ -159,10 +159,12 @@ class DiagnosticTest(unittest.TestCase):
         (ROOT / "outputs").mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=ROOT / "outputs") as directory:
             output = Path(directory) / "diagnosis.json"
-            command = [sys.executable, str(ROOT / "src" / "flowpilot" / "diagnostics.py"),
+            command = [sys.executable, "-X", "utf8", str(ROOT / "src" / "flowpilot" / "diagnostics.py"),
                        str(ROOT / "data" / "fixtures" / "cases" / "baseline.json"), "--output", str(output)]
-            result = subprocess.run(command, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("checked", result.stdout)
+            self.assertEqual(result.stderr, "")
             before = output.read_bytes()
             self.assertNotEqual(subprocess.run(command, capture_output=True).returncode, 0)
             self.assertEqual(output.read_bytes(), before)

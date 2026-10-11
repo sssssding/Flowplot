@@ -8,8 +8,11 @@
 | [NOTES.md](NOTES.md) | 安全、数据、COMSOL 与建模注意事项 | 发现新风险时更新 |
 | [PROGRESS.md](PROGRESS.md) | 项目任务、验收标准和当前进度 | 每次合并 PR 后更新 |
 | [BASELINE_MODEL.md](BASELINE_MODEL.md) | COMSOL 基准模型 Ground Truth | 基准模型变化时更新 |
+| [BASELINE_REVIEW.md](BASELINE_REVIEW.md) | 保存解速度云图、截面采样与专业复核材料 | 图像复核材料变化时更新 |
+| [BASELINE_SOLVES.md](BASELINE_SOLVES.md) | 基准五次重新求解、日志采集与结果一致性 | 自动求解入口或验证证据变化时更新 |
 | [DECISIONS.md](DECISIONS.md) | 重要技术决策记录 | 决策被采纳时追加 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
+| [MODEL_CHECK.md](MODEL_CHECK.md) | 指定 MPH 文件的只读检查入口、报告和失败处理 | 文件检查流程变化时更新 |
 | [BOUNDARY_CASES.md](BOUNDARY_CASES.md) | 五类异常样本、预期标签和复核清单 | 新增或审核样本时更新 |
 | [RULES.md](RULES.md) | 规则 ID、证据、适用范围与 JSON 契约 | 规则变化时更新 |
 | [GUI_REVIEW.md](GUI_REVIEW.md) | COMSOL 界面核对、兼容性提示和未完成项 | 每次 GUI 核对后更新 |

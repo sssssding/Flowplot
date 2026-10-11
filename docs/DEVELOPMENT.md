@@ -5,6 +5,7 @@
 - COMSOL Multiphysics 6.3，已验证构建号 290。
 - PowerShell 7（Windows）。
 - Python 3.12 64 位（当前验证环境），以及 `requirements-dev.txt` 中的 JSON Schema 验证依赖。
+- 接手环境补充验证：Python 3.13.5 64 位、jsonschema 4.25.1；原有 Python 3.12 环境仍用于 CI。
 - Git 与 Git LFS。
 
 不在源码中写死 COMSOL 安装目录。以下 `<COMSOL_ROOT>` 指包含 `bin/win64` 的 Multiphysics 安装目录。
@@ -35,9 +36,11 @@ COMSOL 的编译器或批处理有时在内部失败时仍返回退出码 0。�
 
 工具通过 Java API 十次加载本地基准模型，枚举实际组件、几何、研究、物理场、feature 类型、启用状态、选择结果及一组常用边界表达式。十次 JSON 必须完全相同。
 
-这是基准模型上的只读技术验证。它尚未提供任意输入路径的 CLI，也未覆盖所有物理场、所有边界模式、嵌套 feature 和空间表达式求值。`u0` 等字段可能在当前边界模式下不生效，后续规则引擎必须先判断 `BoundaryCondition`，不能把所有存储属性同时视为有效设置。
+这是基准模型上的只读技术验证。该脚本固定读取基准文件；指定其他 `.mph` 文件并输出诊断报告时，使用 [指定模型的只读检查](MODEL_CHECK.md)。两者均未覆盖所有物理场、所有边界模式、嵌套 feature 和空间表达式求值。`u0` 等字段可能在当前边界模式下不生效，规则引擎必须先判断 `BoundaryCondition`，不能把所有存储属性同时视为有效设置。
 
 `ModelInventory` 现输出 `inventory-0.2`，增加几何/材料证据、声明与有效选择、入口速度模式及 COMSOL 带单位求值。新诊断归一化输出为 `diagnostic-0.1`，对应 `schema/diagnostic-model.schema.json`。旧 `inventory-0.1` 与人工 `0.1.0` fixture 保留作历史参考，不应误认成新工具的自动输出。
+
+新增解析还包含可选的 `rectangle_rotation_expression` 几何证据，拒绝把旋转矩形的包围盒高度用于当前通道规则。旧版 fixture 保持可读；本次真实清单通过新文件入口生成，不覆盖历史证据。
 
 ## 异常模型与只读诊断
 
@@ -65,6 +68,14 @@ python -m venv .venv
 ## 更新实验记录
 
 重新生成模型后，将本机 JSON 报告中经审核的证据更新到 `data/fixtures/`，同步更新 `docs/BASELINE_MODEL.md` 中的指标、SHA-256 和验证范围。保留原始日志用于本机排查，但不上传含计算机信息的运行日志。
+
+## 基准保存解的图像复核
+
+使用 [速度场复核材料](BASELINE_REVIEW.md) 中的命令，生成原生 COMSOL 速度云图、截面曲线、采样 JSON 和独立的带图组模型副本。入口只接受 manifest 中的已提交基准，不重新求解；专业复核状态仍需团队确认。
+
+## 基准自动重复求解
+
+使用 [重复求解入口](BASELINE_SOLVES.md) 在独立副本上连续重新求解默认 5 次。每次先清除保存解，保留原求解器设置，记录耗时、原生日志、模型副本和指标一致性。该入口实际运行求解器，需要许可证；与只读检查及保存解图像导出分开使用，不运行异常模型。
 
 ## API 参考
 

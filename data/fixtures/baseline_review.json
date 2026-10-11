@@ -1,0 +1,76 @@
+{
+  "schema_version": "baseline-review-report-0.1",
+  "review_status": "expert_review_pending",
+  "solver_run": false,
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "metrics": {
+    "mass_in_kg_m_s": 0.4875000000000002,
+    "mass_out_kg_m_s": 0.4870954446317323,
+    "max_speed_m_s": 0.014426545604284052,
+    "wall_interior_speed_m_s": 0.0,
+    "min_u_m_s": 0.0,
+    "pressure_drop_pa": 0.07758404211491263,
+    "mass_relative_error": 0.0008298571656777213
+  },
+  "reference_match": {
+    "mass_in_kg_m_s": true,
+    "mass_out_kg_m_s": true,
+    "max_speed_m_s": true,
+    "wall_interior_speed_m_s": true,
+    "min_u_m_s": true,
+    "pressure_drop_pa": true
+  },
+  "engineering_checks": {
+    "reference_metrics_match": true,
+    "positive_mass_flow": true,
+    "mass_balance_below_1e_3": true,
+    "wall_interior_speed_below_1e_8": true,
+    "no_reverse_u_above_tolerance": true,
+    "max_speed_in_baseline_range": true,
+    "positive_pressure_drop": true,
+    "section_walls_below_1e_8": true,
+    "section_centers_above_walls": true,
+    "nonnegative_sampled_speed": true,
+    "profile_symmetry_below_1_percent": true
+  },
+  "engineering_checks_passed": true,
+  "sections": [
+    {
+      "x_m": 0.1,
+      "center_u_m_s": 0.01147048838985886,
+      "wall_sample_speed_m_s": 8.007687666977695e-19,
+      "symmetry_relative_error": 0.0004435183348927723,
+      "center_above_wall": true,
+      "nonnegative_speed": true
+    },
+    {
+      "x_m": 0.25,
+      "center_u_m_s": 0.012650840786980777,
+      "wall_sample_speed_m_s": 3.16296811568793e-19,
+      "symmetry_relative_error": 0.00022611232774075453,
+      "center_above_wall": true,
+      "nonnegative_speed": true
+    },
+    {
+      "x_m": 0.5,
+      "center_u_m_s": 0.013719890978225095,
+      "wall_sample_speed_m_s": 5.567515493747695e-19,
+      "symmetry_relative_error": 9.365701261888886e-05,
+      "center_above_wall": true,
+      "nonnegative_speed": true
+    },
+    {
+      "x_m": 0.9,
+      "center_u_m_s": 0.014365245201782142,
+      "wall_sample_speed_m_s": 0.0,
+      "symmetry_relative_error": 0.00011819961116458934,
+      "center_above_wall": true,
+      "nonnegative_speed": true
+    }
+  ],
+  "source": {
+    "filename": "baseline_pipe_2d_laminar.mph",
+    "sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b"
+  },
+  "review_model_sha256": "db7ce750442458910abc6e9b605f98a9f48a1bd8bc0d16848481b84d6bcde1eb"
+}

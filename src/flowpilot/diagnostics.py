@@ -37,6 +37,11 @@ def normalize(inventory):
              "暂仅支持二维单域四边界矩形通道")
     _require(geometry["feature_types"].count("Rectangle") == 1
              and set(geometry["feature_types"]) <= {"Rectangle", "Finalize"}, "暂不支持非矩形或组合几何")
+    # New API inventories include this evidence; old versioned fixtures remain readable.
+    if "rectangle_rotation_expression" in geometry:
+        rotation = geometry["rectangle_rotation_expression"]
+        _require(isinstance(rotation, str) and "".join(rotation.split()) in {"0", "0[deg]", "0[rad]"},
+                 "当前矩形配置仅验证显式零旋转，不能用旋转后的包围盒计算通道高度")
     _require(geometry["length_unit"] == "m", "当前矩形配置仅验证米制几何")
     bbox = geometry["bounding_box"]
     _require(len(bbox) == 4 and all(math.isfinite(x) for x in bbox), "几何包围盒不可用")
