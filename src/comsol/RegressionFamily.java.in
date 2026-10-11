@@ -1,0 +1,74 @@
+  public static void main(String[] args) throws Exception {
+    for (String name : FAMILY_NAMES) {
+      Model model = ModelUtil.load("Family", "input.mph");
+      try {
+        if ("units_equivalent".equals(name)) {
+          model.param().set("Uin", "10[mm/s]");
+          model.param().set("rho_ref", "1[g/cm^3]");
+          model.param().set("mu_ref", "1[mPa*s]");
+        }
+        if ("re_below".equals(name)) model.param().set("Uin", "0.03998[m/s]");
+        if ("re_at".equals(name)) model.param().set("Uin", "0.04[m/s]");
+        if ("re_above".equals(name)) model.param().set("Uin", "0.04002[m/s]");
+        if ("zero_velocity".equals(name)) model.param().set("Uin", "0[m/s]");
+        if ("reversed_fast".equals(name)) model.param().set("Uin", "-0.1[m/s]");
+        if ("empty_inlet".equals(name))
+          model.component("comp1").physics("spf").feature("inl1").selection().set(new int[] {});
+        if ("empty_outlet".equals(name))
+          model.component("comp1").physics("spf").feature("out1").selection().set(new int[] {});
+        if ("both_missing".equals(name)) {
+          model.component("comp1").physics("spf").feature().remove("inl1");
+          model.component("comp1").physics("spf").feature().remove("out1");
+        }
+        if ("overlap_reversed".equals(name)) {
+          model.param().set("Uin", "-0.1[m/s]");
+          model.component("comp1").physics("spf").create("out_conflict", "Outlet", 1);
+          model.component("comp1").physics("spf").feature("out_conflict").selection().named("inlet");
+          model.component("comp1").physics("spf").feature("out_conflict").set("p0", "p_out");
+        }
+        if ("zero_viscosity".equals(name)) model.param().set("mu_ref", "0[Pa*s]");
+        if ("low_viscosity".equals(name)) model.param().set("mu_ref", "1e-4[Pa*s]");
+        if ("short_narrow".equals(name)) resize(model, "0.5[m]", "0.02[m]");
+        if ("long_wide".equals(name)) resize(model, "2[m]", "0.1[m]");
+        // Never solve altered configurations or leave the baseline's stale solution attached.
+        for (String solver : model.sol().tags()) {
+          model.sol(solver).clearSolutionData();
+          if (!model.sol(solver).isEmpty()) throw new IllegalStateException("Solution not empty");
+        }
+        model.label(name + ".mph");
+        model.comments("FlowPilot controlled development variation; unsolved; expert review pending.");
+        model.save("models/" + name + ".mph");
+        System.out.println("FLOWPILOT_FAMILY_SAVED " + name);
+      } finally {
+        ModelUtil.remove("Family");
+      }
+    }
+    // ASCII JSON avoids losing localized version text through the Windows console encoding.
+    System.out.println("FLOWPILOT_FAMILY_VERSION " + quote(ModelUtil.getComsolVersion()));
+    System.out.println("FLOWPILOT_FAMILY_VERIFIED " + FAMILY_NAMES.length);
+  }
+
+  private static void resize(Model model, String length, String height) {
+    model.param().set("L", length);
+    model.param().set("H", height);
+    model.component("comp1").geom("geom1").run();
+    double l = model.param().evaluate("L", "m");
+    double h = model.param().evaluate("H", "m");
+    double e = 1e-8;
+    // Refresh coordinate-based selections; do not assume entity numbering after rebuilding.
+    bounds(model, "inlet", -e, e, -e, h + e);
+    bounds(model, "outlet", l - e, l + e, -e, h + e);
+    bounds(model, "bottom", -e, l + e, -e, e);
+    bounds(model, "top", -e, l + e, h - e, h + e);
+    for (String tag : new String[] {"inlet", "outlet", "bottom", "top"}) {
+      if (model.component("comp1").selection(tag).entities(1).length != 1)
+        throw new IllegalStateException("Invalid resized selection: " + tag);
+    }
+  }
+
+  private static void bounds(Model model, String tag, double xmin, double xmax, double ymin, double ymax) {
+    model.component("comp1").selection(tag).set("xmin", xmin);
+    model.component("comp1").selection(tag).set("xmax", xmax);
+    model.component("comp1").selection(tag).set("ymin", ymin);
+    model.component("comp1").selection(tag).set("ymax", ymax);
+  }

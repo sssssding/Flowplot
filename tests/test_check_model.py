@@ -56,6 +56,8 @@ class ModelCheckTest(unittest.TestCase):
         self.assertEqual(report["status"], "checked")
         self.assertEqual(report["findings"], [])
         metadata = json.loads((self.output / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["diagnosis_sha256"], cli.sha256(self.output / "diagnosis.json"))
+        self.assertEqual(metadata["inventory_sha256"], cli.sha256(self.output / "inventory.json"))
         self.assertEqual(metadata["status"], "completed")
         self.assertEqual(metadata["verified_loads"], 3)
         self.assertEqual(metadata["source"]["sha256"], cli.sha256(self.model))
@@ -63,6 +65,31 @@ class ModelCheckTest(unittest.TestCase):
         source = (self.output / "FileInventory.java").read_text(encoding="utf-8")
         self.assertNotIn(str(self.model), source)
         self.assertIn("当前规则未发现问题", (self.output / "report.md").read_text(encoding="utf-8"))
+        events = [json.loads(line) for line in (self.output / "progress.jsonl").read_text(encoding="utf-8").splitlines()]
+        self.assertEqual([event["stage"] for event in events], ["snapshot", "compile", "inventory", "diagnose", "completed"])
+        self.assertTrue(all(event["schema_version"] == "check-progress-0.1" for event in events))
+
+    def test_progress_storage_failure_does_not_change_diagnosis(self):
+        original_open = Path.open
+        def failed_progress(path, *args, **kwargs):
+            if path.name == "progress.jsonl":
+                raise PermissionError("synthetic telemetry write denial")
+            return original_open(path, *args, **kwargs)
+        with patch.object(Path, "open", failed_progress), patch.object(cli, "_run", side_effect=self.simulate_comsol):
+            report = self.run_check()
+        self.assertEqual(report["status"], "checked")
+        metadata = json.loads((self.output / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["status"], "completed")
+        self.assertIn("telemetry write denial", metadata["progress_error"])
+
+    def test_failed_progress_preserves_actual_failure_stage(self):
+        with patch.object(cli, "_run", side_effect=cli.CheckError("synthetic compile failure")), self.assertRaises(cli.CheckError):
+            self.run_check()
+        metadata = json.loads((self.output / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["stage"], "compile")
+        self.assertEqual(metadata["status"], "failed")
+        events = [json.loads(line)["stage"] for line in (self.output / "progress.jsonl").read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(events, ["snapshot", "compile", "failed"])
 
     def test_six_case_reports_preserve_rule_evidence(self):
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8"))
@@ -87,6 +114,21 @@ class ModelCheckTest(unittest.TestCase):
             self.run_check()
         launch.assert_not_called()
         self.assertEqual(existing.read_bytes(), b"user report")
+
+    def test_unrepresentable_reynolds_publishes_partial_not_failed_or_clean(self):
+        material = self.inventory["components"][0]["materials"][0]
+        material["density"]["value"] = 1e300
+        inlet = next(item for item in self.inventory["components"][0]["physics"][0]["features"] if item["type"] == "Inlet")
+        inlet["evaluated_parameters"]["normal_velocity"]["value"] = 1e100
+        with patch.object(cli, "_run", side_effect=self.simulate_comsol):
+            report = self.run_check()
+        self.assertEqual(report["status"], "partial")
+        metadata = json.loads((self.output / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["status"], "completed")
+        self.assertEqual(metadata["diagnosis_status"], "partial")
+        self.assertEqual(metadata["diagnosis_sha256"], cli.sha256(self.output / "diagnosis.json"))
+        self.assertIn("部分检查未完成", (self.output / "report.md").read_text(encoding="utf-8"))
+        self.assertEqual(report["findings"][0]["code"], "EVALUATION_UNAVAILABLE")
 
     def test_lfs_pointer_is_rejected_before_launch(self):
         self.model.write_bytes(cli.LFS_HEADER + b"\noid sha256:mock\nsize 123\n")

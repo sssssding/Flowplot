@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from fractions import Fraction
 import itertools
 import json
 import math
@@ -13,10 +14,39 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "schema" / "diagnostic-model.schema.json"
 ROLES = {"Inlet": "inlet", "Outlet": "outlet", "Wall": "wall", "WallBC": "wall"}
 ALLOWED_FEATURES = set(ROLES) | {"FluidProperties", "init"}
+REYNOLDS_THRESHOLD_GUARD_ULPS = 4
 
 
 class UnsupportedModel(ValueError):
     """The currently verified profile does not cover this model."""
+
+
+def is_finite_number(value):
+    """JSON numeric evidence/options must fit a finite float; bool is not a number."""
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _reynolds_number(rho, speed, height, mu):
+    """Combine recorded decimal numbers exactly; round only the final report value.
+
+    Fraction reads numeric values, never COMSOL expressions. This avoids overflowing
+    or underflowing a product whose final quotient is still representable.
+    """
+    exact = Fraction(str(rho)) * Fraction(str(abs(speed))) * Fraction(str(height)) / Fraction(str(mu))
+    try:
+        value = float(exact)
+    except OverflowError:
+        return None, "above_float_range"
+    if not math.isfinite(value):
+        return None, "above_float_range"
+    if value == 0 and exact != 0:
+        return None, "below_nonzero_float_range"
+    return value, None
 
 
 def _require(condition, explanation):
@@ -44,9 +74,10 @@ def normalize(inventory):
                  "当前矩形配置仅验证显式零旋转，不能用旋转后的包围盒计算通道高度")
     _require(geometry["length_unit"] == "m", "当前矩形配置仅验证米制几何")
     bbox = geometry["bounding_box"]
-    _require(len(bbox) == 4 and all(math.isfinite(x) for x in bbox), "几何包围盒不可用")
+    _require(len(bbox) == 4 and all(is_finite_number(x) for x in bbox), "几何包围盒不可用")
     length, height = bbox[1] - bbox[0], bbox[3] - bbox[2]
-    _require(length > 0 and height > 0, "几何尺寸必须为正")
+    _require(is_finite_number(length) and is_finite_number(height) and length > 0 and height > 0,
+             "几何尺寸必须为有限的正数")
     _require(len(component["physics"]) == 1, "暂仅支持一个物理场")
     physics = component["physics"][0]
     _require(physics["type"] == "LaminarFlow" and physics["enabled"], "需要启用的 LaminarFlow")
@@ -102,8 +133,8 @@ def normalize(inventory):
 
 def validate(model):
     def finite(value):
-        if isinstance(value, float) and not math.isfinite(value):
-            raise ValueError("non-finite numeric evidence")
+        if type(value) in (int, float) and not is_finite_number(value):
+            raise ValueError("numeric evidence must fit a finite float")
         if isinstance(value, dict):
             for child in value.values():
                 finite(child)
@@ -122,7 +153,7 @@ def validate(model):
 def check(model, *, reynolds_warning=2000.0):
     """Template constraints, not a proof of physical validity or solver success."""
     validate(model)
-    if not math.isfinite(reynolds_warning) or reynolds_warning <= 0:
+    if not is_finite_number(reynolds_warning) or reynolds_warning <= 0:
         raise ValueError("Reynolds warning threshold must be finite and positive")
     findings = []
 
@@ -132,9 +163,19 @@ def check(model, *, reynolds_warning=2000.0):
 
     boundaries = model["boundaries"]
     for role in ("inlet", "outlet"):
-        if not any(item["type"] == role and item["boundary_ids"] for item in boundaries):
+        role_nodes = [item for item in boundaries if item["type"] == role]
+        if not any(item["boundary_ids"] for item in role_nodes):
             add("MISSING_" + role.upper(), "Critical", "当前通道模板缺少有效" + ("入口" if role == "inlet" else "出口")
-                + "；这不是对所有 COMSOL 模型的普遍判错。")
+                + "；这不是对所有 COMSOL 模型的普遍判错。",
+                tags=[item["feature_tag"] for item in role_nodes],
+                evidence={"required_role": role, "observation_scope": "enabled_normalized_boundary_nodes",
+                          "active_role_node_count": len(role_nodes), "effective_boundary_ids": [],
+                          "absence_kind": "no_enabled_role_node" if not role_nodes else "all_effective_selections_empty",
+                          "active_boundary_nodes": [
+                              {"feature_tag": item["feature_tag"], "role": item["type"],
+                               "declared_boundary_ids": item["declared_boundary_ids"],
+                               "effective_boundary_ids": item["boundary_ids"], "selection_scope": item["selection_scope"]}
+                              for item in sorted(boundaries, key=lambda item: item["feature_tag"])]})
     # Never interpret an all-boundaries fallback wall as conflicting with overrides.
     for left, right in itertools.combinations(boundaries, 2):
         if left["type"] == right["type"] or "fallback" in (left["selection_scope"], right["selection_scope"]):
@@ -173,12 +214,27 @@ def check(model, *, reynolds_warning=2000.0):
             add("INLET_DIRECTION", "Warning", "入口法向速度未指向域内或为零；该符号约定只用于法向速度模式。",
                 (tag,), boundary["boundary_ids"], {"normal_velocity_m_s": speed})
         if material_valid:
-            reynolds = rho * abs(speed) * model["geometry"]["height_m"] / mu
-            if reynolds > reynolds_warning:
-                add("REYNOLDS_RISK", "Warning", "以通道高度计算的名义 Reynolds 数超过可配置筛查阈值；不是普适转捩判据或湍流结论。",
-                    (tag,), boundary["boundary_ids"], {"reynolds_height_based": reynolds, "threshold": reynolds_warning})
+            height = model["geometry"]["height_m"]
+            reynolds, unavailable = _reynolds_number(rho, speed, height, mu)
+            if unavailable:
+                add("EVALUATION_UNAVAILABLE", "Warning", "名义 Reynolds 数超出当前报告的非零有限数值表示范围；"
+                    "Re 风险筛查未完成，不能按零或正常工况处理。", (tag,), boundary["boundary_ids"],
+                    {"quantity": "reynolds_height_based", "reason": unavailable,
+                     "formula": "rho * abs(Uin) * H / mu", "density_kg_m3": rho,
+                     "normal_velocity_m_s": speed, "height_m": height, "dynamic_viscosity_pa_s": mu,
+                     "threshold": reynolds_warning})
+                continue
+            # Geometry/API values can differ by their last binary digits (e.g. H=0.05
+            # arrives as 0.05000000000000001). Protect the threshold comparison only,
+            # never round the evidence or treat this as a physical uncertainty bound.
+            margin = REYNOLDS_THRESHOLD_GUARD_ULPS * math.ulp(float(reynolds_warning))
+            if reynolds > reynolds_warning and reynolds - reynolds_warning > margin:
+                add("REYNOLDS_RISK", "Warning", "以通道高度计算的名义 Reynolds 数超过可配置筛查阈值及末位浮点比较保护；不是普适转捩判据或湍流结论。",
+                    (tag,), boundary["boundary_ids"], {"reynolds_height_based": reynolds, "threshold": reynolds_warning,
+                                                       "numerical_comparison_margin": margin})
     return {"schema_version": "diagnosis-0.1", "profile": model["profile"],
             "status": "partial" if any(x["code"] == "EVALUATION_UNAVAILABLE" for x in findings) else "checked",
+            "numeric_policy": {"reynolds_threshold_guard_ulps": REYNOLDS_THRESHOLD_GUARD_ULPS},
             "findings": sorted(findings, key=lambda x: (x["code"], x["feature_tags"]))}
 
 

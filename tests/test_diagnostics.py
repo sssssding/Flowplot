@@ -50,6 +50,39 @@ class DiagnosticTest(unittest.TestCase):
         self.feature("Inlet")["selected_entity_ids"] = []
         self.assertEqual(self.codes(), {"MISSING_INLET"})
 
+    def test_missing_role_evidence_distinguishes_no_enabled_node(self):
+        self.feature("Inlet")["enabled"] = False
+        finding = diagnose_inventory(self.inventory)["findings"][0]
+        self.assertEqual(finding["evidence"]["absence_kind"], "no_enabled_role_node")
+        self.assertEqual(finding["evidence"]["active_role_node_count"], 0)
+        self.assertEqual(finding["evidence"]["effective_boundary_ids"], [])
+        self.assertTrue(finding["evidence"]["active_boundary_nodes"])
+        self.assertNotIn("inl1", [item["feature_tag"] for item in finding["evidence"]["active_boundary_nodes"]])
+
+    def test_missing_empty_selection_keeps_node_and_declared_evidence(self):
+        self.feature("Inlet")["selected_entity_ids"] = []
+        finding = diagnose_inventory(self.inventory)["findings"][0]
+        self.assertEqual(finding["feature_tags"], ["inl1"])
+        self.assertEqual(finding["boundary_ids"], [])
+        self.assertEqual(finding["evidence"]["absence_kind"], "all_effective_selections_empty")
+        self.assertEqual(finding["evidence"]["active_role_node_count"], 1)
+        inlet = next(item for item in finding["evidence"]["active_boundary_nodes"] if item["role"] == "inlet")
+        self.assertEqual(inlet["declared_boundary_ids"], [1])
+        self.assertEqual(inlet["effective_boundary_ids"], [])
+
+    def test_missing_outlet_evidence_has_required_role_and_other_coverage(self):
+        finding = diagnose_inventory(load("missing_outlet"))["findings"][0]
+        self.assertEqual(finding["code"], "MISSING_OUTLET")
+        self.assertEqual(finding["evidence"]["required_role"], "outlet")
+        self.assertEqual(finding["evidence"]["observation_scope"], "enabled_normalized_boundary_nodes")
+        self.assertTrue(any(item["role"] == "inlet" for item in finding["evidence"]["active_boundary_nodes"]))
+
+    def test_missing_role_evidence_is_deterministic_under_node_order_change(self):
+        data = load("missing_inlet")
+        before = diagnose_inventory(data)["findings"]
+        data["components"][0]["physics"][0]["features"].reverse()
+        self.assertEqual(diagnose_inventory(data)["findings"], before)
+
     def test_overlap_uses_declared_not_effective_selection(self):
         report = diagnose_inventory(load("selection_overlap"))
         warning = next(x for x in report["findings"] if x["code"] == "BC_SELECTION_OVERLAP")

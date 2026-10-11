@@ -19,13 +19,17 @@ COMSOL 自己将表达式转换到指定单位；Python 不执行表达式。无
 | MISSING_INLET / MISSING_OUTLET | Critical | 模板内无该角色的非空有效边界；忽略未启用节点 |
 | BC_SELECTION_OVERLAP | Warning | 不同显式角色的声明边界重叠，结合有效选择提示优先级覆盖；不包括未命名的全边界 fallback wall |
 | INLET_DIRECTION | Warning | 当前法向流入速度 <= 0；不适用于速度分量模式 |
-| REYNOLDS_RISK | Warning | rho × abs(Uin) × H / mu > 可配置阈值，默认 2000 |
+| REYNOLDS_RISK | Warning | rho × abs(Uin) × H / mu 超过可配置阈值（默认 2000），且超出量大于阈值处 4 ULP 浮点保护 |
 | INVALID_MATERIAL_PARAMETER | Critical | 当前牛顿流体模板的密度或动力黏度非正 |
-| EVALUATION_UNAVAILABLE | Warning | 常数求值或单位转换失败；不填 0，不给干净结论 |
+| EVALUATION_UNAVAILABLE | Warning | 常数求值/单位转换失败，或派生 Re 超出非零有限表示范围；不填 0，不给干净结论 |
 
 默认 Re 阈值是团队初始筛查参数，不是二维通道普适转捩值。这里使用高度 H，而不是水力直径；不能混用名义入口速度、实际积分流量或不同特征长度下的 Reynolds 数。
 
+Re 合并计算已记录数值的十进制精确比值，最后才转换为报告数值，避免中间乘积溢出/下溢改变结论；最终值无法表示时返回带计算量、原因和操作数的 `EVALUATION_UNAVAILABLE`，整体 `partial`。真正零速度和非正材料仍按原规则处理。有限坐标产生无穷大尺寸时不使用该几何；超大整数或非有限输入不成为有效证据。数值选项不接受布尔值。详见 [数值稳定性](NUMERIC_SAFETY.md)。
+
 `Critical` 仅说明当前模板需要先处理的问题，不代表所有 COMSOL 模型都不合法。`checked` 表示已执行当前可用规则，即便包含 Critical；`findings=[]` 也不证明求解收敛或物理正确。`partial` / `unsupported` 不得在 UI 中显示成“通过”。
+
+缺少入口/出口现在补充启用角色节点数、空的有效边界和所有启用边界节点的声明/实际生效证据，区分没有启用角色节点与有效选择全空；节点仍存在时保留相关标识，不猜测缺失边界位置。此处不区分已删除和未启用节点。判定条件不变，但规则源码哈希已变，跨版本报告需重新检查后再比较或评分；详见 [模型概览与证据](MODEL_OVERVIEW.md)。
 
 ## JSON 契约
 
@@ -34,4 +38,4 @@ COMSOL 自己将表达式转换到指定单位；Python 不执行表达式。无
 - `diagnosis-0.1`：诊断报告，包含状态与规则证据。
 - 原 `0.1.0` Schema 与人工 baseline fixture 保留为旧参考接口，不是新版自动输出。
 
-六个真实模型的清单用于回归；其他不支持结构、无效 Schema、未求值数据等测试为 Python 构造的反例，不能称作 COMSOL 实测。
+原六个真实模型的清单及 [14 个受控变体](REGRESSION_FAMILY.md) 用于开发回归；不支持结构、无效 Schema、极端未求值数据等 Python 构造反例不能称作 COMSOL 实测，也不能用这些开发样本替代专业标签审核或独立验收。

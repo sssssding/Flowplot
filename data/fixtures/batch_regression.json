@@ -1,0 +1,177 @@
+{
+  "schema_version": "check-suite-report-0.1",
+  "evaluation_unit": "model_rule_code",
+  "evaluation_kind": "development_or_unreviewed",
+  "total_cases": 6,
+  "checked_cases": 6,
+  "checked_coverage": 1.0,
+  "exact_match_cases": 6,
+  "exact_match_fraction_all_cases": 1.0,
+  "metrics_on_checked_cases_only": {
+    "true_positive": 6,
+    "false_positive": 0,
+    "false_negative": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "per_rule_on_checked_cases_only": {
+    "BC_SELECTION_OVERLAP": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "EVALUATION_UNAVAILABLE": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "INLET_DIRECTION": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "INVALID_MATERIAL_PARAMETER": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "MISSING_INLET": {
+      "true_positive": 2,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "MISSING_OUTLET": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "REYNOLDS_RISK": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "unassessed_expected_code_count": 0,
+  "recall_lower_bound_all_expected_codes": 1.0,
+  "acceptance_eligible": false,
+  "acceptance_blockers": [
+    "case_development_usage_not_excluded",
+    "expert_labels_not_reviewed",
+    "independent_set_not_declared",
+    "missing_case_review_date",
+    "missing_case_reviewer",
+    "overlaps_known_development_models"
+  ],
+  "meets_recall_above_90_percent": null,
+  "cases": [
+    {
+      "case_id": "baseline",
+      "status": "checked",
+      "expected_codes": [],
+      "diagnosis_sha256": "ba747689a9e303c3e773616710ffd60af7393fb384c86d7c4fb2f27790b526e2",
+      "run_metadata_sha256": "b0c1fc755f4b3ed109d0f9a9a7442aa0685756afca288e3eeaf4fb470071235c",
+      "predicted_codes": [],
+      "missed_codes": [],
+      "unexpected_codes": []
+    },
+    {
+      "case_id": "missing_inlet",
+      "status": "checked",
+      "expected_codes": [
+        "MISSING_INLET"
+      ],
+      "diagnosis_sha256": "6f962ea36adf2d2433e038a844dd67aa909343e2659e6b877cf05d9aa5de3bd3",
+      "run_metadata_sha256": "9809054383bd816318bc0ff198c77e4d8fd0600939a45e52e4026a3ca9d81e79",
+      "predicted_codes": [
+        "MISSING_INLET"
+      ],
+      "missed_codes": [],
+      "unexpected_codes": []
+    },
+    {
+      "case_id": "missing_outlet",
+      "status": "checked",
+      "expected_codes": [
+        "MISSING_OUTLET"
+      ],
+      "diagnosis_sha256": "208c9fa06875a938b0d9022a0cb0aacb62aed95c26fd1f20663e93dd0b0ca547",
+      "run_metadata_sha256": "4c374b31f01c612f025fcb5c2ad6ddeba60d8cd5cef3237e75f7f9224b9d70f8",
+      "predicted_codes": [
+        "MISSING_OUTLET"
+      ],
+      "missed_codes": [],
+      "unexpected_codes": []
+    },
+    {
+      "case_id": "selection_overlap",
+      "status": "checked",
+      "expected_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "diagnosis_sha256": "07552ed7fe9f5af817f239f41ffa943c9e143351cfedce0ab57142af0d1aab7b",
+      "run_metadata_sha256": "acc3e82ca2d420a8dc887bb06369536bfa65196969072d81f10ea52caa8a04dd",
+      "predicted_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "missed_codes": [],
+      "unexpected_codes": []
+    },
+    {
+      "case_id": "reversed_inlet",
+      "status": "checked",
+      "expected_codes": [
+        "INLET_DIRECTION"
+      ],
+      "diagnosis_sha256": "13f6ded867d0502af2488aaaab0145509327b2e95b6cb530d0d581d29952d288",
+      "run_metadata_sha256": "e4926f16af7ddc4483dc6757c96b5d2acc0a1f5cfee48f067dd9669ac9b09f85",
+      "predicted_codes": [
+        "INLET_DIRECTION"
+      ],
+      "missed_codes": [],
+      "unexpected_codes": []
+    },
+    {
+      "case_id": "high_reynolds",
+      "status": "checked",
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "diagnosis_sha256": "4f37b80c9b3e1cf88e26ff2f31e56a7b31cb573e8946acacfcbea301280e7e30",
+      "run_metadata_sha256": "336f6e9f24202b2f2aa1ed4c19f7f5afe7a54c0a630376afd39c62f4be2971cf",
+      "predicted_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "missed_codes": [],
+      "unexpected_codes": []
+    }
+  ],
+  "manifest_sha256": "8bf70a25857d54ccfca426834ce2936d5c009e2231e25808dc88ddfcf38e4ad8",
+  "mode": "check",
+  "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+  "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+  "reynolds_warning": 2000.0
+}

@@ -29,8 +29,11 @@ python src/flowpilot/check_model.py models/cases/high_reynolds.mph --comsol-root
 | `--loads` | 加载 1–10 次，默认 1；大于 1 时验证 JSON 重复一致性 |
 | `--timeout` | 编译、批处理各自的超时秒数，默认 300，必须为有限正数 |
 | `--reynolds-warning` | 以高度 H 计算的名义 Re 筛查阈值，默认 2000，必须为有限正数 |
+| `--cancel-file` | 可选的调用方取消请求文件；文件出现后停止本次进程并记录取消 |
 
 退出码 0 表示完成检查，结果仍可能为 `unsupported`、`partial` 或含 Critical 的 `checked`；必须读取报告。退出码 1 表示输入、编译、加载、证据校验或诊断失败。
+
+数值选项统一拒绝布尔值、字符串、非有限值、不能表示为有限浮点数的超大整数及非正数。Re 最终值超出表示范围时，产物仍完整但诊断为 `partial`，带操作数证据；不会用无穷大保存 JSON、用零漏报或显示正常。此处与运行失败分开，详见 [数值稳定性](NUMERIC_SAFETY.md)。
 
 ## 输出与可复现性
 
@@ -44,6 +47,7 @@ run/
 ├─ compile.log            编译输出
 ├─ batch.log              COMSOL 批处理日志
 ├─ batch-console.log      包含 JSON 与完成标记的标准输出
+├─ progress.jsonl         阶段提示日志，不是成功凭证
 ├─ inventory.json         实际 API 清单，仅成功时生成
 ├─ diagnosis.json         现有 diagnosis-0.1 报告
 ├─ report.md              中文说明、节点/边界证据和建议
@@ -51,6 +55,8 @@ run/
 ```
 
 运行记录包含源模型文件名及 SHA-256、Python/COMSOL 版本、规则阈值、加载次数和 UTC 时间。`run.json.status` 为 `completed` 才表示产物完整；`failed` 或 `cancelled` 不能当作检查完成。日志与模型副本留在本地 `outputs/` 中，不提交仓库。
+
+`progress.jsonl` 每行是 `check-progress-0.1` 事件，含 `stage` 和 UTC 时间 `at`。正常顺序为 `snapshot`、`compile`、`inventory`、`diagnose`、`completed`；失败/取消以对应终止事件结束，`run.json.stage` 仍保留实际失败位置。进度仅供界面提示，不参与诊断或批量评分，也不能替代完成元数据及内容哈希校验。进度写入失败不终止检查，会记录 `progress_error`；最终运行记录写入失败仍属于失败。
 
 ## 模型保护与失败处理
 
