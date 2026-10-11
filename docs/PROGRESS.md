@@ -48,6 +48,14 @@
 - Python 3.12 64 位、jsonschema 4.26.0 环境下，27 项本地测试全部通过；六个实模清单的规则结果符合工程预期。
 - 未运行异常模型求解；未完成 GUI 或专业标签复核；未宣称独立测试 Recall 达标。CI 状态应以 GitHub 实际运行结果为准。
 
+## 2026-10-11 GitHub 同步确认
+
+- 功能分支 `feat/baseline-foundation` 已推送，远端开发提交为 `c8adee2fa14887fabd19caed27f4a50bd210aab3`。
+- 六个 Git LFS 模型已上传，共约 7.1 MB；本地工作区在推送后无未提交改动。
+- [GitHub Actions 第一次运行](https://github.com/sssssding/Flowplot/actions/runs/38129405602) 成功，对应开发提交 `c8adee2`；执行的是 27 项 Python 合同与规则测试，不是真实 COMSOL 求解。
+- `main` 未由本轮开发直接修改。团队可通过 [分支比较](https://github.com/sssssding/Flowplot/compare/main...feat/baseline-foundation) 审阅后创建 PR。
+- 下一步仍为 GUI 对照、专业标签审核和独立验收样本；CI 成功不代替这些验收。
+
 ## 更新规则
 
 - 任务开始时补充负责人和 Issue 链接。
