@@ -1,0 +1,57 @@
+{
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "inlet_boundary_ids": [
+    1
+  ],
+  "outlet_boundary_ids": [
+    4
+  ],
+  "wall_boundary_ids": [
+    2,
+    3
+  ],
+  "reynolds_number": 500.0,
+  "passed": true,
+  "runs": [
+    {
+      "run": 0,
+      "mass_in_kg_m_s": 0.4875000000000002,
+      "mass_out_kg_m_s": 0.4870954446317323,
+      "mass_relative_error": 0.0008298571656777213,
+      "max_speed_m_s": 0.014426545604284052,
+      "wall_interior_speed_m_s": 0.0,
+      "min_u_m_s": 0.0,
+      "pressure_drop_pa": 0.07758404211491263
+    },
+    {
+      "run": 1,
+      "mass_in_kg_m_s": 0.4875000000000002,
+      "mass_out_kg_m_s": 0.4870954446317322,
+      "mass_relative_error": 0.000829857165677949,
+      "max_speed_m_s": 0.014426545604284052,
+      "wall_interior_speed_m_s": 0.0,
+      "min_u_m_s": 0.0,
+      "pressure_drop_pa": 0.07758404211491263
+    },
+    {
+      "run": 2,
+      "mass_in_kg_m_s": 0.4875000000000002,
+      "mass_out_kg_m_s": 0.4870954446317323,
+      "mass_relative_error": 0.0008298571656777213,
+      "max_speed_m_s": 0.01442654560428405,
+      "wall_interior_speed_m_s": 0.0,
+      "min_u_m_s": 0.0,
+      "pressure_drop_pa": 0.07758404211491263
+    },
+    {
+      "run": 3,
+      "mass_in_kg_m_s": 0.4875000000000002,
+      "mass_out_kg_m_s": 0.48709544463173227,
+      "mass_relative_error": 0.0008298571656778351,
+      "max_speed_m_s": 0.014426545604284045,
+      "wall_interior_speed_m_s": 0.0,
+      "min_u_m_s": 0.0,
+      "pressure_drop_pa": 0.07758404211491263
+    }
+  ]
+}

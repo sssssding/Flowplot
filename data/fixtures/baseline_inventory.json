@@ -1,0 +1,137 @@
+{
+  "schema_version": "inventory-0.1",
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "studies": [
+    {
+      "study_tag": "std1",
+      "feature_tag": "stat",
+      "type": "Stationary"
+    }
+  ],
+  "components": [
+    {
+      "tag": "comp1",
+      "geometries": [
+        {
+          "tag": "geom1",
+          "dimension": 2,
+          "domain_count": 1,
+          "boundary_count": 4
+        }
+      ],
+      "physics": [
+        {
+          "tag": "spf",
+          "type": "LaminarFlow",
+          "features": [
+            {
+              "tag": "dcont1",
+              "label": "流动连续性 1",
+              "type": "Continuity",
+              "enabled": false,
+              "selection_dimensions": [
+                1
+              ],
+              "selected_entity_ids": [],
+              "parameters": {}
+            },
+            {
+              "tag": "fp1",
+              "label": "流体属性 1",
+              "type": "FluidProperties",
+              "enabled": true,
+              "selection_dimensions": [
+                2
+              ],
+              "selected_entity_ids": [
+                1
+              ],
+              "parameters": {}
+            },
+            {
+              "tag": "grav1",
+              "label": "重力 1",
+              "type": "Gravity",
+              "enabled": false,
+              "selection_dimensions": [],
+              "selected_entity_ids": [],
+              "parameters": {}
+            },
+            {
+              "tag": "init1",
+              "label": "初始值 1",
+              "type": "init",
+              "enabled": true,
+              "selection_dimensions": [
+                2
+              ],
+              "selected_entity_ids": [
+                1
+              ],
+              "parameters": {}
+            },
+            {
+              "tag": "inl1",
+              "label": "Velocity Inlet",
+              "type": "Inlet",
+              "enabled": true,
+              "selection_dimensions": [
+                1
+              ],
+              "selected_entity_ids": [
+                1
+              ],
+              "parameters": {
+                "BoundaryCondition": "Velocity",
+                "U0in": "Uin",
+                "u0": [
+                  "0",
+                  "0",
+                  "0"
+                ],
+                "p0": "0"
+              }
+            },
+            {
+              "tag": "out1",
+              "label": "Pressure Outlet",
+              "type": "Outlet",
+              "enabled": true,
+              "selection_dimensions": [
+                1
+              ],
+              "selected_entity_ids": [
+                4
+              ],
+              "parameters": {
+                "BoundaryCondition": "PressureNoViscousStress",
+                "u0": [
+                  "0",
+                  "0",
+                  "0"
+                ],
+                "p0": "p_out"
+              }
+            },
+            {
+              "tag": "wallbc1",
+              "label": "No-Slip Walls",
+              "type": "WallBC",
+              "enabled": true,
+              "selection_dimensions": [
+                1
+              ],
+              "selected_entity_ids": [
+                2,
+                3
+              ],
+              "parameters": {
+                "BoundaryCondition": "NoSlip"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

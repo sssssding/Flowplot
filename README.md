@@ -5,7 +5,8 @@ FlowPilot 是一个面向 COMSOL 二维稳态层流模型的智能检查原型�
 ## 当前阶段
 
 - 已冻结 MVP 范围。
-- 正在建立二维层流管道基准模型与人工 Ground Truth。
+- 基准模型已完成实际求解、三次重新加载验证与十次只读解析；GUI 复核待完成。
+- 已加入模型生成/清单脚本、实测证据和 GitHub Actions fixture 测试。
 - 尚未进入 AI 求解参数推荐阶段。
 
 ## 仓库结构
@@ -27,6 +28,7 @@ FlowPlot/
 2. 按 [协作规范](docs/COLLABORATION.md) 创建 Issue 和功能分支。
 3. 开发前查看 [注意事项](docs/NOTES.md) 与 [项目进度](docs/PROGRESS.md)。
 4. 建立或验证 COMSOL 基准模型时，使用 [基准模型规范](docs/BASELINE_MODEL.md)。
+5. 运行脚本和测试时，参照 [开发与验证](docs/DEVELOPMENT.md)。
 
 ## 一句话目标
 

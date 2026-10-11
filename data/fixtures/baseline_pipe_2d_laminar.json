@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1.0",
+  "model": {
+    "name": "baseline_pipe_2d_laminar",
+    "comsol_version": "6.3.0.290",
+    "dimension": 2,
+    "physics": "laminar_flow",
+    "study": "stationary"
+  },
+  "geometry": {
+    "length_m": 1.0,
+    "height_m": 0.05
+  },
+  "material": {
+    "name": "water_reference",
+    "density_kg_m3": 1000.0,
+    "dynamic_viscosity_pa_s": 0.001
+  },
+  "boundaries": [
+    {
+      "feature_tag": "inl1",
+      "type": "inlet",
+      "boundary_ids": [1],
+      "enabled": true,
+      "parameters": {"normal_velocity_m_s": 0.01},
+      "verification_status": "verified"
+    },
+    {
+      "feature_tag": "out1",
+      "type": "outlet",
+      "boundary_ids": [4],
+      "enabled": true,
+      "parameters": {"gauge_pressure_pa": 0.0},
+      "verification_status": "verified"
+    },
+    {
+      "feature_tag": "wallbc1",
+      "type": "wall",
+      "boundary_ids": [2, 3],
+      "enabled": true,
+      "parameters": {"condition": "no_slip"},
+      "verification_status": "verified"
+    }
+  ],
+  "expected_metrics": {
+    "reynolds_number": 500.0,
+    "mass_conservation_relative_tolerance": 0.001
+  }
+}

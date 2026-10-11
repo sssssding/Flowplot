@@ -9,6 +9,7 @@
 | [PROGRESS.md](PROGRESS.md) | 项目任务、验收标准和当前进度 | 每次合并 PR 后更新 |
 | [BASELINE_MODEL.md](BASELINE_MODEL.md) | COMSOL 基准模型 Ground Truth | 基准模型变化时更新 |
 | [DECISIONS.md](DECISIONS.md) | 重要技术决策记录 | 决策被采纳时追加 |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
 
 ## 文档规则
 
