@@ -12,6 +12,7 @@
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
 | [BOUNDARY_CASES.md](BOUNDARY_CASES.md) | 五类异常样本、预期标签和复核清单 | 新增或审核样本时更新 |
 | [RULES.md](RULES.md) | 规则 ID、证据、适用范围与 JSON 契约 | 规则变化时更新 |
+| [GUI_REVIEW.md](GUI_REVIEW.md) | COMSOL 界面核对、兼容性提示和未完成项 | 每次 GUI 核对后更新 |
 
 ## 文档规则
 

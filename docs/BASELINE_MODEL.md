@@ -26,11 +26,11 @@
 
 | 对象 | GUI 名称 | Tag | Boundary ID | 已核对 |
 |---|---|---|---:|---|
-| Component | 2D Pipe Component | comp1 | — | API 已核对，GUI 待核对 |
-| Laminar Flow | Laminar Flow | spf | — | API 已核对，GUI 待核对 |
-| Inlet | Velocity Inlet | inl1 | 1（左） | API 已核对，GUI 待核对 |
-| Outlet | Pressure Outlet | out1 | 4（右） | API 已核对，GUI 待核对 |
-| Wall | No-Slip Walls | wallbc1 | 2、3（上下壁面） | API 已核对，GUI 待核对 |
+| Component | 2D Pipe Component | comp1 | — | API 与 GUI 已核对 |
+| Laminar Flow | Laminar Flow | spf | — | API 与 GUI 已核对 |
+| Inlet | Velocity Inlet | inl1 | 1（左） | API tag；GUI 名称、选择和模式已核对 |
+| Outlet | Pressure Outlet | out1 | 4（右） | API tag；GUI 名称、选择和模式已核对 |
+| Wall | No-Slip Walls | wallbc1 | 2、3（上下壁面） | API tag；GUI 默认覆盖与无滑移已核对 |
 
 编号来自 COMSOL 坐标选择的实际结果，不应推广到其他几何。默认 Wall 的实际类型为 `WallBC`，本模型中 API 返回的有效边界是 `[2, 3]`；不能把所有默认节点重叠都直接判为边界冲突。
 
@@ -41,7 +41,8 @@
 - [x] 入口与出口质量流量相对误差小于 `1e-3`。
 - [x] 从保存的 `.mph` 重新加载并连续求解 3 次，均收敛（API 验证）。
 - [x] 三次最大速度、压降和质量流量相对漂移小于 `1e-5`。
-- [ ] GUI 设置与本文件逐项一致。
+- [x] GUI 几何、参数、材料、边界、网格、稳态与求解容差和本文件一致（Codex 工程核对，不代替专业签字）。
+- [ ] GUI 速度云图复核；保存模型没有速度图组，尚未新增或绘制。
 - [x] 模型文件 SHA-256 已记录。
 
 均匀入口与 No Slip 在交角处存在不连续约束。壁面检查使用 `H < x < L-H` 范围，排除交角；报告不把交角插值速度误认作整个壁面不满足 No Slip。网格与容差经过实测调整，不采用未验证的 Normal 默认网格。
@@ -52,12 +53,14 @@
 
 | 日期 | COMSOL 版本 | 模型 SHA-256 | 最大速度 | 压降 | 质量误差 | 求解时间 | 结论 |
 |---|---|---|---:|---:|---:|---:|---|
-| 2026-10-11 | 6.3.0.290 | 见下方 | 0.0144265456 m/s | 0.0775840421 Pa | 8.29857166e-4 | 单次求解约 2 s | API 验证通过；GUI 待复核 |
+| 2026-10-11 | 6.3.0.290 | 见下方 | 0.0144265456 m/s | 0.0775840421 Pa | 8.29857166e-4 | 单次求解约 2 s | API 验证及 GUI 设置核对通过；云图、专业复核待完成 |
 
 SHA-256：`023D94CF9C7F2DD5B5BF1BD581B1F19AB8A38CF9304C3AF25F239A2398707E1B`
 
 网格：20,034 个域单元；31,314 个求解自由度（另有 1 个内部自由度）。
 
 版本化证据：[求解记录](../data/fixtures/baseline_verification.json)、[实际 API 清单](../data/fixtures/baseline_inventory.json)。
+
+界面核对详情、旧入口/出口特征的弃用提示和待办见 [GUI 核对记录](GUI_REVIEW.md)。本轮未保存模型，磁盘哈希保持一致。
 
 运行方法见 [开发与验证](DEVELOPMENT.md)。
