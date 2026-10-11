@@ -6,6 +6,8 @@
 | [BLUEPRINT.md](BLUEPRINT.md) | 系统架构、数据流和里程碑 | 架构评审后更新 |
 | [COLLABORATION.md](COLLABORATION.md) | Git/GitHub 多人协作流程 | 工作流变化时更新 |
 | [HANDOFF.md](HANDOFF.md) | 当前功能分支拉取、运行复现、验证边界与下一位开发者待办 | 交接或集中提交时更新 |
+| [PREFLIGHT.md](PREFLIGHT.md) | 只读接手预检、模型保护和运行依赖检查 | 接手或环境排查时更新 |
+| [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md) | 本机接手复现、保留的修改和未完成验收 | 本机复现或交接时更新 |
 | [NOTES.md](NOTES.md) | 安全、数据、COMSOL 与建模注意事项 | 发现新风险时更新 |
 | [PROGRESS.md](PROGRESS.md) | 项目任务、验收标准和当前进度 | 每次合并 PR 后更新 |
 | [BASELINE_MODEL.md](BASELINE_MODEL.md) | COMSOL 基准模型 Ground Truth | 基准模型变化时更新 |

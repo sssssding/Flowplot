@@ -38,7 +38,7 @@ FlowPlot/
 
 ## 快速开始
 
-队友接手当前功能分支，先阅读 [协作接手说明](docs/HANDOFF.md)，其中包含拉取方式、运行命令、实测证据和未完成验收事项。
+队友从最新 main 创建自己的功能分支，先阅读 [协作接手说明](docs/HANDOFF.md)，再执行 [只读接手预检](docs/PREFLIGHT.md)，确认依赖与模型文件。说明包含拉取方式、运行命令、实测证据和未完成验收事项。
 
 1. 阅读 [项目范围](docs/PROJECT_SCOPE.md) 和 [技术蓝图](docs/BLUEPRINT.md)。
 2. 按 [协作规范](docs/COLLABORATION.md) 创建 Issue 和功能分支。

@@ -2,7 +2,7 @@
 
 ## 从哪里接手
 
-仓库：`sssssding/Flowplot`；本批功能在 **`codex/local-handoff`** 分支，基于已推送的 `7c76bee` 继续开发。接手基准以包含本说明的提交为准，可用 `git log -1 --oneline` 记录实际提交号。不在 `main` 或队友的 `feat/baseline-foundation` 分支直接开发；本次推送不等于合并或专业验收通过。
+仓库：`sssssding/Flowplot`；本批功能最初在 **`codex/local-handoff`** 分支交接，随后通过 PR #1 合并到 `main`（`cba7a12`）。新开发从最新 `origin/main` 建立自己的功能分支；旧交接分支保留作历史参考。合并不等于专业验收通过。本机接手结果见 [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md)。
 
 本文是当前交接入口。`PROGRESS.md` 各历史段落中的“尚未提交/推送”描述的是当时状态，不代表包含本文的交接提交仍有那些未提交文件。
 
@@ -25,7 +25,7 @@
 
 ```powershell
 git lfs install
-git clone --branch codex/local-handoff https://github.com/sssssding/Flowplot.git
+git clone --branch main https://github.com/sssssding/Flowplot.git
 cd Flowplot
 git lfs pull
 python -m venv .venv
@@ -33,7 +33,9 @@ python -m venv .venv
 ./.venv/Scripts/python.exe -X utf8 -m unittest discover -s tests -q
 ```
 
-已有仓库：先 `git status` 保存自己的未提交内容，不直接覆盖或重置；工作区确认干净后执行 `git fetch origin`，从 `origin/codex/local-handoff` 建立自己的新分支，例如 `git switch -c codex/your-task origin/codex/local-handoff`（替换任务名）。若要更新现有同名分支，仅使用快进拉取；遇到分叉先核对双方提交，不强推。
+已有仓库：先 `git status` 保存自己的未提交内容，不直接覆盖或重置；工作区确认干净后执行 `git fetch origin`，从 `origin/main` 建立自己的新分支，例如 `git switch -c codex/your-task origin/main`（替换任务名）。若要更新现有同名分支，仅使用快进拉取；遇到分叉先核对双方提交，不强推。
+
+运行前执行 [只读接手预检](PREFLIGHT.md)，使用与桌面/CLI 相同的 Python 环境，提前识别依赖缺失、LFS 指针和本地模型哈希变化。预检不自动覆盖或恢复文件。
 
 六个原始 MPH 应完整下载，不是 Git LFS 指针；`data/fixtures/cases/manifest.json` 保存其 SHA-256。正式检查会拒绝指针；运行原六模型批量检查也会核对清单哈希。不要重新保存基准后再改 manifest 来绕过保护。
 
