@@ -5,7 +5,7 @@
 ## 启动与使用
 
 1. 确认已安装 Python（包含 Tcl/Tk）、`requirements-dev.txt` 中的依赖，以及有可用许可证和模块的 COMSOL 6.3。
-2. 在 Windows 文件夹中双击项目根目录的 `FlowPilot.cmd`。优先使用项目 `.venv`，否则使用系统 `python`；启动失败时控制台会保留错误。
+2. 在 Windows 文件夹中双击项目根目录的 `FlowPilot.cmd`。依次使用显式 `FLOWPILOT_PYTHON`、项目 `.venv`、系统 `python`；先检查依赖，缺失时给出配置提示，不自动安装或替换环境。
 3. 选择一个已经下载完整的 `.mph` 文件；选择 COMSOL 的 `Multiphysics` 文件夹（其中应有 `bin/win64`），再选结果保存目录。
 4. 点击“开始检查”，等候结果。默认重复加载 2 次，每个编译/读取进程超时 300 秒，Re 筛查阈值 2000；不是整个检查的总超时。
 5. 点击问题行查看相关节点、边界编号、证据与建议；可打开结果目录或查看完整 Markdown 报告。
@@ -15,6 +15,16 @@
 ```powershell
 python src/flowpilot/desktop.py
 ```
+
+若 `.venv` 存在但依赖不完整，选择自己已经准备好的环境，例如：
+
+```powershell
+$env:FLOWPILOT_PYTHON = (Resolve-Path './.venv-tests/Scripts/python.exe').Path
+./FlowPilot.cmd --check-env
+./FlowPilot.cmd
+```
+
+示例中的 `.venv-tests` 是本机已有环境，队友应换成自己的可用环境；虚拟环境和解释器路径不提交仓库。`--check-env` 只检查 Python、jsonschema 和 tkinter 是否可导入，不创建窗口、不启动 COMSOL，也不证明许可证或可见界面通过。`FLOWPILOT_NO_PAUSE=1` 仅供自动化测试关闭失败后的控制台等待。
 
 可选参数为 `--model`、`--comsol-root`、`--output-root`，只预填界面，不自动启动检查。也可用环境变量 `FLOWPILOT_COMSOL_ROOT` 预填安装目录；代码中不写死本机路径。
 
@@ -27,6 +37,8 @@ python src/flowpilot/desktop.py
 - 失败或取消：不展示新的诊断结论；发起新检查时会清除旧结果，避免误看上一份正常报告。
 
 窗口使用独立后台 Python 进程运行现有只读入口，并通过事件循环轮询状态，不在窗口事件处理器中等待 COMSOL。进度条是不确定时长的活动提示，不是计算完成百分比。
+
+初始窗口按屏幕尺寸留出边缘空间；问题表格与证据区之间的横向分隔条可上下拖动。条目较多时增大表格，阅读解释和 JSON 证据时增大下方区域；两区均可滚动，不把隐藏行当作没有问题。
 
 运行中会显示当前阶段和已用秒数：创建副本、准备读取程序、COMSOL 读取模型、规则检查与报告生成、核验完成记录。用时来自单调时钟，不因系统时间调整而倒退。`progress.jsonl` 仅提供提示；即使其中出现 `completed`，也必须等后台退出并验证 `run.json` 和诊断内容，才展示结果。旧报告没有进度文件也仍可读取。
 
@@ -105,6 +117,10 @@ session-.../
 ```powershell
 python scripts/smoke_desktop.py --comsol-root '<COMSOL_ROOT>' --reports-root outputs/check-suites/run-001 --output-dir outputs/desktop-smoke/run-001
 ```
+
+工作区模型有需保留的修改时，可用 `--model-root` 指定独立目录中的清单匹配原件。入口先核对全部模型及路径范围；不匹配则停止，不自动恢复工作区。2026-10-12 的新完整实测已更新 `desktop_smoke.json`，不是仅替换旧证据里的源码指纹。
+
+可见窗口工程核验与隐藏测试分别记录在 [DESKTOP_REVIEW.md](DESKTOP_REVIEW.md)。可见核验已发现并修复证据区拥挤，检查了基准、缺少入口和重叠样本；仍不是新用户、专业标签或十个未见模型的验收。
 
 `--reports-root` 可省略；指定时先检查整组六个模型的报告展示。每次输出目录必须是新目录。CI 只运行不初始化 Tk 的离线会话、展示逻辑和取消机制测试，不运行窗口或 COMSOL。
 

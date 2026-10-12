@@ -73,7 +73,7 @@
       "codes": [],
       "headline": "当前规则未发现问题",
       "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
-      "ui_run_sha256": "a4533bc82a6aba62045f1eabdf294e3733a79f779f5ca3484bbde5d6cff05593"
+      "ui_run_sha256": "d6a386b12b3a7840030d49721fbf9f79e91aed0929bca3f71094908e9a5da85e"
     },
     {
       "case_id": "missing_inlet",
@@ -107,11 +107,11 @@
       ],
       "headline": "发现需要优先处理的问题",
       "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
-      "ui_run_sha256": "7973ccb74c5a1c6c3321f79dc669ab07eb1557d59b2cf4ef764b978d36407589"
+      "ui_run_sha256": "6b1aa4b63e56d6947ff25c4f3df7bbaa48b2a998d874b3aa8186d94c3f88c80a"
     }
   ],
   "source_sha256": {
-    "src/flowpilot/desktop.py": "bd2055c045511cae0d0c54c317e7ac641d759f22c11463e1ad1d80ada440a679",
+    "src/flowpilot/desktop.py": "7062e8a67da8272b6a24801e1c71c1c2e3c0b8fb3c8f540a0083e43993e7316a",
     "src/flowpilot/desktop_session.py": "92fb04892484330fe7e6656bc58a8a456e94ffae3b4a4a5a6f01426c4d1e2a27",
     "src/flowpilot/check_model.py": "9cc23d496b316232522b9006fa9db886ae39015bef084ccb06a5d8cf15977c45",
     "src/flowpilot/compare_reports.py": "d6a994f874b4f598bb30c111d437d1540db42b75d7f5c464f8544bfd0d6df1d5",
@@ -123,7 +123,8 @@
     "src/flowpilot/package_integrity.py": "30deb890f2acbaff5b86e188de01fcc3fdc73612095862bf8170b9e4aa1c41a3",
     "src/flowpilot/report_io.py": "63b008f8ce555bd518dcbb660ebd937649a4d59f28492fedf4762993c891b3cd",
     "src/flowpilot/check_suite.py": "fbf87d5520f3e6b9b75edd4a4e472313a5a224e5850392c2a2ffa476ba450258",
-    "scripts/smoke_desktop.py": "3b9a25f29d8126f1e26c3908e595ebb1742072d210fae9fdf01fceeea9437acd"
+    "src/flowpilot/preflight.py": "cab86efef2cc768a5133ecb77cb57ca25f01808acf34d127c1bcead3266d59a5",
+    "scripts/smoke_desktop.py": "3581931204ed02dd9dd4decfe7317fe37b485a1389251c0bf0ff62d0a9ad24de"
   },
   "source_model_sha256": {
     "baseline": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
@@ -148,7 +149,7 @@
       "unchanged": 0
     },
     "dialog_handler_verified": true,
-    "comparison_sha256": "457820ee65f4f290addeebe44e484ac794c871f0f832b90f40fed97509f62da1",
+    "comparison_sha256": "78cd93680cef22bd9facc0b30d4befa5d282ed52b3ef87e5fad3a05c477936a9",
     "different_controlled_fixtures_not_a_repair_test": true
   },
   "report_reader": {
@@ -170,7 +171,7 @@
       "report.md",
       "run.json"
     ],
-    "manifest_sha256": "90f7833d62b821264d3f218c5f915d6924194e318085b92e0688552286755869"
+    "manifest_sha256": "10026d791d5b4f4b557fb929adeb32eb3fba7ee4350d4289bb5d195089c3e789"
   },
   "synthetic_numeric_views": [
     {
@@ -193,7 +194,7 @@
   "real_cancellation": {
     "status": "cancelled",
     "requested_after_batch_console_created": true,
-    "check_run_sha256": "792e4ac79f09efb2e20b62896c6bdbcf37576b37ffd84f06871e6912c3bfafbe"
+    "check_run_sha256": "8ace917b3929f1887f3e933f1c96f755985c76d8e5151052898ff0d8bf60ac55"
   },
   "history_browser": {
     "record_counts": {
@@ -207,7 +208,7 @@
     "cancelled_report_open_disabled": true,
     "scan_ran_in_worker": true
   },
-  "event_loop_heartbeat_count": 727,
+  "event_loop_heartbeat_count": 1306,
   "source_hashes_unchanged": true,
   "passed": true
 }
