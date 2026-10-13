@@ -17,6 +17,7 @@
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
 | [MODEL_CHECK.md](MODEL_CHECK.md) | 指定 MPH 文件的只读检查入口、报告和失败处理 | 文件检查流程变化时更新 |
 | [BATCH_CHECK.md](BATCH_CHECK.md) | 整组模型的只读检查、漏报误报统计与独立验收阻断 | 批量流程或评估口径变化时更新 |
+| [ACCEPTANCE_PLAN.md](ACCEPTANCE_PLAN.md) | 专业审核、独立集冻结和真实新用户验收计划 | 团队开始正式验收前更新 |
 | [DESKTOP.md](DESKTOP.md) | 本地桌面检查、取消、已有报告读取与功能验证范围 | 界面或会话流程变化时更新 |
 | [DESKTOP_REVIEW.md](DESKTOP_REVIEW.md) | 可见工程核验、启动与布局修复及未完成验收 | 每次可见核验后更新 |
 | [REPORT_COMPARISON.md](REPORT_COMPARISON.md) | 前后报告差异、比较条件及离线导出 | 对比流程或口径变化时更新 |

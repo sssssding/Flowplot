@@ -40,7 +40,22 @@
 
 ## 后续核对
 
+### 2026-10-13 本机 GUI 继续核对
+
+使用 `outputs/local-acceptance/run-003/` 的独立副本，不打开用户未提交的基准修改。不编辑模型参数、不重新求解、不保存；只查看树、设置和保存解图组。
+
+- 已在 COMSOL GUI 打开带图组复核副本，看到 `Saved-solution speed magnitude` 和 `Saved-solution velocity profiles`。表面表达式为 `spf.U`、单位 m/s，数据集均引用 `sol1` 保存解；曲线图显示 x=0.1/0.25/0.5/0.9 m，横轴 y/H、纵轴速度 x 分量（m/s）。图组来源和显示已工程核对，不代替专业物理审核。
+- 已打开 `missing_inlet.mph` 副本，展开 Laminar Flow：没有入口节点，保留默认无滑移壁面及压力出口。出口选择“框 2”、边界 4，模式压力/无黏性应力、表达式 p_out、单位 Pa；壁面声明所有边界，4 标为“已替代”，1/2/3 生效，与 API 清单一致。
+- 切换 `missing_outlet.mph` 时出现 missing_inlet 保存提示；用户明确选择“不保存，继续核对”后点击“否”，没有保存该副本。
+- 已在 `missing_outlet.mph` 副本展开 Laminar Flow：没有出口节点；入口选择“框”、边界 1，法向流入速度 Uin、单位 m/s。默认无滑移壁面声明所有边界，1 标为“已替代”，2/3/4 生效。参数表显示 Uin=0.01 m/s、L=1 m、H=0.05 m、密度 1000 kg/m³、黏度 0.001 Pa·s、p_out=0 Pa、名义 Re_H=500；保留 p_out 参数不表示存在出口节点。与 API 清单一致。
+- 用户单独确认不保存 missing_outlet 查看状态后，已打开 `selection_overlap.mph`。原入口声明边界 1，但显示“已替代”；新增“出口”在边界 1，原 Pressure Outlet 在边界 4，两个出口均为压力/无黏性应力、p_out、Pa。壁面 1/4 被替代，2/3 有效。与 API 一致，证实是新增出口覆盖入口，不是两种约束同时生效。
+- 用户确认不保存 selection_overlap 的查看状态后，已核对 `reversed_inlet.mph`：入口边界 1，法向流入速度 Uin、m/s；参数 Uin=-0.01 m/s，参数表中的有符号 Re_H=-500（rho_ref*Uin*H/mu_ref）。诊断使用绝对速度得到 Re_H=500，方向警告另判，不能把有符号参数与筛查 Re 混为同一数值。出口边界 4、p_out/Pa，壁面 1/4 被替代、2/3 有效，模式与 API 一致。
+- 切换 `high_reynolds.mph` 时出现 reversed_inlet 的保存提示，尚未选择保存或丢弃，等待单独确认。最后一个异常仍未通过本轮 GUI 核对；已查看样本仅完成上述角色相关设置工程对照，不宣称完整专业核验。
+- 用户修改版基准、复核副本和六个原件副本的磁盘哈希保持既有值。小型观察记录见 [comsol_gui_review.json](../data/fixtures/comsol_gui_review.json)。记录结构/清单一致性测试不代替真实 GUI 或专业审核。
+- 团队后续验收按 [ACCEPTANCE_PLAN.md](ACCEPTANCE_PLAN.md) 分开进行工程对照、专业复核、独立集冻结及新用户试用；当前未填造专业审核人或独立验收结果。
+
 - [x] 基准几何、参数、材料、边界、网格、稳态及容差。
+- [x] 基准保存解图组的 GUI 来源、表达式、单位及四截面显示（工程核对）。
 - [ ] 基准速度云图，由专业人员复核。
 - [ ] 五个异常样本的 GUI 选择、模式、速度符号和单位。
 - [ ] 团队审核标签、等级，补充审核人和日期。
