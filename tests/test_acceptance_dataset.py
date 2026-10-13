@@ -24,6 +24,8 @@ class AcceptanceDatasetTest(unittest.TestCase):
         self.root = Path(self.temp.name).resolve()
         self.models = self.root / "input models"
         self.models.mkdir()
+        self.reports_root = self.root / "reports"
+        self.reports_root.mkdir()
         self.output = self.root / "frozen"
         self.manifest_path = self.root / "review.json"
         self.manifest = {"schema_version": "case-manifest-0.1", "label_status": "expert_reviewed",
@@ -330,7 +332,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
             path.write_text(json.dumps(changed), encoding="utf-8")
             return summary
         with patch.object(dataset, "run_suite", side_effect=run), self.assertRaisesRegex(ValueError, "保存汇总不一致"):
-            dataset.run_frozen(self.output, output_dir=output, reports_root=self.root)
+            dataset.run_frozen(self.output, output_dir=output, reports_root=self.reports_root)
         self.assertFalse((output / "result.json").exists())
 
     def test_inconsistent_suite_terminal_record_is_not_published(self):
@@ -344,7 +346,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
             path.write_text(json.dumps(changed), encoding="utf-8")
             return summary
         with patch.object(dataset, "run_suite", side_effect=run), self.assertRaisesRegex(ValueError, "完成记录"):
-            dataset.run_frozen(self.output, output_dir=output, reports_root=self.root)
+            dataset.run_frozen(self.output, output_dir=output, reports_root=self.reports_root)
         self.assertFalse((output / "result.json").exists())
 
     def test_result_changed_while_publishing_is_not_recorded_completed(self):
@@ -359,7 +361,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
                 path.write_text(json.dumps(changed), encoding="utf-8")
         with patch.object(dataset, "run_suite", side_effect=self.suite), patch.object(dataset, "_write_json", side_effect=change):
             with self.assertRaisesRegex(ValueError, "发布时变化"):
-                dataset.run_frozen(self.output, output_dir=output, reports_root=self.root)
+                dataset.run_frozen(self.output, output_dir=output, reports_root=self.reports_root)
         self.assertEqual(json.loads((output / "run.json").read_text(encoding="utf-8"))["status"], "failed")
 
     def test_run_detects_during_evaluation_mutation_and_publishes_no_result(self):
@@ -370,7 +372,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
             (self.output / "models/case-000.mph").write_bytes(b"synthetic concurrent change")
             return summary
         with patch.object(dataset, "run_suite", side_effect=run), self.assertRaises(ValueError):
-            dataset.run_frozen(self.output, output_dir=output, reports_root=self.root)
+            dataset.run_frozen(self.output, output_dir=output, reports_root=self.reports_root)
         self.assertFalse((output / "result.json").exists())
         self.assertEqual(json.loads((output / "run.json").read_text(encoding="utf-8"))["status"], "failed")
 
@@ -383,7 +385,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
             path.write_bytes(path.read_bytes() + b" ")
             return summary
         with patch.object(dataset, "run_suite", side_effect=run), self.assertRaisesRegex(ValueError, "冻结集在评估期间"):
-            dataset.run_frozen(self.output, output_dir=output, reports_root=self.root)
+            dataset.run_frozen(self.output, output_dir=output, reports_root=self.reports_root)
         self.assertFalse((output / "result.json").exists())
 
     def test_run_interrupted_or_failed_is_recorded_not_success(self):
@@ -431,7 +433,9 @@ class AcceptanceDatasetTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
         result = subprocess.run(command + ["verify", str(self.output)], capture_output=True)
         self.assertEqual(result.returncode, 0)
-        result = subprocess.run(command + ["run", str(self.output), "--reports-root", str(self.root),
+        missing_reports = self.root / "empty-reports"
+        missing_reports.mkdir()
+        result = subprocess.run(command + ["run", str(self.output), "--reports-root", str(missing_reports),
                                 "--output-dir", str(self.root / "offline-missing")], capture_output=True)
         self.assertEqual(result.returncode, 2)
         formal = json.loads((self.root / "offline-missing/result.json").read_text(encoding="utf-8"))

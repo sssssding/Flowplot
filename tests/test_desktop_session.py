@@ -364,7 +364,7 @@ class DesktopSessionTest(unittest.TestCase):
         stop.assert_called_once_with(process)
 
     def test_versioned_desktop_smoke_separates_functional_checks_from_acceptance(self):
-        stored = json.loads((ROOT / "data/fixtures/desktop_smoke.json").read_text(encoding="utf-8"))
+        stored = json.loads((ROOT / "data/fixtures/desktop_smoke_report_boundaries.json").read_text(encoding="utf-8"))
         self.assertTrue(stored["passed"])
         self.assertTrue(stored["window_hidden"])
         self.assertFalse(stored["visual_review"])
@@ -407,11 +407,41 @@ class DesktopSessionTest(unittest.TestCase):
             self.assertEqual(item["diagnosis_status"], "partial")
             self.assertEqual(item["desktop_tone"], "incomplete")
             self.assertTrue(item["package_reimport_verified"])
-        from branding_evidence import historical_digest
         for path, digest in stored["source_sha256"].items():
-            # Historical smoke is not renamed or relabelled as current execution.
-            self.assertEqual(historical_digest(path, (ROOT / path).read_bytes()), digest)
+            if path == "src/flowpilot/report_package.py":
+                # Full COMSOL smoke predates only this exporter change; do not
+                # relabel it. The current exporter has separate real-report
+                # offline Tk/reimport evidence and a current-byte fingerprint.
+                self.assertEqual(digest, "8399fc4f0f37baa7b092f11e712ddf27f34d3afceb0f4f8afbf6f4407423e018")
+                offline = json.loads((ROOT / "data/fixtures/report_export_offline_smoke.json").read_text(encoding="utf-8"))
+                self.assertEqual(desktop.sha256(ROOT / path), offline["source_sha256"][path])
+            else:
+                self.assertEqual(desktop.sha256(ROOT / path), digest)
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8-sig"))
+        self.assertEqual(stored["source_model_sha256"], {case["case_id"]: case["sha256"].lower() for case in manifest["cases"]})
+
+    def test_previous_desktop_smoke_is_preserved_without_rebinding_sources(self):
+        # The prior engineering record remains byte-for-byte historical evidence.
+        self.assertEqual(desktop.sha256(ROOT / "data/fixtures/desktop_smoke.json"),
+                         "d6670077d40a1185f9a224428e6089424ea66c2f8cf2391d1b418ad87661a849")
+        self.assertEqual(desktop.sha256(ROOT / "data/fixtures/desktop_smoke_eligibility_gate.json"),
+                         "637230a460c793a1e7d7ffd1d5569ba642a3175a063bbce90471e4319d233703")
+        self.assertEqual(desktop.sha256(ROOT / "data/fixtures/desktop_smoke_batch_stability.json"),
+                         "5d04b9ef644ef0ca3acac3b6db8763df0247755ad1e46eb2d47a13cfbbfd236e")
+        self.assertEqual(desktop.sha256(ROOT / "data/fixtures/desktop_smoke_report_boundaries.json"),
+                         "09a2869c5b1c7b31ea27519f4dde2dbec40036bc7b96fcdb480f9e69fbc1e5f8")
+
+    def test_current_exporter_offline_smoke_does_not_claim_new_comsol_or_user_acceptance(self):
+        stored = json.loads((ROOT / "data/fixtures/report_export_offline_smoke.json").read_text(encoding="utf-8"))
+        self.assertEqual(stored["schema_version"], "naming-smoke-0.1")
+        for flag in ("passed", "window_hidden", "models_unchanged", "new_package_reimport_verified"):
+            self.assertTrue(stored[flag])
+        for flag in ("comsol_invoked", "visual_review", "new_user_timing_validated", "expert_review"):
+            self.assertFalse(stored[flag])
+        for path, digest in stored["source_sha256"].items():
+            self.assertEqual(desktop.sha256(ROOT / path), digest)
+        manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(stored["old_report_case_ids"], [case["case_id"] for case in manifest["cases"]])
         self.assertEqual(stored["source_model_sha256"], {case["case_id"]: case["sha256"].lower() for case in manifest["cases"]})
 
 

@@ -32,6 +32,8 @@ python -X utf8 src/flowpilot/acceptance_result.py outputs/acceptance/run-001 --d
 
 这些检查防止不一致的记录被正常读取，不是作者签名、可信运行证明或文件系统级原子快照。拥有文件权限的人仍可同时重写所有输入、诊断和哈希；软件不能证明 COMSOL 确实执行、审核人真实、专业标签正确或数据独立。
 
+[批量发布保护](BATCH_STABILITY.md) 新增的可选 `summary_sha256` / `input_stability_verified` 存在时须核对实际汇总字节和严格 true；可选 `source_fingerprints` 须与冻结记录一致。外层哈希重新绑定不能绕过；旧匹配格式中缺少这些可选字段时不自动补造稳定性证明，仍按原逐报告重算要求核验。读取器与批量源码指纹均变化，不手改历史冻结记录升级。
+
 ## 不完整结果如何呈现
 
 - partial / unsupported 诊断仍核对其内容和运行指纹，但不作为完整模型计分，不因为其他模型 Recall 高就改成通过。

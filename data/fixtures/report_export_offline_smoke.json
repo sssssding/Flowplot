@@ -1,0 +1,42 @@
+{
+  "schema_version": "naming-smoke-0.1",
+  "application_name": "FlowPlot",
+  "passed": true,
+  "window_hidden": true,
+  "visual_review": false,
+  "new_user_timing_validated": false,
+  "expert_review": false,
+  "comsol_invoked": false,
+  "models_unchanged": true,
+  "main_title": "FlowPlot · 模型边界检查",
+  "history_title": "FlowPlot · 检查历史",
+  "comparison_title": "FlowPlot · 前次 / 本次检查对比",
+  "old_report_case_ids": [
+    "baseline",
+    "missing_inlet",
+    "missing_outlet",
+    "selection_overlap",
+    "reversed_inlet",
+    "high_reynolds"
+  ],
+  "new_package_reimport_verified": true,
+  "source_sha256": {
+    "FlowPlot.cmd": "305748bf9b3eb2630d9818cea6e52aedc514dfcc277c1d7cdf0876f2c177e042",
+    "FlowPilot.cmd": "305748bf9b3eb2630d9818cea6e52aedc514dfcc277c1d7cdf0876f2c177e042",
+    "src/flowpilot/desktop.py": "ded5c9cb5697d73853e9944ef4814aa3ec881c5b5f64db85717a6729c5b44538",
+    "src/flowpilot/launcher.py": "e04908615c1ad9b7c7954f90617c113377829e4b9b87dfa3dd2867373a1e7ed2",
+    "src/flowpilot/history_window.py": "2f255e2f10ea9979fa275283631cc3693c49382c63d4a20d9eeac66fdcb555d9",
+    "src/flowpilot/check_model.py": "8c5ce4adfd944d7e99b81e89012fb3b3644fdb2901cd3c6d6e11d434ad4f1493",
+    "src/flowpilot/compare_reports.py": "918d0f7d7285a7d9c7f33f6c9f96f15046e5c602cae96dc3ac59d50f349e10e8",
+    "src/flowpilot/report_package.py": "9f6f95769cb2857705ab722ee2664a15f0ca75324d13cba785fb85282545a75e",
+    "scripts/smoke_naming.py": "73e0cfce27a2c705b304ff107831958d1309a04135c284e851c4c463dc4ebd71"
+  },
+  "source_model_sha256": {
+    "baseline": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "missing_inlet": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+    "missing_outlet": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+    "selection_overlap": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+    "reversed_inlet": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+    "high_reynolds": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d"
+  }
+}

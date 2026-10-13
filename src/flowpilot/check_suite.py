@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import date, datetime, timezone
+import hashlib
 import json
 from pathlib import Path, PureWindowsPath
 import re
@@ -16,6 +17,7 @@ if __package__ in (None, ""):
 from flowpilot.check_model import CheckError, ROOT, check_model, sha256, _write_json
 from flowpilot.diagnostics import is_finite_number
 from flowpilot.desktop_session import load_completed_check
+from flowpilot.report_io import MAX_METADATA_BYTES, MAX_DIAGNOSIS_BYTES, decode_json, read_regular_file
 
 DEVELOPMENT_MANIFEST = ROOT / "data/fixtures/cases/manifest.json"
 RULE_SOURCE = ROOT / "src/flowpilot/diagnostics.py"
@@ -134,6 +136,16 @@ def evaluate_dataset(manifest, outcomes):
         rows.append(row)
     micro = _scores(*(sum(count[i] for count in per_rule.values()) for i in range(3)))
     reasons = acceptance_reasons(manifest)
+    if not reasons:
+        # The legacy manifest gate predates strict freezing. Do not let the
+        # generic evaluator promote a dataset the formal freeze gate rejects.
+        # Import at call time: acceptance_dataset itself uses this evaluator.
+        try:
+            from flowpilot.acceptance_dataset import fingerprints, validate_acceptance
+            _, known = fingerprints()
+            validate_acceptance(manifest, known)
+        except (ImportError, OSError, ValueError, KeyError, TypeError, RuntimeError, RecursionError):
+            reasons.append("formal_freeze_requirements_not_met")
     if checked != len(rows):
         reasons.append("incomplete_checked_coverage")
     eligible = not reasons
@@ -207,8 +219,9 @@ def run_suite(manifest_path, *, output_dir, comsol_root=None, model_root=ROOT,
               reports_root=None, loads=1, timeout=300.0):
     if type(loads) is not int or not 1 <= loads <= 10 or not is_finite_number(timeout) or timeout <= 0:
         raise ValueError("loads must be 1 to 10 and timeout finite and positive")
-    manifest_path = Path(manifest_path).resolve(strict=True)
-    manifest = validate_manifest(json.loads(manifest_path.read_text(encoding="utf-8-sig")))
+    manifest_path = Path(manifest_path).absolute()
+    manifest_bytes = read_regular_file(manifest_path, max_bytes=MAX_METADATA_BYTES)
+    manifest = validate_manifest(decode_json(manifest_bytes))
     if (comsol_root is None) == (reports_root is None):
         raise ValueError("Choose exactly one: COMSOL checks or existing reports")
     threshold = manifest.get("reynolds_warning", 2000.0)
@@ -221,22 +234,61 @@ def run_suite(manifest_path, *, output_dir, comsol_root=None, model_root=ROOT,
                 raise CheckError(f"Model outside root, wrong extension or hash mismatch: {case['case_id']}")
             models[case["case_id"]] = model
     else:
-        reports_root = Path(reports_root).resolve(strict=True)
+        reports_root = Path(reports_root)
+        if reports_root.is_symlink() or reports_root.is_junction() or not reports_root.is_dir():
+            raise ValueError("Existing reports root must be a real directory, not a link or junction")
+        reports_root = reports_root.resolve(strict=True)
+    from flowpilot.acceptance_dataset import fingerprints
+    source_fingerprints, _ = fingerprints()
     output = Path(output_dir)
-    if output.exists() or output.is_symlink():
+    if output.exists() or output.is_symlink() or output.is_junction():
         raise FileExistsError(f"Output directory already exists: {output}")
     directory = output.resolve()
+    if reports_root is not None and directory.is_relative_to(reports_root):
+        raise ValueError("Batch output must be outside the input reports root")
     directory.mkdir(parents=True, exist_ok=False)
     metadata = {"schema_version": "check-suite-run-0.1", "status": "running",
-                "started_at": datetime.now(timezone.utc).isoformat(), "manifest_sha256": sha256(manifest_path),
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
                 "mode": "check" if reports_root is None else "evaluate", "attempted_cases": 0,
-                "rule_engine_sha256": sha256(RULE_SOURCE), "inventory_source_sha256": sha256(INVENTORY_SOURCE),
+                "rule_engine_sha256": source_fingerprints["src/flowpilot/diagnostics.py"],
+                "inventory_source_sha256": source_fingerprints["src/comsol/ModelInventory.java"],
+                "source_fingerprints": source_fingerprints, "input_stability_verified": False,
                 "settings": {"loads": loads if reports_root is None else None,
                              "timeout_seconds_per_process": timeout if reports_root is None else None,
                              "reynolds_warning": threshold}}
     outcomes = {}
+
+    def verify_reports_root():
+        if reports_root is not None and (reports_root.is_symlink() or reports_root.is_junction()
+                                         or not reports_root.is_dir()):
+            raise CheckError("Input reports root changed or became a link during this run")
+
+    def verify_inputs():
+        verify_reports_root()
+        if read_regular_file(manifest_path, max_bytes=MAX_METADATA_BYTES) != manifest_bytes:
+            raise CheckError("Batch manifest changed during this run; no successful result published")
+        if fingerprints()[0] != source_fingerprints:
+            raise CheckError("Batch program or development registry changed during this run")
+        for case in manifest["cases"]:
+            identity = case["case_id"]
+            if identity in models:
+                path = models[identity]
+                if (path.is_symlink() or path.is_junction() or not path.resolve(strict=True).is_relative_to(root)
+                        or sha256(path).lower() != case["sha256"].lower()):
+                    raise CheckError("Batch source model changed during this run: " + identity)
+            if outcomes[identity]["status"] == "failed":
+                # An execution failure has no scored report to authenticate. Keep
+                # it failed/incomplete; do not invent a diagnosis or failure proof.
+                continue
+            reread = read_outcome((reports_root or directory) / identity, case, threshold)
+            fields = ("status", "predicted_codes", "diagnosis_sha256", "run_metadata_sha256")
+            if any(reread.get(key) != outcomes[identity].get(key) for key in fields):
+                raise CheckError("Batch report changed during this run: " + identity)
+
     try:
         for case in manifest["cases"]:
+            verify_reports_root()
             identity = case["case_id"]
             metadata["current_case"] = identity
             child = (reports_root or directory) / identity
@@ -254,11 +306,22 @@ def run_suite(manifest_path, *, output_dir, comsol_root=None, model_root=ROOT,
         summary.update(manifest_sha256=metadata["manifest_sha256"], mode=metadata["mode"],
                        rule_engine_sha256=metadata["rule_engine_sha256"],
                        inventory_source_sha256=metadata["inventory_source_sha256"], reynolds_warning=threshold)
+        verify_inputs()
         _write_json(directory / "summary.json", summary)
-        with (directory / "report.md").open("x", encoding="utf-8") as stream:
-            stream.write(render_report(summary))
+        summary_bytes = read_regular_file(directory / "summary.json", max_bytes=MAX_DIAGNOSIS_BYTES)
+        canonical = {"sort_keys": True, "allow_nan": False, "ensure_ascii": True}
+        if json.dumps(decode_json(summary_bytes), **canonical) != json.dumps(summary, **canonical):
+            raise CheckError("Saved batch summary differs from computed scores")
+        report_bytes = render_report(summary).encode("utf-8")
+        with (directory / "report.md").open("xb") as stream:
+            stream.write(report_bytes)
+        verify_inputs()
+        if (read_regular_file(directory / "summary.json", max_bytes=MAX_DIAGNOSIS_BYTES) != summary_bytes
+                or read_regular_file(directory / "report.md", max_bytes=MAX_DIAGNOSIS_BYTES) != report_bytes):
+            raise CheckError("Batch outputs changed before completion")
         metadata.update(status="completed" if summary["checked_cases"] == summary["total_cases"] else "incomplete",
-                        checked_cases=summary["checked_cases"])
+                        checked_cases=summary["checked_cases"], input_stability_verified=True,
+                        summary_sha256=hashlib.sha256(summary_bytes).hexdigest())
         return summary
     except Exception as error:
         metadata.update(status="failed", error=str(error))

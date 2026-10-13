@@ -1,6 +1,77 @@
 # 协作接手说明（更新至 2026-10-13）
 
-## 最新保存点：codex/acceptance-handoff
+## 本次交接入口（2026-10-13）
+
+接手分支为 **`origin/codex/acceptance-handoff`**，不是 `main` 或队友的 `feat/local-acceptance`。本次按用户要求提交并推送 `dfc9ae7` 之后的全部开发成果；提交号以该分支最新的 `chore: hand off acceptance and report safety improvements` 提交为准。本次不创建 PR、不合并 main、不修改队友分支、不代发消息。下方历史记录中的“未提交/推送”、旧测试数、旧分支命令只描述当时状态，当前接手以本节为准。
+
+### 交付范围与验证
+
+- 新增验收草稿只读预检；通用评分复用真正冻结门槛，不让已知开发样本或不完整声明变成独立验收成绩。
+- 批量发布前后核对清单、程序、模型、报告与实际产物；正式结果复核兼容新增绑定，旧缺失字段不补造证明。
+- 普通/协作报告根目录链接在解析前拒绝，通用/正式批量输出不能写入输入报告树。
+- 轻量协作包按接收端容量预检，写后真实重读并核对快照；最终报错即使留下完整目录也不要分享，换新目录重试。
+- 提交前本机完整回归：467 项，466 通过，1 项因真实符号链接权限跳过；测试中的模拟失败和 1.500 秒求解不是新增 COMSOL 实验。
+- 前几轮真实 COMSOL 隐藏功能流程保存在三份新增 `desktop_smoke_*` 摘要；最后一轮仅六份旧报告离线隐藏 Tk/直接导出重读，见 `report_export_offline_smoke.json`。四份完整旧摘要保持原字节，当前来源按未变模块与新导出模块分层核对；不是人工可见、专业或新用户验收。
+- 六个仓库原始 MPH 的 SHA-256 均匹配 `data/fixtures/cases/manifest.json`；不修改模型、Java 或诊断规则。本次只上传源码、测试、文档与小型证据，不上传 outputs、运行日志、环境、许可证或新增 MPH。
+
+当前名为 **FlowPlot**；推荐 `FlowPlot.cmd`，保留旧入口、内部 `flowpilot` 与 `FLOWPILOT_*` 配置。仍只支持已声明的二维单域稳态牛顿层流、米制轴对齐矩形通道及当前边界模式，不是通用 COMSOL 检查器，也没有训练 AI 参数推荐器。
+
+### 新电脑首次接手
+
+安装 Git、Git LFS、带 Tcl/Tk 的 Python（已验证 3.12/3.13）；真正读模型还需 COMSOL 6.3、适用许可证和模块（本机构建 6.3.0.290）。离线测试/读报告不需运行 COMSOL。
+
+```powershell
+git lfs install
+git clone --branch codex/acceptance-handoff https://github.com/sssssding/Flowplot.git
+cd Flowplot
+git lfs pull
+# 示例个人分支名，若已存在请另选，不强制重置
+git switch -c codex/colleague-next
+python -m venv .venv
+./.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/preflight.py
+./.venv/Scripts/python.exe -X utf8 -m unittest discover -s tests -q
+./FlowPlot.cmd --check-env
+```
+
+已有仓库：先 `git status`，提交或另行备份自己的未提交内容，确认干净后 `git fetch origin`，再执行 `git switch -c codex/colleague-next origin/codex/acceptance-handoff`、`git lfs pull` 和上面的环境/测试步骤。个人分支名自行替换；遇到分叉先核对提交，不强推、重置或覆盖原模型。`.gitattributes` 要求源码/JSON 为 LF；来源测试失败时先核对字节换行，不直接改证据哈希。
+
+运行窗口使用 `./FlowPlot.cmd`；COMSOL 路径在界面选择或用 `FLOWPILOT_COMSOL_ROOT` 配置，不照抄本机安装路径。若要重新生成自己的真实报告，在新目录执行：
+
+```powershell
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/check_suite.py --comsol-root '<本机 Multiphysics 安装目录>' --output-dir outputs/check-suites/colleague-001 --loads 2
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/check_suite.py --reports-root outputs/check-suites/colleague-001 --output-dir outputs/check-suites/colleague-001-offline
+```
+
+以上目录名只是示例，每次换新目录，离线输出不能嵌在输入树中。本机 outputs 不在 Git，不能直接引用交出方电脑上的旧报告路径。14 个变体按 `REGRESSION_FAMILY.md` 在自己电脑生成，仍是开发数据，不是独立集。GitHub Actions 只运行离线测试；本机通过不代表本次远端 CI 已通过，应查看对应提交的实际 Actions 状态。
+
+### 下一位开发者的优先事项
+
+1. 先阅读 `PROJECT_SCOPE.md`、本文、`PROGRESS.md`、`DEVELOPMENT.md` 与 `GUI_REVIEW.md`，报告本机预检/测试结果、分支和计划，再在个人分支开发。
+2. 组织真实专业人员审核基准、异常和变体的物理/标签；继续基准五次求解副本的 GUI 日志对照，不用编码代理代签。
+3. 当前用户明确没有专业审核的独立模型集。先收集至少 10 个真正未用于规则调试、覆盖五条核心规则及负对照、至少两个声明来源组的模型；真实审核后按 `ACCEPTANCE_PREFLIGHT.md` → `ACCEPTANCE_FREEZE.md` → `ACCEPTANCE_RESULTS.md` 准备、冻结和评估。组名/声明不能自动证明独立性，不填造人员或日期，不拿原六个及 14 个开发变体充数。
+4. 完成真实新用户和可见界面试用，记录操作耗时/错误理解；隐藏 Tk 不替代新用户五分钟验收。T13 AI 推荐未开始，范围扩展前先更新范围与决策。
+5. 按 `ACCEPTANCE_ELIGIBILITY.md`、`BATCH_STABILITY.md`、`REPORT_BOUNDARIES.md`、`REPORT_PACKAGE.md` 维护本次保护。冻结源码已在前几轮变化，旧正式记录须匹配版本或重新确认，不手改哈希适配。轻量报告包不带模型/日志但不是全文脱敏；正式证据包包含模型和审核信息，必须显式 `--include-models` 并人工审查授权，不自动上传。
+
+多人各用分支和独立输出目录，不同时修改同一 MPH；保持原基准与历史证据。请通过 PR 审阅后再决定合并，当前保存分支不是专业验收通过或已合并 main 的声明。
+
+可直接交给接手方的任务：
+
+> 从 `origin/codex/acceptance-handoff` 建立个人分支，先完整阅读 `docs/HANDOFF.md` 顶部本次交接、`docs/PROJECT_SCOPE.md`、`docs/PROGRESS.md`、`docs/DEVELOPMENT.md` 和 `docs/GUI_REVIEW.md`。检查 Git LFS 原模型、依赖与本机 COMSOL，运行只读预检和全部离线测试，先汇报结果及计划。保持 FlowPlot 命名，不覆盖基准/历史证据，不伪造专业审核或独立模型；优先完成真实审核、独立集准备和真实用户试用。不要未经授权推送、合并或上传模型与日志。
+
+## 历史记录（以下不是当前接手操作入口）
+
+### 上一个保存点及随后各轮本地记录：dfc9ae7
+
+最新本地补 [轻量报告包导出保护](REPORT_PACKAGE.md)：创建前按接收端限制检查大小，拒绝链接/联接输出，写后真实重读并核对快照和数值类型。最终核验失败可能留下完整目录，报错时不要分享或覆盖重试。全量 467 项中 466 通过、1 项真实符号链接权限跳过；13 项新专项为模拟故障/边界。本轮未调用 COMSOL，只用六份既有真实报告做隐藏 Tk 展示、历史/对比及直接导出重读；不声称重新点击导出按钮或人工验收。当前来源分层使用旧完整 `desktop_smoke_report_boundaries.json` 中未变的 13 个模块与新 `report_export_offline_smoke.json` 的导出模块，四份完整旧记录原字节保留。六个原模型哈希不变；当前及下方新改动仍未提交推送，远端保存点仍为 `dfc9ae7`，新代码远端 CI 未运行。独立集/专业/新用户验收待办不变。
+
+最新本地另补 [报告目录边界](REPORT_BOUNDARIES.md)：普通/协作报告根链接在解析前拒绝，通用/正式运行输出不能写入输入报告树，正式外层创建前也检查。全量 453 项中 452 通过、1 项真实符号链接权限跳过；新链路模拟测试不当作操作系统链接集成。真实 COMSOL 隐藏桌面与六报告离线 6/6 通过，无求解/原件修改；当前来源摘要为 `desktop_smoke_report_boundaries.json`，前三份记录保持原字节。本轮及下方各轮新增内容尚未提交推送，远端保存点仍是 `dfc9ae7`，未宣称新代码远端 CI 通过。
+
+保存后本地最新还包括 [批量输入稳定性与发布保护](BATCH_STABILITY.md)：清单解析/指纹同源，发布前后复核来源及实际产物；正式复核同步验证可选绑定。全量 435 项中 434 通过、1 项真实符号链接权限跳过；六报告离线 6/6、真实 COMSOL 隐藏桌面流程重跑通过，无求解/原件修改。当前来源记录为 `desktop_smoke_batch_stability.json`，前两份桌面证据不改字节。本轮及下面两轮本地新改动尚未提交推送，远端保存点仍为 `dfc9ae7`；新代码未宣称远端 CI 通过。
+
+保存后最新本地改动还包括 [通用评分资格修复](ACCEPTANCE_ELIGIBILITY.md)：旧条件不足的清单不能绕过真正冻结门槛声明独立验收。当前全量 413 项中 412 通过、1 项真实符号链接权限跳过；真实 COMSOL 隐藏桌面/六报告展示/取消及协作流程已重跑，新摘要为 `data/fixtures/desktop_smoke_eligibility_gate.json`，旧记录保持原字节。没有求解或改原模型，仍无真实独立验收集。本轮与下段草稿预检尚未提交推送，不宣称新代码远端 CI 已通过。
+
+保存提交为 `dfc9ae7`，远端 [CI](https://github.com/sssssding/Flowplot/actions/runs/38361859189) 已成功。保存后本地新增 [验收草稿只读预检](ACCEPTANCE_PREFLIGHT.md)，尚未提交推送：集中查看审核/来源缺项和逐模型文件问题，不补造数据、不创建冻结集。最新本机全量 401 项中 400 通过、1 项真实符号链接权限跳过；这些新代码未宣称远端 CI 通过。原六模型预检均哈希匹配，但其开发身份等条件仍阻止正式独立验收准备。
 
 按用户要求将当前本地成果提交并推送保存，目标为 `origin/codex/acceptance-handoff`，不合并 main、不修改队友分支、不创建 PR。本节随保存提交发布；实际提交号与推送结果以 Git 分支为准。下方历史段落中的“未提交/推送”仅代表对应开发轮次。
 
@@ -19,13 +90,13 @@ python -X utf8 -m unittest discover -s tests -q
 
 本机 outputs、模型副本、运行日志、Python 环境及许可证配置不随此次 Git 保存。六个原模型未改；历史工程记录不改指纹冒充新版验收。正式冻结/结果/核验包需匹配源码版本，即使只改标题也不能手改旧哈希复用成绩。
 
-## 从哪里接手
+## 历史：从哪里接手
 
 仓库：`sssssding/Flowplot`；本批功能最初在 **`codex/local-handoff`** 分支交接，随后通过 PR #1 合并到 `main`（`cba7a12`）。新开发从最新 `origin/main` 建立自己的功能分支；旧交接分支保留作历史参考。合并不等于专业验收通过。本机接手结果见 [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md)。
 
 本文是当前交接入口。`PROGRESS.md` 各历史段落中的“尚未提交/推送”描述的是当时状态，不代表包含本文的交接提交仍有那些未提交文件。
 
-## 接收方后续开发（2026-10-13）
+## 历史：接收方后续开发（2026-10-13）
 
 当前应用名由用户确认为 **FlowPlot**，推荐双击 `FlowPlot.cmd`；旧 `FlowPilot.cmd`、`flowpilot` 内部包与 `FLOWPILOT_*` 配置保留。最新本机全量 378 项测试中 377 通过、1 项符号链接权限跳过；新旧入口异目录实跑及新名称隐藏 Tk/六份旧报告/新包往返通过，未调用 COMSOL 或修改原模型。历史可见记录仍为改名前版本，不宣称新版本可见/新用户验收。命名、冻结版本影响及回退见 [NAMING.md](NAMING.md)；本轮仍未提交推送，以下各段测试数为对应轮次记录。
 
@@ -35,7 +106,7 @@ python -X utf8 -m unittest discover -s tests -q
 
 最新补充 [正式验收证据交接包](ACCEPTANCE_BUNDLE.md)：`acceptance_bundle.py export / verify` 将冻结模型、正式记录和必要原报告复制到新目录，接收方无需原电脑路径或 COMSOL 即可核验并重算。必须显式 `--include-models`，内容包含模型及审核声明，人工检查授权/隐私后自行分享；不自动上传，不将部分结果提升。新增 19 项模拟流程专项；当前全量 373 项测试中 372 通过，1 项真实符号链接测试因本机权限跳过。原六份实测报告再次离线复核 6/6，未重跑 COMSOL 或求解；本轮仍未提交、推送或创建 PR。
 
-## 2026-10-13 本次交接给同事
+## 历史：2026-10-13 队友上次交接
 
 本轮开发与 GUI 工程核验提交截至 `33ea57b`，交接起点为 `origin/feat/local-acceptance`，不是尚未包含这批改进的 main。此节是接手摘要，后续交接文档提交也在同一分支；不自动合并 main、创建 PR 或通知同事。
 

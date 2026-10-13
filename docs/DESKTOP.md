@@ -112,6 +112,14 @@ session-.../
 
 可共享摘要：[桌面功能验证](../data/fixtures/desktop_smoke.json)。它明确保留 `visual_review: false`、`new_user_timing_validated: false`、`expert_review: false`。该验证不是可见窗口截图验收、十个未见模型验收或新用户 5 分钟操作测试，T14 仍进行中；也不是 COMSOL GUI 设置复核。
 
+2026-10-13 的 [验收门槛修复](ACCEPTANCE_ELIGIBILITY.md) 后重新运行了完整隐藏流程，新源码来源记录另存 [desktop_smoke_eligibility_gate.json](../data/fixtures/desktop_smoke_eligibility_gate.json)，当前来源测试使用此记录；上面的旧摘要保留历史，不改指纹冒充本轮运行。该新增记录仍不代表人工可见或独立验收通过。
+
+随后 [批量稳定性加固](BATCH_STABILITY.md) 再次真实重跑同一隐藏功能流程，当前来源测试更新为 [desktop_smoke_batch_stability.json](../data/fixtures/desktop_smoke_batch_stability.json)；前两份记录原样保留。没有重新求解，专业/独立/新用户待办不变。
+
+最新 [报告目录边界加固](REPORT_BOUNDARIES.md) 后又重跑同一真实隐藏流程，当前来源记录为 [desktop_smoke_report_boundaries.json](../data/fixtures/desktop_smoke_report_boundaries.json)，前三份记录继续按原字节保留。收到的报告根目录为链接/联接时先拒绝，需改选实际目录；普通目录使用方式不变。
+
+随后 [协作包导出加固](REPORT_PACKAGE.md) 仅改变导出模块，新增接收端大小预检、最终重新导入与快照一致性核对；失败目录不要分享。本轮未重跑 COMSOL：新 [离线摘要](../data/fixtures/report_export_offline_smoke.json) 记录六份旧报告的隐藏 Tk 展示、历史/对比及直接导出重读，不宣称重新验证按钮点击或人工试用。来源测试分层使用此前完整流程中未变的 13 个模块与本轮导出模块的新证据，四份完整流程旧记录均保持原字节。
+
 开发者可重跑隐藏窗口集成检查（会实际调用 COMSOL，需要本地桌面会话及许可证）：
 
 ```powershell

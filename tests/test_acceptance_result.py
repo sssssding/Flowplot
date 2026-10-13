@@ -59,6 +59,8 @@ class AcceptanceResultTest(unittest.TestCase):
         # Simulate tampering with both hashes and content. Independent recomputation must
         # still reject wrong metrics; public hashes alone are not an author signature.
         summary = json.loads((self.run / "checks/summary.json").read_text(encoding="utf-8"))
+        self.mutate(self.run / "checks/run.json", lambda r: r.update(
+            summary_sha256=dataset.sha256(self.run / "checks/summary.json")))
         self.mutate(self.run / "result.json", lambda r: r.update(evaluation=summary))
         self.mutate(self.run / "run.json", lambda r: r.update(
             result_sha256=dataset.sha256(self.run / "result.json"),
@@ -140,7 +142,7 @@ class AcceptanceResultTest(unittest.TestCase):
 
     def test_rebound_wrong_counts_recall_boolean_or_rule_metrics_rejected(self):
         self.run_pipeline()
-        paths = [self.run / name for name in ("run.json", "result.json", "checks/summary.json")]
+        paths = [self.run / name for name in ("run.json", "result.json", "checks/summary.json", "checks/run.json")]
         before = [path.read_bytes() for path in paths]
         changes = (lambda s: s.update(exact_match_cases=9),
                    lambda s: s["metrics_on_checked_cases_only"].update(recall=.99),
@@ -157,7 +159,7 @@ class AcceptanceResultTest(unittest.TestCase):
 
     def test_rebound_missing_duplicate_reordered_or_extra_rows_rejected(self):
         self.run_pipeline()
-        paths = [self.run / name for name in ("run.json", "result.json", "checks/summary.json")]
+        paths = [self.run / name for name in ("run.json", "result.json", "checks/summary.json", "checks/run.json")]
         before = [path.read_bytes() for path in paths]
         for change in (lambda s: s["cases"].pop(), lambda s: s["cases"].reverse(),
                        lambda s: s["cases"][0].update(case_id=s["cases"][1]["case_id"]),
@@ -291,6 +293,31 @@ class AcceptanceResultTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;", rendered)
         self.assertIn("不认证审核身份", rendered)
         self.assertIn("不是物理", rendered)
+
+    def test_optional_batch_stability_bindings_cannot_be_falsified_by_outer_rehash(self):
+        self.run_pipeline()
+        batch = self.run / "checks/run.json"
+        top = self.run / "run.json"
+        batch_raw, top_raw = batch.read_bytes(), top.read_bytes()
+        for change in (lambda r: r.update(summary_sha256="0" * 64),
+                       lambda r: r.update(input_stability_verified=1),
+                       lambda r: r.update(input_stability_verified=False),
+                       lambda r: r.update(source_fingerprints={"synthetic wrong source": "0" * 64})):
+            self.mutate(batch, change)
+            self.mutate(top, lambda r: r.update(suite_run_sha256=dataset.sha256(batch)))
+            with self.assertRaises(ValueError):
+                self.load()
+            batch.write_bytes(batch_raw)
+            top.write_bytes(top_raw)
+
+    def test_missing_optional_batch_fields_are_not_fabricated_as_verified(self):
+        self.run_pipeline()
+        batch = self.run / "checks/run.json"
+        self.mutate(batch, lambda r: [r.pop(key, None) for key in
+                    ("summary_sha256", "input_stability_verified", "source_fingerprints")])
+        self.mutate(self.run / "run.json", lambda r: r.update(suite_run_sha256=dataset.sha256(batch)))
+        self.assertEqual(self.load()["status"], "verified_complete")
+        self.assertNotIn("input_stability_verified", json.loads(batch.read_text(encoding="utf-8")))
 
     def test_cli_review_export_existing_output_and_incomplete_exit(self):
         self.run_pipeline()

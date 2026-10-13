@@ -38,6 +38,10 @@ python src/flowpilot/check_suite.py --manifest data/fixtures/cases/manifest.json
 
 每次输出目录必须是新目录，已有结果不会覆盖。退出码：`0` 为所有模型完整检查且规则集合均匹配；`1` 为入口或整组处理错误；`2` 为检查覆盖不完整；`3` 为完整检查后发现规则标签不匹配。退出码 `0` 也不代表物理正确或专业验收通过。
 
+批量运行现检查 [输入稳定性与发布保护](BATCH_STABILITY.md)：清单由同一次字节读取解析和计算指纹，发布前后重新核对程序/登记、模型/报告及实际产物。发现变化时整组失败；即使留下汇总文件，也不能绕过 failed/cancelled 终态引用成绩。需要完整程序及开发登记，运行目录新增可选稳定性/汇总绑定字段，不把这些字段当签名或独立验收凭证。
+
+[报告目录边界](REPORT_BOUNDARIES.md) 要求离线输入根目录为实际目录，输出在其外部，不能写进任何输入报告子目录。单个链接案例不读取目标、记为 unscored；运行中根目录变化停止并记录 failed。正式外层也在创建目录前检查，不自动追踪或修复链接。
+
 ## 指标口径
 
 - 评估单位为“模型 × 规则 code”。同一模型同一 code 出现多次只计一次；当前不评估具体边界定位、严重等级或解释质量。
@@ -57,10 +61,13 @@ Re 派生量超出非零有限表示范围时诊断为 `partial`，不纳入完�
 复用 `case-manifest-0.1` 结构，另建清单及模型目录，不修改已有开发集。待独立模型真实建立并完成专业审核后填写：
 
 - 顶层：`independent_acceptance_set: true`、`label_status: "expert_reviewed"`；可显式记录 `reynolds_warning`（默认 2000）。
-- 每个案例：`case_id`、相对 `model_path`、实际 `sha256`、审核后的 `expected_codes`，以及真实的 `reviewed_by`、ISO 日期 `reviewed_date`、`used_for_rule_development: false`。
-- 覆盖首批五个规则，且至少包含一个没有预期问题的负对照；不得重复文件哈希，不得包含已知开发集模型。
+- 顶层另有真实 `acceptance_declaration`：数据集 ID、独立性审核人/已发生日期及三项独立性确认；字段定义见 [冻结要求](ACCEPTANCE_FREEZE.md)。
+- 每个案例：`case_id`、相对 `model_path`、实际 `sha256`、审核后的 `expected_codes`，以及真实的 `reviewed_by`、标准且已发生日期 `reviewed_date`、`used_for_rule_development: false`、`created_by`、`origin_reference`、`independence_group`。
+- 至少 10 个案例、两个独立来源组，覆盖首批五个规则且包含负对照；不得重复文件哈希/大小写路径，不得包含已登记原六模型/14 变体，未完成求值的鲁棒性标签另行处理。
 
 只有以上声明、审核信息、覆盖条件和全部完整检查均满足时，才提供 `meets_recall_above_90_percent`（严格大于 90%）结果；否则为 `null` 并列出阻断原因。该字段仅表示 Recall 目标，不表示精度、误报率或全部比赛验收条件达标。
+
+通用评分现复用真正冻结门槛；只满足早期条件的清单会追加 `formal_freeze_requirements_not_met`，不会提升资格，开发统计仍保留。具体修复、历史记录与源码版本影响见 [验收门槛一致性](ACCEPTANCE_ELIGIBILITY.md)。通用入口不创建冻结凭证，正式成绩仍按冻结/运行/复核流程核验。
 
 这些元数据不能自动证明独立性：应由未参与规则调试的团队成员建立并审核模型，记录来源，禁止只复制改名或轻改开发样本冒充独立数据；看过验收结果并据此调规则后，应另建新的独立验收集。工具能拒绝已知开发模型哈希，但无法识别所有变体泄漏。
 

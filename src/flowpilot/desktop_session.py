@@ -98,7 +98,10 @@ def diagnosis_view(report):
 
 def load_completed_check(directory):
     """Never display a stale, incomplete, or content-mismatched diagnosis as current."""
-    directory = Path(directory).resolve(strict=True)
+    directory = Path(directory)
+    if directory.is_symlink() or directory.is_junction():
+        raise CheckError("报告根目录不能是符号链接或目录联接，请选择实际目录。")
+    directory = directory.resolve(strict=True)
     if (directory / "package.json").exists() or (directory / "package.json").is_symlink():
         _, payloads = read_verified_package(directory)
         run_bytes, diagnosis_bytes = payloads["run.json"], payloads["diagnosis.json"]

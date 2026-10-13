@@ -18,6 +18,8 @@ def read_package_file(path):
 def read_verified_package(directory):
     """Return the exact verified byte snapshots, not a promise about later reads."""
     directory = Path(directory)
+    if directory.is_symlink() or directory.is_junction() or not directory.is_dir():
+        raise ValueError("报告包根目录须为实际目录，不能是链接或目录联接。")
     manifest = decode_json(read_regular_file(directory / "package.json", max_bytes=MAX_METADATA_BYTES))
     if (not isinstance(manifest, dict) or manifest.get("schema_version") != "report-package-0.1"
             or not isinstance(manifest.get("files"), dict) or set(manifest["files"]) != PACKAGE_FILES):

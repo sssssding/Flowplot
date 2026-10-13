@@ -213,7 +213,11 @@ class ReportReaderTest(unittest.TestCase):
         loaded = desktop.load_completed_check(self.source)
         before_hash = loaded["run_sha256"]
         (self.source / "run.json").write_text("{}", encoding="utf-8")
-        with patch.object(package, "load_completed_check", return_value=loaded):
+        def read_snapshot_or_export(directory):
+            if Path(directory) == self.source:
+                return loaded
+            return desktop.load_completed_check(directory)
+        with patch.object(package, "load_completed_check", side_effect=read_snapshot_or_export):
             exported = package.export_package(self.source, self.root / "exported")
         self.assertEqual(integrity.verify_package(exported)["original_run_sha256"], before_hash)
 

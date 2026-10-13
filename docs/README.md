@@ -18,7 +18,11 @@
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
 | [MODEL_CHECK.md](MODEL_CHECK.md) | 指定 MPH 文件的只读检查入口、报告和失败处理 | 文件检查流程变化时更新 |
 | [BATCH_CHECK.md](BATCH_CHECK.md) | 整组模型的只读检查、漏报误报统计与独立验收阻断 | 批量流程或评估口径变化时更新 |
+| [BATCH_STABILITY.md](BATCH_STABILITY.md) | 批量清单/程序/报告变化防护、实际产物绑定与失败终态 | 来源稳定性或发布流程变化时更新 |
+| [REPORT_BOUNDARIES.md](REPORT_BOUNDARIES.md) | 报告/协作包根目录链接及批量/正式输入树写保护 | 目录政策或来源边界变化时更新 |
 | [ACCEPTANCE_PLAN.md](ACCEPTANCE_PLAN.md) | 专业审核、独立集冻结和真实新用户验收计划 | 团队开始正式验收前更新 |
+| [ACCEPTANCE_PREFLIGHT.md](ACCEPTANCE_PREFLIGHT.md) | 草稿清单的集中准备提示、模型文件核对和只读状态边界 | 正式清单准备或预检口径变化时更新 |
+| [ACCEPTANCE_ELIGIBILITY.md](ACCEPTANCE_ELIGIBILITY.md) | 通用批量评分与正式冻结的门槛一致性及历史证据影响 | 评分资格或来源验证口径变化时更新 |
 | [ACCEPTANCE_FREEZE.md](ACCEPTANCE_FREEZE.md) | 已审核验收集的冻结、指纹核验与正式运行入口 | 冻结流程或门槛变化时更新 |
 | [ACCEPTANCE_RESULTS.md](ACCEPTANCE_RESULTS.md) | 正式结果绑定、逐模型重算与中文离线复核导出 | 正式结果格式或核验口径变化时更新 |
 | [ACCEPTANCE_BUNDLE.md](ACCEPTANCE_BUNDLE.md) | 含冻结模型与原报告的证据交接包及接收端离线重算 | 包格式、共享边界或核验方式变化时更新 |
@@ -27,7 +31,7 @@
 | [REPORT_COMPARISON.md](REPORT_COMPARISON.md) | 前后报告差异、比较条件及离线导出 | 对比流程或口径变化时更新 |
 | [CHECK_HISTORY.md](CHECK_HISTORY.md) | 本地历史浏览、运行状态边界及重新核验 | 历史扫描或窗口流程变化时更新 |
 | [MODEL_OVERVIEW.md](MODEL_OVERVIEW.md) | 模型尺寸/材料/边界概览及缺失边界证据 | 概览或解释证据变化时更新 |
-| [REPORT_PACKAGE.md](REPORT_PACKAGE.md) | 离线协作报告导出、重新导入及隐私边界 | 分享格式或完整性核验变化时更新 |
+| [REPORT_PACKAGE.md](REPORT_PACKAGE.md) | 离线协作报告导出、容量预检、重读快照核对及隐私/失败边界 | 分享格式或完整性核验变化时更新 |
 | [REPORT_VALIDATION.md](REPORT_VALIDATION.md) | 统一报告读取、条目/状态一致性及快照指纹 | 报告消费者或读取限制变化时更新 |
 | [BOUNDARY_CASES.md](BOUNDARY_CASES.md) | 五类异常样本、预期标签和复核清单 | 新增或审核样本时更新 |
 | [REGRESSION_FAMILY.md](REGRESSION_FAMILY.md) | 14 个未求解矩形变体、真实配置差异及阈值末位保护 | 受控变体或实测证据变化时更新 |

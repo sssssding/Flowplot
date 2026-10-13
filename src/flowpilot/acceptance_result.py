@@ -39,6 +39,9 @@ def suite_snapshot(directory):
     if (not isinstance(run, dict) or run.get("schema_version") != "check-suite-run-0.1"
             or not isinstance(summary, dict) or summary.get("schema_version") != "check-suite-report-0.1"):
         raise ValueError("批量产物的结构或版本无效")
+    if ("summary_sha256" in run and run["summary_sha256"] != summary_digest
+            or "input_stability_verified" in run and run["input_stability_verified"] is not True):
+        raise ValueError("批量汇总绑定或输入稳定性标记无效")
     return {"run": run, "summary": summary, "run_sha256": run_digest, "summary_sha256": summary_digest}
 
 
@@ -50,6 +53,8 @@ def check_suite_record(snapshot, loaded, mode):
         raise ValueError("完整检查案例数无效")
     status = "completed" if checked == count else "incomplete"
     source = loaded["metadata"]["source_fingerprints"]
+    if "source_fingerprints" in run and not same_json(run["source_fingerprints"], source):
+        raise ValueError("批量程序登记指纹与冻结输入不符")
     settings = loaded["manifest"]["reynolds_warning"]
     expected = {"status": status, "attempted_cases": count, "checked_cases": checked, "mode": mode,
                 "manifest_sha256": loaded["metadata"]["manifest_sha256"],

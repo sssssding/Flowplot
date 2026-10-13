@@ -18,6 +18,7 @@ from flowpilot.desktop_session import DISCLAIMER, load_completed_check
 from flowpilot.model_overview import build_overview
 from flowpilot.package_integrity import MAX_FILE_BYTES, verify_package
 from flowpilot.diagnostics import is_finite_number
+from flowpilot.report_io import MAX_METADATA_BYTES
 
 PRIVACY_NOTICE = ("不会复制 .mph 模型、运行日志或本机路径元数据字段。"
                   "模型名称、参数、表达式、标签和诊断自由文本仍可能包含敏感信息（包括路径）；"
@@ -77,7 +78,10 @@ def _render_report(loaded, metadata):
 def export_package(report_dir, output_dir):
     """Validate again; write only a new folder, with run.json published last."""
     loaded = load_completed_check(report_dir)
-    directory = Path(output_dir).resolve()
+    target = Path(output_dir)
+    if target.exists() or target.is_symlink() or target.is_junction():
+        raise FileExistsError("导出目录已存在或是链接/联接，拒绝覆盖：" + target.name)
+    directory = target.resolve()
     if directory == loaded["directory"] or loaded["directory"] in directory.parents:
         raise CheckError("导出目录不能放在原报告目录内。")
     diagnosis = _json_bytes(loaded["report"])
@@ -93,20 +97,32 @@ def export_package(report_dir, output_dir):
                     "如导出中途失败，目录可能不完整；不要分享，重新导出到新目录。\n").encode("utf-8")}
     if any(len(payload) > MAX_FILE_BYTES for payload in payloads.values()):
         raise CheckError("报告过大，不能导出为当前版本的协作报告包（单文件上限 10 MiB）。")
+    if len(payloads["run.json"]) > MAX_METADATA_BYTES:
+        raise CheckError("导出运行元数据超过接收端 64 KiB 上限；未创建目录。")
     manifest = {"schema_version": "report-package-0.1", "created_at": datetime.now(timezone.utc).isoformat(),
                 "original_run_sha256": loaded["run_sha256"],
                 "original_diagnosis_sha256": loaded["metadata"]["diagnosis_sha256"],
                 "privacy_notice": PRIVACY_NOTICE,
                 "files": {name: {"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()}
                           for name, payload in payloads.items()}}
+    manifest_bytes = _json_bytes(manifest)
+    if len(manifest_bytes) > MAX_METADATA_BYTES:
+        raise CheckError("导出包清单超过接收端 64 KiB 上限；未创建目录。")
     directory.mkdir(parents=True, exist_ok=False)
     with (directory / "package.json").open("xb") as stream:
-        stream.write(_json_bytes(manifest))
+        stream.write(manifest_bytes)
     # Completed run is the last file: interrupted export cannot look like a completed legacy report.
     for name in [name for name in payloads if name != "run.json"] + ["run.json"]:
         with (directory / name).open("xb") as stream:
             stream.write(payloads[name])
     verify_package(directory)
+    # Byte integrity alone does not prove that our output is consumable or is
+    # the same structured snapshot the user asked to export.
+    published = load_completed_check(directory)
+    options = {"sort_keys": True, "allow_nan": False, "ensure_ascii": True}
+    if (json.dumps(published["report"], **options) != json.dumps(loaded["report"], **options)
+            or json.dumps(published["metadata"], **options) != json.dumps(metadata, **options)):
+        raise CheckError("导出包重读与原诊断/便携元数据不一致，不应分享此目录。")
     return directory
 
 

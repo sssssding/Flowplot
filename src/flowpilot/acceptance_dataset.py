@@ -137,7 +137,7 @@ def _model(root, relative):
 
 def _new_output(output_dir, protected):
     output = Path(output_dir)
-    if output.exists() or output.is_symlink():
+    if output.exists() or output.is_symlink() or output.is_junction():
         raise FileExistsError("输出目录已存在，拒绝覆盖：" + output.name)
     resolved = output.resolve()
     if resolved.is_relative_to(protected):
@@ -242,6 +242,10 @@ def run_frozen(directory, *, output_dir, comsol_root=None, reports_root=None, lo
     if (comsol_root is None) == (reports_root is None):
         raise ValueError("请选择真实 COMSOL 检查或已有报告离线复核之一")
     output = _new_output(output_dir, loaded["directory"])
+    if reports_root is not None:
+        reports_root = _root(reports_root)
+        if output.is_relative_to(reports_root):
+            raise ValueError("正式运行输出不能位于输入报告根目录内部")
     output.mkdir(parents=True, exist_ok=False)
     metadata = {"schema_version": "acceptance-run-0.2", "status": "running",
                 "started_at": datetime.now(timezone.utc).isoformat(),
