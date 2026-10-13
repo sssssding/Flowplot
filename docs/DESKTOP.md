@@ -5,7 +5,7 @@
 ## 启动与使用
 
 1. 确认已安装 Python（包含 Tcl/Tk）、`requirements-dev.txt` 中的依赖，以及有可用许可证和模块的 COMSOL 6.3。
-2. 在 Windows 文件夹中双击项目根目录的 `FlowPilot.cmd`。依次使用显式 `FLOWPILOT_PYTHON`、项目 `.venv`、系统 `python`；先检查依赖，缺失时给出配置提示，不自动安装或替换环境。
+2. 在 Windows 文件夹中双击项目根目录的 `FlowPlot.cmd`（旧 `FlowPilot.cmd` 仍兼容）。依次使用显式 `FLOWPILOT_PYTHON`、项目 `.venv`、系统 `python`；先检查依赖，缺失时给出配置提示，不自动安装或替换环境。名称约定见 [NAMING.md](NAMING.md)。
 3. 选择一个已经下载完整的 `.mph` 文件；选择 COMSOL 的 `Multiphysics` 文件夹（其中应有 `bin/win64`），再选结果保存目录。
 4. 点击“开始检查”，等候结果。默认重复加载 2 次，每个编译/读取进程超时 300 秒，Re 筛查阈值 2000；不是整个检查的总超时。
 5. 点击问题行查看相关节点、边界编号、证据与建议；可打开结果目录或查看完整 Markdown 报告。
@@ -20,8 +20,8 @@ python src/flowpilot/desktop.py
 
 ```powershell
 $env:FLOWPILOT_PYTHON = (Resolve-Path './.venv-tests/Scripts/python.exe').Path
-./FlowPilot.cmd --check-env
-./FlowPilot.cmd
+./FlowPlot.cmd --check-env
+./FlowPlot.cmd
 ```
 
 示例中的 `.venv-tests` 是本机已有环境，队友应换成自己的可用环境；虚拟环境和解释器路径不提交仓库。`--check-env` 只检查 Python、jsonschema 和 tkinter 是否可导入，不创建窗口、不启动 COMSOL，也不证明许可证或可见界面通过。`FLOWPILOT_NO_PAUSE=1` 仅供自动化测试关闭失败后的控制台等待。

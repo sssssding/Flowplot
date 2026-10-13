@@ -3,6 +3,7 @@
 | 文档 | 用途 | 维护时机 |
 |---|---|---|
 | [PROJECT_SCOPE.md](PROJECT_SCOPE.md) | MVP 边界、支持项和非目标 | 范围变化前先更新 |
+| [NAMING.md](NAMING.md) | FlowPlot 当前应用名、旧入口/内部标识兼容及历史证据边界 | 团队决定改名或迁移入口时更新 |
 | [BLUEPRINT.md](BLUEPRINT.md) | 系统架构、数据流和里程碑 | 架构评审后更新 |
 | [COLLABORATION.md](COLLABORATION.md) | Git/GitHub 多人协作流程 | 工作流变化时更新 |
 | [HANDOFF.md](HANDOFF.md) | 当前功能分支拉取、运行复现、验证边界与下一位开发者待办 | 交接或集中提交时更新 |
@@ -18,6 +19,9 @@
 | [MODEL_CHECK.md](MODEL_CHECK.md) | 指定 MPH 文件的只读检查入口、报告和失败处理 | 文件检查流程变化时更新 |
 | [BATCH_CHECK.md](BATCH_CHECK.md) | 整组模型的只读检查、漏报误报统计与独立验收阻断 | 批量流程或评估口径变化时更新 |
 | [ACCEPTANCE_PLAN.md](ACCEPTANCE_PLAN.md) | 专业审核、独立集冻结和真实新用户验收计划 | 团队开始正式验收前更新 |
+| [ACCEPTANCE_FREEZE.md](ACCEPTANCE_FREEZE.md) | 已审核验收集的冻结、指纹核验与正式运行入口 | 冻结流程或门槛变化时更新 |
+| [ACCEPTANCE_RESULTS.md](ACCEPTANCE_RESULTS.md) | 正式结果绑定、逐模型重算与中文离线复核导出 | 正式结果格式或核验口径变化时更新 |
+| [ACCEPTANCE_BUNDLE.md](ACCEPTANCE_BUNDLE.md) | 含冻结模型与原报告的证据交接包及接收端离线重算 | 包格式、共享边界或核验方式变化时更新 |
 | [DESKTOP.md](DESKTOP.md) | 本地桌面检查、取消、已有报告读取与功能验证范围 | 界面或会话流程变化时更新 |
 | [DESKTOP_REVIEW.md](DESKTOP_REVIEW.md) | 可见工程核验、启动与布局修复及未完成验收 | 每次可见核验后更新 |
 | [REPORT_COMPARISON.md](REPORT_COMPARISON.md) | 前后报告差异、比较条件及离线导出 | 对比流程或口径变化时更新 |

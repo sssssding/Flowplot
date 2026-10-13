@@ -43,6 +43,8 @@
 
 执行现有入口，输出目录必须全新：
 
+2026-10-13 已补充 [冻结与运行核验入口](ACCEPTANCE_FREEZE.md)：正式验收优先先固定模型、审核标签和程序字节指纹，再运行并进行前后核验。该入口还要求来源组及独立性审核声明；没有真实审核集时拒绝冻结，不自动生成示范验收结果。下列原通用批量命令保留用于兼容复核，不代表已经执行正式冻结流程。
+
 ```powershell
 python -X utf8 src/flowpilot/check_suite.py --manifest '<已审核清单>' --model-root '<独立模型根目录>' --comsol-root '<COMSOL_ROOT>' --output-dir outputs/acceptance/run-001 --loads 2
 python -X utf8 src/flowpilot/check_suite.py --manifest '<已审核清单>' --reports-root outputs/acceptance/run-001 --output-dir outputs/acceptance/offline-001

@@ -1,4 +1,4 @@
-name: FlowPilot contract and rule tests
+name: FlowPlot contract and rule tests
 
 on:
   push:

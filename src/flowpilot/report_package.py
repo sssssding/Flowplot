@@ -58,7 +58,7 @@ def _render_report(loaded, metadata):
     view = loaded["view"]
     def safe(value):
         return _markdown_text(html.escape(str(value)))
-    lines = ["# FlowPilot 协作检查报告", "", DISCLAIMER, "", PRIVACY_NOTICE, "",
+    lines = ["# FlowPlot 协作检查报告", "", DISCLAIMER, "", PRIVACY_NOTICE, "",
              "模型：" + safe(metadata["source"]["filename"]),
              "模型 SHA-256：`" + metadata["source"]["sha256"] + "`",
              "COMSOL：" + safe(metadata.get("comsol_version", "原记录未提供")),
@@ -85,7 +85,7 @@ def export_package(report_dir, output_dir):
     payloads = {"diagnosis.json": diagnosis, "run.json": _json_bytes(metadata),
                 "report.md": _render_report(loaded, metadata).encode("utf-8"),
                 "overview.txt": build_overview(loaded["report"])["text"].encode("utf-8"),
-                "README.md": ("# FlowPilot 协作报告包\n\n"
+                "README.md": ("# FlowPlot 协作报告包\n\n"
                     "先阅读 report.md 和 overview.txt。安装项目依赖后，可在桌面点击“读取已有报告”并选择本文件夹；"
                     "不需要源模型或 COMSOL 即可离线阅读。可手动压缩整个文件夹发送，接收方解压后选择该文件夹。\n\n"
                     + PRIVACY_NOTICE + "\n\n不要只发送单个文件或修改包内文件。读取时核对全部五份文件的大小与 SHA-256；"

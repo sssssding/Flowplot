@@ -166,7 +166,7 @@ def _markdown_text(value):
 def render_report(report, metadata):
     statuses = {"checked": "已执行当前规则", "partial": "部分检查未完成，需人工复核",
                 "unsupported": "超出当前支持范围"}
-    lines = ["# FlowPilot 检查报告", "", f"模型：{_markdown_text(metadata['source']['filename'])}",
+    lines = ["# FlowPlot 检查报告", "", f"模型：{_markdown_text(metadata['source']['filename'])}",
              f"SHA-256：`{metadata['source']['sha256']}`", "",
              f"状态：{statuses[report['status']]}",
              f"COMSOL：{_markdown_text(metadata['comsol_version'])}",

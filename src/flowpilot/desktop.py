@@ -54,7 +54,7 @@ class DesktopApp:
         self.loads, self.timeout, self.reynolds = (tk.StringVar(root, value) for value in ("2", "300", "2000"))
         self.status = tk.StringVar(root, "选择模型和 COMSOL 目录后，点击“开始检查”。")
         self.source = tk.StringVar(root, "尚未加载报告。")
-        root.title("FlowPilot · 模型边界检查")
+        root.title("FlowPlot · 模型边界检查")
         width, height = initial_window_size(root.winfo_screenwidth(), root.winfo_screenheight())
         root.geometry(f"{width}x{height}")
         root.minsize(min(860, width), min(650, height))
@@ -69,7 +69,7 @@ class DesktopApp:
         main.grid(row=0, column=0, sticky="nsew")
         main.columnconfigure(0, weight=1)
         main.rowconfigure(5, weight=1)
-        ttk.Label(main, text="FlowPilot 模型边界检查", style="Heading.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(main, text="FlowPlot 模型边界检查", style="Heading.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Label(main, text="二维稳态层流 · 原模型只读 · 中文证据与建议").grid(row=1, column=0, sticky="w", pady=(3, 12))
         form = ttk.LabelFrame(main, text="1. 选择文件与环境", padding=10)
         form.grid(row=2, column=0, sticky="ew")
@@ -336,7 +336,7 @@ class DesktopApp:
     def show_comparison(self, summary):
         from tkinter.scrolledtext import ScrolledText
         window = self.tk.Toplevel(self.root)
-        window.title("FlowPilot · 前次 / 本次检查对比")
+        window.title("FlowPlot · 前次 / 本次检查对比")
         window.geometry("820x640")
         window.minsize(640, 460)
         window.columnconfigure(0, weight=1)
@@ -399,7 +399,7 @@ class DesktopApp:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="FlowPilot local desktop model checker")
+    parser = argparse.ArgumentParser(description="FlowPlot local desktop model checker")
     parser.add_argument("--model", type=Path)
     parser.add_argument("--comsol-root", type=Path)
     parser.add_argument("--output-root", type=Path)

@@ -407,8 +407,10 @@ class DesktopSessionTest(unittest.TestCase):
             self.assertEqual(item["diagnosis_status"], "partial")
             self.assertEqual(item["desktop_tone"], "incomplete")
             self.assertTrue(item["package_reimport_verified"])
+        from branding_evidence import historical_digest
         for path, digest in stored["source_sha256"].items():
-            self.assertEqual(desktop.sha256(ROOT / path), digest)
+            # Historical smoke is not renamed or relabelled as current execution.
+            self.assertEqual(historical_digest(path, (ROOT / path).read_bytes()), digest)
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8-sig"))
         self.assertEqual(stored["source_model_sha256"], {case["case_id"]: case["sha256"].lower() for case in manifest["cases"]})
 

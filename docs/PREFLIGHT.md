@@ -10,7 +10,7 @@ python -X utf8 src/flowpilot/preflight.py
 python -X utf8 src/flowpilot/preflight.py --json
 ```
 
-与运行桌面的 Python 必须是同一个环境。若使用虚拟环境，将上述 `python` 替换为该环境的 `Scripts/python.exe`。`FlowPilot.cmd` 依次使用显式 `FLOWPILOT_PYTHON`、`.venv`、系统 Python；不会自动扫描其他测试环境。可先执行 `FlowPilot.cmd --check-env`，不要因为另一个环境测试成功，就认定双击入口的依赖齐全。
+与运行桌面的 Python 必须是同一个环境。若使用虚拟环境，将上述 `python` 替换为该环境的 `Scripts/python.exe`。`FlowPlot.cmd`（兼容旧 `FlowPilot.cmd`）依次使用显式 `FLOWPILOT_PYTHON`、`.venv`、系统 Python；不会自动扫描其他测试环境。可先执行 `FlowPlot.cmd --check-env`，不要因为另一个环境测试成功，就认定双击入口的依赖齐全。
 
 ## 结果含义
 

@@ -21,16 +21,16 @@ def launch(arguments=None):
     checks = [item for item in check_environment() if item["name"] != "comsol"]
     failed = [item["name"] for item in checks if item["status"] == "error"]
     if failed:
-        print("FlowPilot cannot start: unavailable dependencies: " + ", ".join(failed), file=sys.stderr)
+        print("FlowPlot cannot start: unavailable dependencies: " + ", ".join(failed), file=sys.stderr)
         print(f'Python selected: "{sys.executable}"', file=sys.stderr)
         if "jsonschema" in failed:
             print("Install requirements-dev.txt with this interpreter, or select a prepared environment.", file=sys.stderr)
         if "tkinter" in failed:
             print("Use a Python installation with Tcl/Tk; this launcher does not install software.", file=sys.stderr)
-        print("Set FLOWPILOT_PYTHON to a prepared python.exe before running FlowPilot.cmd.", file=sys.stderr)
+        print("Set FLOWPILOT_PYTHON to a prepared python.exe before running FlowPlot.cmd.", file=sys.stderr)
         return 1
     if options.check_env:
-        print("FlowPilot desktop dependencies are importable; no window or COMSOL process started.")
+        print("FlowPlot desktop dependencies are importable; no window or COMSOL process started.")
         print("This does not validate visible UI, licenses, models, or physical correctness.")
         for item in checks:
             print(f"{item['name']}: {item['status']} ({item.get('version', 'unknown')})")
@@ -41,7 +41,7 @@ def launch(arguments=None):
                                  cwd=ROOT, check=False)
         return process.returncode
     except OSError:
-        print("FlowPilot could not launch its desktop process. Check the selected Python environment.", file=sys.stderr)
+        print("FlowPlot could not launch its desktop process. Check the selected Python environment.", file=sys.stderr)
         return 1
 
 

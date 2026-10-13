@@ -87,7 +87,7 @@ def compare_reports(before_dir, after_dir):
 
 
 def render_comparison(summary):
-    lines = ["# FlowPilot 检查报告对比", "", summary["disclaimer"], ""]
+    lines = ["# FlowPlot 检查报告对比", "", summary["disclaimer"], ""]
     for field, label in (("before", "前次"), ("after", "本次")):
         side = summary[field]
         lines += [f"{label}：{_markdown_text(side['source']['filename'])}",

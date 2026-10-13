@@ -1,12 +1,12 @@
 """Launcher fault injection, not visible UI or real COMSOL acceptance."""
 from contextlib import redirect_stderr, redirect_stdout
 import io
-import hashlib
 import json
 from pathlib import Path
 import sys
 import unittest
 from unittest.mock import Mock, patch
+from branding_evidence import historical_digest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -42,6 +42,8 @@ class LauncherTest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("requirements-dev.txt", errors)
         self.assertIn("FLOWPILOT_PYTHON", errors)
+        self.assertTrue(errors.startswith("FlowPlot cannot start"))
+        self.assertIn("FlowPlot.cmd", errors)
         self.assertNotIn("Traceback", errors)
         runner.assert_not_called()
 
@@ -88,7 +90,8 @@ class LauncherTest(unittest.TestCase):
         self.assertTrue(stored["original_local_model_unchanged"])
         self.assertEqual(set(stored["source_sha256"]), {"FlowPilot.cmd", "src/flowpilot/desktop.py", "src/flowpilot/launcher.py"})
         for name, expected in stored["source_sha256"].items():
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), expected)
+            # Old visible evidence remains old; this is only a branding-delta guard.
+            self.assertEqual(historical_digest(name, (ROOT / name).read_bytes()), expected)
 
 
 if __name__ == "__main__":
