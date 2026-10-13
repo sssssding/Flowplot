@@ -30,6 +30,16 @@ class GuiReviewRecordTest(unittest.TestCase):
         self.assertEqual(plots["surface_unit"], "m/s")
         self.assertEqual(plots["profiles_x_m"], [0.1, 0.25, 0.5, 0.9])
 
+    def test_all_role_observations_have_versioned_model_identity(self):
+        self.assertTrue(self.record["role_specific_gui_review_complete"])
+        expected = {item["case_id"]: item for item in self.manifest["cases"] if item["case_id"] != "baseline"}
+        self.assertEqual(len(self.record["cases"]), len(expected))
+        self.assertEqual({item["case_id"] for item in self.record["cases"]}, set(expected))
+        for case in self.record["cases"]:
+            with self.subTest(case=case["case_id"]):
+                self.assertIn(case["gui_status"], ("partial", "completed"))
+                self.assertEqual(case["sha256"], expected[case["case_id"]]["sha256"].lower())
+
     def test_recorded_missing_inlet_matches_versioned_api_evidence(self):
         case = next(case for case in self.record["cases"] if case["case_id"] == "missing_inlet")
         inventory = json.loads((ROOT / "data/fixtures/cases/missing_inlet.json").read_text(encoding="utf-8"))

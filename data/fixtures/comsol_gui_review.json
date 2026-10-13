@@ -8,6 +8,7 @@
   "independent_acceptance_set": false,
   "solver_run": false,
   "model_saved": false,
+  "role_specific_gui_review_complete": true,
   "original_local_modification_preserved": true,
   "baseline_plots": {
     "gui_viewed": true,
@@ -88,7 +89,23 @@
       ],
       "save_prompt_pending_at_recording": true
     },
-    {"case_id": "high_reynolds", "gui_status": "pending"}
+    {
+      "case_id": "high_reynolds",
+      "gui_status": "partial",
+      "sha256": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+      "opened_in_separate_window": true,
+      "inlet_velocity_value_m_s": 0.1,
+      "inlet_component_mode": "NormalInflowVelocity",
+      "gui_signed_re_h": 5000,
+      "diagnostic_absolute_re_h": 5000,
+      "flow_compressibility": "Incompressible",
+      "turbulence_model": "None",
+      "nodes": [
+        {"gui_label": "Velocity Inlet", "declared_boundary_ids": [1], "effective_boundary_ids": [1], "mode": "Velocity", "expression": "Uin", "unit": "m/s"},
+        {"gui_label": "Pressure Outlet", "declared_boundary_ids": [4], "effective_boundary_ids": [4], "mode": "PressureNoViscousStress", "expression": "p_out", "unit": "Pa"},
+        {"gui_label": "No-Slip Walls", "declared_boundary_ids": [1, 2, 3, 4], "effective_boundary_ids": [2, 3], "mode": "NoSlip"}
+      ]
+    }
   ],
-  "note": "GUI observations only. Four cases have role-specific node observations; high-reynolds remains pending. Reversed-inlet save dialog awaits a separate decision. GUI labels are not internal tags. No professional or independent acceptance claimed."
+  "note": "GUI observations only. All five cases have role-specific node observations; partial means not a full model or professional review. High-reynolds was opened separately without touching the reversed-inlet save dialog. GUI labels are not internal tags. No professional or independent acceptance claimed."
 }

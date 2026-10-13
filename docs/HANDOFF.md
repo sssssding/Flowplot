@@ -6,7 +6,7 @@
 
 本文是当前交接入口。`PROGRESS.md` 各历史段落中的“尚未提交/推送”描述的是当时状态，不代表包含本文的交接提交仍有那些未提交文件。
 
-最新未合并改进在 `feat/local-acceptance`：包括接手预检、依赖感知启动器、可读性布局修复及 COMSOL 部分工程核对记录。若要接手/审阅这批改进，从 `origin/feat/local-acceptance` 建立自己的新分支；不要直接修改队友分支。下列克隆命令以这批改进为目标；稳定 main 的环境与功能仍以 main 文件为准。可见核验及剩余事项见 [DESKTOP_REVIEW.md](DESKTOP_REVIEW.md)、[GUI_REVIEW.md](GUI_REVIEW.md) 和 [正式验收计划](ACCEPTANCE_PLAN.md)。
+最新未合并改进在 `feat/local-acceptance`：包括接手预检、依赖感知启动器、可读性布局修复及基准保存解图组/五个异常关键边界的 COMSOL GUI 工程核对。若要接手/审阅这批改进，从 `origin/feat/local-acceptance` 建立自己的新分支；不要直接修改队友分支。下列克隆命令以这批改进为目标；稳定 main 的环境与功能仍以 main 文件为准。可见核验及剩余事项见 [DESKTOP_REVIEW.md](DESKTOP_REVIEW.md)、[GUI_REVIEW.md](GUI_REVIEW.md) 和 [正式验收计划](ACCEPTANCE_PLAN.md)。
 
 ## 这批交付了什么
 
@@ -37,7 +37,7 @@ python -m venv .venv
 
 已有仓库：先 `git status` 保存自己的未提交内容，不直接覆盖或重置；工作区确认干净后执行 `git fetch origin`，从 `origin/main` 建立自己的新分支，例如 `git switch -c codex/your-task origin/main`（替换任务名）。若要更新现有同名分支，仅使用快进拉取；遇到分叉先核对双方提交，不强推。
 
-审阅这批未合并改进时，将上句起点替换为 `origin/feat/local-acceptance`。本机源码或格式变化后重新生成对应验证证据，不仅修改旧摘要的哈希；2026-10-13 当前本机离线测试为 301 项，GUI 记录一致性测试不代替真实界面或专业审核。
+审阅这批未合并改进时，将上句起点替换为 `origin/feat/local-acceptance`。本机源码或格式变化后重新生成对应验证证据，不仅修改旧摘要的哈希；2026-10-13 当前本机离线测试为 302 项，GUI 记录一致性测试不代替真实界面或专业审核。
 
 运行前执行 [只读接手预检](PREFLIGHT.md)，使用与桌面/CLI 相同的 Python 环境，提前识别依赖缺失、LFS 指针和本地模型哈希变化。预检不自动覆盖或恢复文件。
 
