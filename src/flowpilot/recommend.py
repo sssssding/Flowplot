@@ -158,6 +158,15 @@ def rank(model, source_sha256, *, cohort=None):
     return result
 
 
+def _assert_report_snapshot(directory, expected):
+    """Re-read before publication; fingerprints are snapshots, not filesystem locks."""
+    current = load_completed_check(directory)
+    if (current["run_sha256"] != expected["run_sha256"]
+            or current["diagnosis_sha256"] != expected["diagnosis_sha256"]
+            or current.get("directory") != expected.get("directory")):
+        raise CheckError("报告内容或来源在推荐计算期间变化，请重新读取报告后再推荐。")
+
+
 def recommend_report(directory, model_path=None, *, expected_fingerprints=None):
     from flowpilot.portable_recommend import NOTICE as portable_notice, rank as portable_rank
     loaded = load_completed_check(directory)
@@ -169,6 +178,7 @@ def recommend_report(directory, model_path=None, *, expected_fingerprints=None):
     source = loaded["metadata"]["source"]["sha256"].lower()
     provenance = {"run_sha256": loaded["run_sha256"], "diagnosis_sha256": loaded["diagnosis_sha256"]}
     if loaded["report"]["status"] != "checked" or loaded["report"]["findings"]:
+        _assert_report_snapshot(directory, loaded)
         return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
                 "reason": "存在诊断问题或检查不完整，请先处理；推荐不得覆盖规则证据。", "ranking": [], "selected": None}
     raw = read_regular_file(model_path or DEFAULT_PORTABLE_MODEL, max_bytes=1024 * 1024)
@@ -178,6 +188,27 @@ def recommend_report(directory, model_path=None, *, expected_fingerprints=None):
               else rank(learned, source))
     result["learned_model_sha256"] = hashlib.sha256(raw).hexdigest()
     result.update(provenance)
+    _assert_report_snapshot(directory, loaded)
+    return result
+
+
+def export_recommendation(directory, output, model_path=None):
+    """Save the verified candidate separately; never add files to input reports."""
+    loaded = load_completed_check(directory)
+    root = loaded["directory"]
+    target = Path(output)
+    def check_target():
+        if target.exists() or target.is_symlink() or target.is_junction():
+            raise FileExistsError("推荐输出已存在或是链接，拒绝覆盖：" + target.name)
+        resolved = target.resolve()
+        if resolved == root or root in resolved.parents:
+            raise CheckError("推荐输出不能位于输入报告目录内，请选择独立文件位置。")
+        return resolved
+    check_target()
+    result = recommend_report(directory, model_path, expected_fingerprints=(
+        loaded["run_sha256"], loaded["diagnosis_sha256"]))
+    _assert_report_snapshot(directory, loaded)
+    _write_json(check_target(), result)
     return result
 
 
@@ -220,9 +251,8 @@ def main():
             _write_json(args.output, result)
             print(f"Learned local ranker saved: {args.output}")
             return
-        result = recommend_report(args.report, args.learned_model)
-        if args.output:
-            _write_json(args.output, result)
+        result = (export_recommendation(args.report, args.output, args.learned_model)
+                  if args.output else recommend_report(args.report, args.learned_model))
         print(render(result))
         if result["status"] != "recommended":
             sys.exit(2)

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -15,6 +16,9 @@ from flowpilot.desktop_session import load_completed_check
 from flowpilot.recommend import read_json
 from flowpilot.recommend_ui import RecommendationApp
 from flowpilot.diagnostics import check
+from flowpilot import portable_recommend
+from flowpilot.recommend import export_recommendation
+from flowpilot.report_package import export_package
 
 
 def main():
@@ -92,6 +96,44 @@ def main():
             tests["explicit_reread_restores_matching_recommendation"] = (app.ai_result["status"] == "recommended"
                 and app.ai_result["run_sha256"] == baseline["run_sha256"]
                 and app.ai_result["diagnosis_sha256"] == baseline["diagnosis_sha256"])
+            original_rank = portable_recommend.rank
+            def change_metadata(*args, **kwargs):
+                changed = copy.deepcopy(baseline["metadata"])
+                changed["finished_at"] = "synthetic change during recommendation"
+                (directory / "run.json").write_text(json.dumps(changed), encoding="utf-8")
+                return original_rank(*args, **kwargs)
+            with patch.object(portable_recommend, "rank", side_effect=change_metadata):
+                app.refresh_recommendation()
+            tests["metadata_change_during_ranking_clears_ai"] = (app.ai_result is None
+                and "重新读取报告" in app.ai_text.get("1.0", "end"))
+            (directory / "run.json").write_bytes(run_bytes)
+            app.open_report(directory)
+            def change_diagnosis(*args, **kwargs):
+                (directory / "diagnosis.json").write_text(json.dumps(warning), encoding="utf-8")
+                changed = copy.deepcopy(baseline["metadata"])
+                changed.update(diagnosis_sha256=sha256(directory / "diagnosis.json"),
+                               diagnosis_status=warning["status"], settings={"reynolds_warning": 100})
+                (directory / "run.json").write_text(json.dumps(changed), encoding="utf-8")
+                return original_rank(*args, **kwargs)
+            with patch.object(portable_recommend, "rank", side_effect=change_diagnosis):
+                app.refresh_recommendation()
+            tests["diagnosis_change_during_ranking_clears_ai"] = (app.ai_result is None
+                and "重新读取报告" in app.ai_text.get("1.0", "end"))
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            package = export_package(args.reports_root / "baseline", directory / "package")
+            try:
+                export_recommendation(package, package / "candidate.json", args.learned_model)
+            except (OSError, ValueError, RuntimeError):
+                pass
+            else:
+                raise AssertionError("Recommendation output inside package must be rejected")
+            tests["recommendation_export_keeps_package_readable"] = (not (package / "candidate.json").exists()
+                and load_completed_check(package)["report"] == baseline["report"])
+            output = directory / "candidate.json"
+            exported = export_recommendation(package, output, args.learned_model)
+            tests["separate_recommendation_export_binds_package_snapshot"] = (read_json(output) == exported
+                and exported["run_sha256"] == load_completed_check(package)["run_sha256"])
         result = {"schema_version": "ai-functional-smoke-0.1", "mode": "hidden-tk-existing-real-reports",
                   "all_passed": all(tests.values()), "checks": tests, "solver_run_in_smoke": False,
                   "visible_user_acceptance": False, "independent_performance_validation": False,

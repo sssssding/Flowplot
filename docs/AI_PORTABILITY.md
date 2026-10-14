@@ -23,10 +23,13 @@
 
 推荐现在绑定当前展示的运行/诊断两个字节指纹，初次展示与手动刷新都核对；同一模型的报告或配置变化时不混用旧诊断与新建议，须重新读取。测量输出必须为输入报告树之外的新目录，普通报告与轻量协作包同样保护；路径别名解析后也不能绕过，拒绝时不写输入目录。
 
+接手收尾额外在候选计算完成、拒绝结果返回和导出写入前重新读取报告，发现运行/诊断快照或目录变化时不发布旧结果。CLI 推荐命令的 `--output` 必须位于输入报告树之外且不存在，避免新增文件使完整协作包失效；不自动创建嵌套输出目录或覆盖结果。这是发布时点的核验，不是文件锁，也不是长期有效性/作者身份保证。
+
 `FlowPlotAI.cmd` 默认读取便携模型；正常报告显示候选，异常/partial/unsupported 报告仍先处理问题。`--report '<已有报告目录>'` 可离线直接预览。
 
 ```powershell
 python src/flowpilot/recommend.py recommend --report '<已核验的单模型报告目录>'
+python src/flowpilot/recommend.py recommend --report '<已核验的单模型报告目录>' --output outputs/ai-recommendation/my-candidate.json
 python src/flowpilot/benchmark_portable.py --baseline '<相同已提交基准副本.mph>' --baseline-report '<基准报告目录>' --comsol-root '<Multiphysics 目录>' --output-dir outputs/ai-recommendation/my-new-portable-benchmark
 python src/flowpilot/portable_recommend.py --dataset '<实测 dataset.json>' --output outputs/ai-recommendation/my-portable-model.json
 ```
@@ -42,5 +45,7 @@ python src/flowpilot/portable_recommend.py --dataset '<实测 dataset.json>' --o
 验证分为真实副本测量、明确合成的跨平台/新哈希/新特征/资源反例和隐藏 Tk 功能核对；结果见 `PROGRESS.md`。未取得第二台机器实际性能实验，未达到 T13 的独立性能标准。以前两份 GUI 功能记录保留原字节，新实测独立保存。
 
 验收修复后新实测为 `ai_review_safety_smoke.json`，19 项隐藏 Tk 检查含四项临时合成快照反例；之前三份 AI 功能摘要均保持原字节。正常流程使用本机真实只读报告，没有重新求解或重采训练数据，隐藏检查不代替可见/新用户或性能验收。
+
+继续接手后的最新功能证据为 `ai_publication_smoke.json`，23 项隐藏 Tk 检查包含计算中变更的临时合成反例和报告包导出/重读，前四份摘要原字节保留。源码绑定以该新记录为准，不修改旧摘要来适配新源码。学习文件、诊断规则、模型与正式冻结集合不因本次推荐发布保护而改变。
 
 回退推荐时在窗口选择旧 `solver_ranker.json`，或使用 CLI 的 `--learned-model` 指定旧文件。旧版仍只能对原基准/本机推荐。不要移除新开发登记来绕过正式验收门槛，也不要上传本机原始模型与运行日志。

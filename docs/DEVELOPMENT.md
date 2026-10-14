@@ -4,6 +4,8 @@
 
 验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。
 
+继续接手补充推荐发布前复核和 CLI 输出目录保护，专项为 `test_recommend_publication.py`。最新实跑绑定在 `ai_publication_smoke.json`（23 项隐藏 Tk），前四份 AI 摘要保持原字节。测试若因受限运行环境无法解析其自建临时目录，应在允许该测试路径的环境复测，不修改程序规则或降级来源核验来让测试通过。
+
 - COMSOL Multiphysics 6.3，已验证构建号 290。
 - PowerShell 7（Windows）。
 - Python 3.12 64 位（当前验证环境），以及 `requirements-dev.txt` 中的 JSON Schema 验证依赖。

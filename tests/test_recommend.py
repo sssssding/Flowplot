@@ -152,9 +152,11 @@ class RecommendationTest(unittest.TestCase):
                          "5831daee73b34e695410172e03da515a7afcc1c319c7a672a9b96aaf94ca39e3")
         self.assertEqual(sha256(ROOT / "data/fixtures/ai_portable_smoke.json"),
                          "fb8aca96815e6f85158768c1f9c9325562795f6eff22d3ffbdefd349ea3f6f9f")
-        record = ai.read_json(ROOT / "data/fixtures/ai_review_safety_smoke.json")
+        self.assertEqual(sha256(ROOT / "data/fixtures/ai_review_safety_smoke.json"),
+                         "e265a0426cf23270d0e5b283051e2c1cc091cee30ab94a89d099b68c3caa600e")
+        record = ai.read_json(ROOT / "data/fixtures/ai_publication_smoke.json")
         self.assertTrue(record["all_passed"])
-        self.assertEqual(len(record["checks"]), 19)
+        self.assertEqual(len(record["checks"]), 23)
         self.assertTrue(record["snapshot_regression_inputs_synthetic"])
         self.assertTrue(all(record["checks"].values()))
         self.assertFalse(record["solver_run_in_smoke"])
