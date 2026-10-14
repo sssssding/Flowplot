@@ -1,6 +1,28 @@
 # 协作接手说明（更新至 2026-10-14）
 
-## 当前交接入口（2026-10-14：AI 推荐检验）
+## 当前接手入口（2026-10-14：验收修复与 main 合并）
+
+本节随 `codex/ai-handoff-review` 的修复 PR 进入 main；PR 合并后，新开发以 **`origin/main`** 为起点。用户已授权修复两个验收问题并合并。此前的验收工具、AI 候选推荐及本次修复一并纳入；下方旧分支命令和“尚未推送/未合并”只代表历史。实际合并/CI 状态以 GitHub 对应 PR 和提交为准，不把文档中的计划当作成功记录。
+
+本次修复：AI 初次展示及手动刷新同时绑定当前 `run.json` 与 `diagnosis.json` 的指纹，报告/配置变化时清除推荐并要求重新读取；测量工具在建目录前拒绝输入报告树内输出，不能污染轻量报告包。建议快照新增 `run_sha256` 来源字段，原报告格式及训练文件不改；推荐模块不在正式冻结源码集合，此次修复不改变冻结集合，队友先前 AI 登记变更的版本约束仍保留。
+
+验收基线：对方 `cc0e9c6` 在本机 506 项测试中 505 通过、1 项权限跳过；COMSOL 6.3 对原六模型各只读加载两次，6/6 匹配开发预期，离线重算一致，原件哈希不变。本次修复的新增测试、最新全量结果和 19 项隐藏 Tk 实测见 `PROGRESS.md`；新证据为 `data/fixtures/ai_review_safety_smoke.json`，前三份 AI 记录保持原字节。四项快照回归只改临时合成报告，不改真实输入。本次没有重新求解或重采训练数据。
+
+合并后首次克隆使用 `git clone https://github.com/sssssding/Flowplot.git`，进入目录执行 `git lfs install`、`git lfs pull`，创建个人分支并按 `DEVELOPMENT.md` 安装依赖、运行只读预检和全量测试。已有仓库先保存自己的未提交工作，再操作：
+
+```powershell
+git fetch origin
+git switch -c codex/your-next-task origin/main
+git lfs pull
+python -X utf8 src/flowpilot/preflight.py
+python -X utf8 -m unittest discover -s tests -q
+```
+
+分支名只是示例，已存在时另选，不强制覆盖；需在项目依赖所在 Python 环境执行。推荐入口 `FlowPlotAI.cmd`，原入口 `FlowPlot.cmd` 保留；真实读模型需要本机 COMSOL 6.3 与适用许可证，已有核验报告可离线预览。outputs、日志、许可证/环境及新增 MPH 不上传，不整体分享本机验收目录。
+
+下一步仍为真实专业复核、真正独立模型集及跨硬件/新用户验收。三种受控几何配置的 36 条训练观测不是独立验证；AI 仅展示需本机副本验证的候选，不自动改模型或求解。不要因本次修复合并把 T13 正式性能门槛或专业验收标为完成。
+
+## 历史交接入口（2026-10-14：AI 推荐检验）
 
 本次按用户要求发布到 **`origin/codex/resume-acceptance`**，供同事检验；接手以本节为准，以下各节的“尚未推送”、旧分支和测试数都是历史记录。该分支包含 `16970c5`（初始推荐）、`16ddd29`（离线预览）和 `c3cae86`（特征迁移）及本次交接文档；最新提交号与发布状态以 Git 实际记录为准。没有合并 `main`、修改队友分支、创建 PR 或代发消息。
 

@@ -49,6 +49,9 @@ def benchmark(*, baseline, baseline_report, comsol_root, output_dir, timeout=300
     if output.exists() or output.is_symlink() or output.is_junction():
         raise FileExistsError("Use a new output directory")
     output = output.resolve()
+    report_root = loaded["directory"]
+    if output == report_root or report_root in output.parents:
+        raise CheckError("测量输出不能位于输入报告目录内，请选择独立的新目录。")
     output.mkdir(parents=True, exist_ok=False)
     (output/"models").mkdir()
     comsol = Path(comsol_root).resolve(strict=True)

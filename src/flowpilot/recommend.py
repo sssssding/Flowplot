@@ -158,12 +158,18 @@ def rank(model, source_sha256, *, cohort=None):
     return result
 
 
-def recommend_report(directory, model_path=None):
+def recommend_report(directory, model_path=None, *, expected_fingerprints=None):
     from flowpilot.portable_recommend import NOTICE as portable_notice, rank as portable_rank
     loaded = load_completed_check(directory)
+    # Bind the recommendation to the exact report snapshot shown by the UI,
+    # including settings/provenance changes for the same model file.
+    if expected_fingerprints is not None and expected_fingerprints != (
+            loaded["run_sha256"], loaded["diagnosis_sha256"]):
+        raise CheckError("报告内容或来源在展示期间变化，请重新读取报告后再推荐。")
     source = loaded["metadata"]["source"]["sha256"].lower()
+    provenance = {"run_sha256": loaded["run_sha256"], "diagnosis_sha256": loaded["diagnosis_sha256"]}
     if loaded["report"]["status"] != "checked" or loaded["report"]["findings"]:
-        return {"status": "unavailable", "source_sha256": source, "notice": portable_notice,
+        return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
                 "reason": "存在诊断问题或检查不完整，请先处理；推荐不得覆盖规则证据。", "ranking": [], "selected": None}
     raw = read_regular_file(model_path or DEFAULT_PORTABLE_MODEL, max_bytes=1024 * 1024)
     learned = decode_json(raw)
@@ -171,7 +177,7 @@ def recommend_report(directory, model_path=None):
               if isinstance(learned, dict) and learned.get("schema_version") == "solver-ranker-0.2"
               else rank(learned, source))
     result["learned_model_sha256"] = hashlib.sha256(raw).hexdigest()
-    result["diagnosis_sha256"] = loaded["diagnosis_sha256"]
+    result.update(provenance)
     return result
 
 

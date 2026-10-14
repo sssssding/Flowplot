@@ -119,14 +119,15 @@ class RecommendationTest(unittest.TestCase):
 
     def test_findings_partial_and_unsupported_never_recommend(self):
         for status, findings in (("checked", [{}]), ("partial", []), ("unsupported", [])):
-            loaded = {"metadata": {"source": {"sha256": "a"*64}}, "report": {"status": status, "findings": findings}}
+            loaded = {"metadata": {"source": {"sha256": "a"*64}}, "report": {"status": status, "findings": findings},
+                      "run_sha256": "c"*64, "diagnosis_sha256": "b"*64}
             with patch.object(ai, "load_completed_check", return_value=loaded), \
                     patch.object(ai, "read_regular_file", side_effect=AssertionError("Do not load ranker")):
                 self.assertEqual(ai.recommend_report("unused")["status"], "unavailable")
 
     def test_report_inference_binds_exact_loaded_model_bytes(self):
         loaded = {"metadata": {"source": {"sha256": BASELINE_HASH}}, "report": {"status": "checked", "findings": []},
-                  "diagnosis_sha256": "b"*64}
+                  "run_sha256": "c"*64, "diagnosis_sha256": "b"*64}
         with tempfile.TemporaryDirectory(dir=ROOT / "outputs") as directory:
             path = Path(directory) / "model.json"
             path.write_text(json.dumps(ai.fit(self.dataset)), encoding="utf-8")
@@ -149,9 +150,12 @@ class RecommendationTest(unittest.TestCase):
                          "e198aa2590e31e4a9440e5024ae6b1ee4922b0da8b0a8cac45a31f2e26634765")
         self.assertEqual(sha256(ROOT / "data/fixtures/ai_offline_preview_smoke.json"),
                          "5831daee73b34e695410172e03da515a7afcc1c319c7a672a9b96aaf94ca39e3")
-        record = ai.read_json(ROOT / "data/fixtures/ai_portable_smoke.json")
+        self.assertEqual(sha256(ROOT / "data/fixtures/ai_portable_smoke.json"),
+                         "fb8aca96815e6f85158768c1f9c9325562795f6eff22d3ffbdefd349ea3f6f9f")
+        record = ai.read_json(ROOT / "data/fixtures/ai_review_safety_smoke.json")
         self.assertTrue(record["all_passed"])
-        self.assertEqual(len(record["checks"]), 15)
+        self.assertEqual(len(record["checks"]), 19)
+        self.assertTrue(record["snapshot_regression_inputs_synthetic"])
         self.assertTrue(all(record["checks"].values()))
         self.assertFalse(record["solver_run_in_smoke"])
         self.assertFalse(record["visible_user_acceptance"])

@@ -34,6 +34,7 @@ class RecommendationApp(DesktopApp):
         self.ai_text = ScrolledText(self.ai_tab, wrap="word", font=("Microsoft YaHei UI", 10), padx=8, pady=8)
         self.ai_text.grid(row=1, column=0, sticky="nsew")
         self.ai_result = None
+        self._displayed_report_fingerprints = None
         self.set_ai_text("完成检查或读取已有报告后显示推荐。\n\n" + NOTICE)
 
     def set_ai_text(self, value):
@@ -44,6 +45,7 @@ class RecommendationApp(DesktopApp):
 
     def clear_result(self):
         super().clear_result()
+        self._displayed_report_fingerprints = None
         if hasattr(self, "ai_text"):
             self.ai_result = None
             self.set_ai_text("尚无有效报告，不展示旧推荐。\n\n" + NOTICE)
@@ -55,7 +57,8 @@ class RecommendationApp(DesktopApp):
 
     def show_result(self, loaded):
         super().show_result(loaded)
-        self.refresh_recommendation(expected=loaded)
+        self._displayed_report_fingerprints = (loaded["run_sha256"], loaded["diagnosis_sha256"])
+        self.refresh_recommendation()
 
     def choose_learned_model(self):
         if self.session.busy:
@@ -78,17 +81,17 @@ class RecommendationApp(DesktopApp):
             self.status.set("已有报告未能验证，未展示诊断或推荐。")
             raise
 
-    def refresh_recommendation(self, *, expected=None):
+    def refresh_recommendation(self):
         if self.session.busy:
             return
         self.ai_result = None
-        if self.current_view is None or self.artifact_directory is None:
+        if (self.current_view is None or self.artifact_directory is None
+                or self._displayed_report_fingerprints is None):
             self.set_ai_text("请先完成检查或读取有效报告。\n\n" + NOTICE)
             return
         try:
-            result = recommend_report(self.artifact_directory, self.learned_model)
-            if expected and result["source_sha256"] != expected["metadata"]["source"]["sha256"].lower():
-                raise ValueError("报告来源在展示期间变化，请重新读取报告。")
+            result = recommend_report(self.artifact_directory, self.learned_model,
+                                      expected_fingerprints=self._displayed_report_fingerprints)
             self.ai_result = result
             self.set_ai_text(render(result))
         except (OSError, ValueError, TypeError, KeyError, CheckError) as error:

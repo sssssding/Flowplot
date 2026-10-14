@@ -47,7 +47,7 @@ FlowPlot/
 
 ## 快速开始
 
-当前交接分支为 `codex/resume-acceptance`，包含尚未合并 main 的队友改进、验收工具和最新 AI 推荐原型。继续检验应从 `origin/codex/resume-acceptance` 建立自己的功能分支；稳定 main 和旧 `codex/acceptance-handoff` 不代表已包含本页全部新功能。先阅读 [协作接手说明](docs/HANDOFF.md) 顶部当前入口，再执行 [只读接手预检](docs/PREFLIGHT.md)，确认依赖与模型文件。说明包含拉取方式、运行命令、实测证据和未完成验收事项。
+本页随验收修复 PR 进入 main，合并后从 `origin/main` 建立自己的功能分支，包含验收工具、AI 推荐原型及报告快照/输入目录保护修复；实际合并状态以 GitHub PR 为准。旧交接分支保留作历史，不必在其上覆盖开发。先阅读 [协作接手说明](docs/HANDOFF.md) 顶部当前入口，再执行 [只读接手预检](docs/PREFLIGHT.md)，确认依赖与模型文件；专业、独立性能及新用户验收仍未完成。
 
 1. 阅读 [项目范围](docs/PROJECT_SCOPE.md) 和 [技术蓝图](docs/BLUEPRINT.md)。
 2. 按 [协作规范](docs/COLLABORATION.md) 创建 Issue 和功能分支。

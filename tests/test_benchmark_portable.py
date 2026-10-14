@@ -13,6 +13,8 @@ from flowpilot import benchmark_portable as bench
 from flowpilot import recommend as ai
 from flowpilot.check_model import CheckError,sha256
 from flowpilot.diagnostics import normalize
+from flowpilot.desktop_session import load_completed_check
+from flowpilot.report_package import export_package
 
 
 class BenchmarkTest(unittest.TestCase):
@@ -55,7 +57,7 @@ class BenchmarkTest(unittest.TestCase):
         (cwd/"solved.mph").write_bytes(b"synthetic"*40); (cwd/"batch.log").write_bytes(b"synthetic native log")
 
     def run_benchmark(self,runner=None):
-        loaded={"metadata":{"source":{"sha256":self.digest}},"report":{"status":"checked","findings":[],"model":self.diagnostic}}
+        loaded={"directory":self.root/"reports", "metadata":{"source":{"sha256":self.digest}},"report":{"status":"checked","findings":[],"model":self.diagnostic}}
         with patch.object(bench,"MANIFEST",self.manifest), patch.object(bench,"load_completed_check",return_value=loaded), \
                 patch.object(bench,"check_model",side_effect=self.inspect),patch.object(bench,"_run",side_effect=runner or self.simulate), \
                 patch.object(bench.time,"monotonic",side_effect=range(0,1000,10)):
@@ -89,6 +91,51 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(self.batch_solves,0)
         self.model.write_bytes(b"synthetic MPH"); self.output.mkdir()
         with self.assertRaises(FileExistsError): self.run_benchmark()
+
+    def write_report(self):
+        directory = self.root / "reports"
+        directory.mkdir()
+        report = {"schema_version": "diagnosis-0.1", "profile": "rectangular-channel-v1",
+                  "status": "checked", "findings": [], "model": self.diagnostic}
+        (directory / "diagnosis.json").write_text(json.dumps(report), encoding="utf-8")
+        metadata = {"schema_version": "check-run-0.1", "status": "completed",
+                    "source": {"filename": "base.mph", "sha256": self.digest},
+                    "diagnosis_status": "checked", "diagnosis_sha256": sha256(directory / "diagnosis.json")}
+        (directory / "run.json").write_text(json.dumps(metadata), encoding="utf-8")
+        return directory
+
+    def assert_input_tree_protected(self, report, output):
+        before = {p.relative_to(report): p.read_bytes() for p in report.rglob("*") if p.is_file()}
+        with patch.object(bench, "MANIFEST", self.manifest), patch.object(bench, "_run") as run:
+            with self.assertRaisesRegex(CheckError, "输入报告目录"):
+                bench.benchmark(baseline=self.model, baseline_report=report, comsol_root=self.comsol, output_dir=output)
+            run.assert_not_called()
+        self.assertFalse(output.exists())
+        self.assertEqual(before, {p.relative_to(report): p.read_bytes() for p in report.rglob("*") if p.is_file()})
+        load_completed_check(report)
+
+    def test_new_output_inside_regular_report_is_rejected_before_writes(self):
+        report = self.write_report()
+        self.assert_input_tree_protected(report, report / "new-output")
+
+    def test_new_output_inside_report_package_is_rejected_without_pollution(self):
+        report = export_package(self.write_report(), self.root / "package")
+        self.assert_input_tree_protected(report, report / "new-output")
+
+    def test_deep_nested_output_does_not_create_parents_in_input_tree(self):
+        report = self.write_report()
+        self.assert_input_tree_protected(report, report / "new-parent" / "new-output")
+        self.assertFalse((report / "new-parent").exists())
+
+    def test_resolved_output_alias_cannot_bypass_input_tree_check(self):
+        report = self.write_report()
+        alias = self.root / "output-alias"
+        original = Path.resolve
+        def resolve(path, *args, **kwargs):
+            return report / "new-output" if path == alias else original(path, *args, **kwargs)
+        with patch.object(Path, "resolve", resolve):
+            self.assert_input_tree_protected(report, alias)
+        self.assertFalse((report / "new-output").exists())
 
 
 if __name__=="__main__": unittest.main()

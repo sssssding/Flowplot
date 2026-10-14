@@ -2,6 +2,8 @@
 
 ## 环境
 
+验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。
+
 - COMSOL Multiphysics 6.3，已验证构建号 290。
 - PowerShell 7（Windows）。
 - Python 3.12 64 位（当前验证环境），以及 `requirements-dev.txt` 中的 JSON Schema 验证依赖。

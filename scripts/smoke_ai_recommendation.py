@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import copy
+import json
 from pathlib import Path
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -11,6 +14,7 @@ from flowpilot.check_model import _write_json, sha256
 from flowpilot.desktop_session import load_completed_check
 from flowpilot.recommend import read_json
 from flowpilot.recommend_ui import RecommendationApp
+from flowpilot.diagnostics import check
 
 
 def main():
@@ -56,9 +60,42 @@ def main():
         else:
             raise AssertionError("Missing report must be rejected")
         tests["invalid_preview_clears_old_recommendation"] = app.ai_result is None and app.current_view is None
+        app.learned_model = args.learned_model
+        # Only mutate our own temporary report, never the real input reports.
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            run_bytes = (args.reports_root / "baseline/run.json").read_bytes()
+            diagnosis_bytes = (args.reports_root / "baseline/diagnosis.json").read_bytes()
+            (directory / "run.json").write_bytes(run_bytes)
+            (directory / "diagnosis.json").write_bytes(diagnosis_bytes)
+            app.open_report(directory)
+            metadata = copy.deepcopy(baseline["metadata"])
+            metadata["finished_at"] = "synthetic metadata change for snapshot regression"
+            (directory / "run.json").write_text(json.dumps(metadata), encoding="utf-8")
+            app.refresh_recommendation()
+            tests["metadata_change_blocks_manual_refresh"] = app.ai_result is None and "重新读取报告" in app.ai_text.get("1.0", "end")
+            warning = {"model": baseline["report"]["model"], **check(baseline["report"]["model"], reynolds_warning=100)}
+            (directory / "diagnosis.json").write_text(json.dumps(warning), encoding="utf-8")
+            metadata["diagnosis_sha256"] = sha256(directory / "diagnosis.json")
+            metadata["diagnosis_status"] = warning["status"]
+            metadata["settings"] = {"reynolds_warning": 100}
+            (directory / "run.json").write_text(json.dumps(metadata), encoding="utf-8")
+            old_warning = load_completed_check(directory)
+            app.refresh_recommendation()
+            tests["diagnosis_change_blocks_manual_refresh"] = app.ai_result is None and "重新读取报告" in app.ai_text.get("1.0", "end")
+            (directory / "run.json").write_bytes(run_bytes)
+            (directory / "diagnosis.json").write_bytes(diagnosis_bytes)
+            app.show_result(old_warning)
+            tests["old_warning_cannot_show_new_recommendation"] = (app.ai_result is None
+                and any(item["code"] == "REYNOLDS_RISK" for item in app.current_view["items"]))
+            app.open_report(directory)
+            tests["explicit_reread_restores_matching_recommendation"] = (app.ai_result["status"] == "recommended"
+                and app.ai_result["run_sha256"] == baseline["run_sha256"]
+                and app.ai_result["diagnosis_sha256"] == baseline["diagnosis_sha256"])
         result = {"schema_version": "ai-functional-smoke-0.1", "mode": "hidden-tk-existing-real-reports",
                   "all_passed": all(tests.values()), "checks": tests, "solver_run_in_smoke": False,
                   "visible_user_acceptance": False, "independent_performance_validation": False,
+                  "snapshot_regression_inputs_synthetic": True,
                   "source_sha256": {p: sha256(ROOT / p) for p in ("src/flowpilot/recommend.py",
                       "src/flowpilot/portable_recommend.py", "src/flowpilot/benchmark_portable.py", "src/comsol/PortableFamily.java",
                       "src/flowpilot/acceptance_dataset.py", "data/fixtures/ai_development_registry.json",
