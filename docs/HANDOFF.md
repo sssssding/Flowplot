@@ -1,5 +1,52 @@
 # 协作接手说明（更新至 2026-10-14）
 
+## 当前交接入口（2026-10-14：AI 推荐检验）
+
+本次按用户要求发布到 **`origin/codex/resume-acceptance`**，供同事检验；接手以本节为准，以下各节的“尚未推送”、旧分支和测试数都是历史记录。该分支包含 `16970c5`（初始推荐）、`16ddd29`（离线预览）和 `c3cae86`（特征迁移）及本次交接文档；最新提交号与发布状态以 Git 实际记录为准。没有合并 `main`、修改队友分支、创建 PR 或代发消息。
+
+### 拉取与启动
+
+新电脑需要 Git/Git LFS 和带 Tcl/Tk 的 Python（已验证 3.12/3.13）。以下为 Windows 示例；个人分支已存在时另选名字，不强制覆盖：
+
+```powershell
+git lfs install
+git clone --branch codex/resume-acceptance https://github.com/sssssding/Flowplot.git
+cd Flowplot
+git lfs pull
+git switch -c codex/colleague-ai-review
+python -m venv .venv
+./.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/preflight.py
+./.venv/Scripts/python.exe -X utf8 -m unittest discover -s tests -q
+./FlowPlotAI.cmd
+```
+
+已有仓库：先查看 `git status` 并保存自己的未提交工作，确认干净后 `git fetch origin`，从 `origin/codex/resume-acceptance` 新建自己的检验分支，再执行 LFS、依赖与测试步骤。不要从旧 `codex/acceptance-handoff` 或 `main` 判断本轮 AI 功能。提交前本机全量 506 项：505 通过、1 项真实符号链接权限跳过；远端 Actions 状态需查看对应提交，不把本机通过当作 CI 已通过。
+
+### 同事检验范围
+
+- 默认使用 `data/ai/portable_ranker.json`：按尺寸、Re 和长宽比推荐相对容差/线程候选，不绑定固定文件哈希或机器；检查 CPU 数不足时过滤线程候选。
+- 检查异常/不完整报告、已知严格参考失败模型、超出训练覆盖或版本不匹配时拒绝推荐；打开无效报告后不得留下旧推荐。
+- 核对界面中文说明、离线报告预览和“不自动改模型、不自动求解”的行为。隐藏 Tk 的 15 项流程已通过，但可见界面/新用户检验仍需同事完成。
+- 建议全部需要本机副本验证；训练仅为同一受控二维矩形层流模型族的三种几何配置、36 条实测记录，不是三种独立模型。没有第二台机器真实速度优势或独立性能验收结论。适用范围与重新采集方法见 [AI_PORTABILITY.md](AI_PORTABILITY.md)。
+- 旧 0.1 文件可显式选择，仍有旧的文件/机器限制；不要用旧行为判断默认 0.2 是否生效。正式验收的程序/开发样本指纹已有更新，旧冻结须重新核验，不手改证据哈希。
+
+本次只共享源码、文档、测试和小型学习/功能摘要；本机 `outputs`、原生日志、环境、许可证及新增 MPH 副本不上传。仓库原有六个模型通过 LFS 获取；本机原基准的未提交修改不包含在交接中。
+
+要检验真实文件，在有 COMSOL 6.3 和适用许可证的 Windows 电脑读取仓库基准，生成自己的报告（每次使用新输出目录）：
+
+```powershell
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/check_model.py models/baseline_pipe_2d_laminar.mph --comsol-root '<本机 Multiphysics 安装目录>' --output-dir outputs/colleague-ai/check-001 --loads 2
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/recommend.py recommend --report outputs/colleague-ai/check-001
+./FlowPlotAI.cmd --report outputs/colleague-ai/check-001
+```
+
+检查入口只读、不重新求解。已有核验报告的离线推荐/预览不需 COMSOL；交出方本机报告路径不能直接在接收电脑使用。跨平台推理反例已测，但 Linux/macOS 的实际 COMSOL 驱动及跨硬件性能尚未实测。
+
+## 历史记录说明
+
+以下保留各轮原始状态，当前拉取分支和检验范围以顶部 2026-10-14 交接入口为准。
+
 ## 本地跨环境推荐扩展（尚未推送）
 
 在 `codex/resume-acceptance` 继续用户要求的通用环境改进。默认升级为按 SI 模型特征与相对耗时匹配的 0.2 文件 `portable_ranker.json`，不再硬性匹配单一文件或机器；旧 0.1 文件可显式选择，历史证据保留。适用范围、原网格失败/副本细化、CPU/版本/覆盖拒绝及重新采集方法见 [AI_PORTABILITY.md](AI_PORTABILITY.md)。所有迁移建议都需本机副本验证，未宣称跨硬件加速或独立性能通过。
