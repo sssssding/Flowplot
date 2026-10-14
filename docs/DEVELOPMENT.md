@@ -133,7 +133,11 @@ python -m venv .venv
 
 正式结果需要交给另一台电脑重算时，使用 [证据交接包](ACCEPTANCE_BUNDLE.md) 的 `acceptance_bundle.py export / verify`。导出须显式 `--include-models`，只复制到新目录，不自动上传；接收方先核对完整性再重算，不能只信包内中文摘要。包包含冻结 MPH 和审核信息，与桌面轻量单模型报告包严格区分；测试均为模拟输入，不补造真实独立验收集。
 
-## API 参考
+## 本地 AI 推荐原型
+
+使用 `FlowPlotAI.cmd`，或 `python src/flowpilot/recommend_ui.py`，在原检查流程上增加推荐页签。独立副本校准、学习模型构建与离线推荐见 [AI_RECOMMENDATION.md](AI_RECOMMENDATION.md)。仅校准入口实际求解；训练、推理和读取报告不调用 COMSOL。不使用开发基准的重复测量宣称独立模型推荐达标。
+
+## API 参考（原只读功能）
 
 - [COMSOL 6.3 Named selections](https://doc.comsol.com/6.3/doc/com.comsol.help.comsol/comsol_api_general.47.56.html)
 - 本机 COMSOL 帮助：Java API、Stationary solver 与 COMSOL Commands on Windows。
