@@ -1,0 +1,754 @@
+{
+  "schema_version": "solver-ranker-0.1",
+  "method": "knn-log-runtime-v1",
+  "k": 3,
+  "dataset": {
+    "schema_version": "solver-calibration-0.1",
+    "status": "completed",
+    "repeats": 3,
+    "source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "environment_id": "2059ab40fa8918742bfe13f2bbab781ee9cf721d257868c998664e0becffdafa",
+    "sources": {
+      "driver": "6467f483afebbbab9c19bd49032bf1764bdf8e9f37944a3ddff0d75dffcc4540",
+      "reference": "cd98b68ff2b554434a63ef82faab28afc67274658be3fd35085318a626bd0dbf"
+    },
+    "started_at": "2026-10-14T02:55:48.562468+00:00",
+    "observations": [
+      {
+        "candidate": {
+          "id": "strict-1",
+          "stol": 1e-06,
+          "threads": 1
+        },
+        "repeat": 1,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 8.3459227,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264,
+            "mass_relative_error": 0.0008298571656776074
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.1396360167816173e-16,
+            "max_speed_m_s": 0.0,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.7887425596180651e-16
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 40.73500000000058,
+        "solved_sha256": "9be81e78a2a02f8fba8529dbce318658298e7f451a79c49e7f50e6908a19e6f0",
+        "console_sha256": "f3d13201bfa1603b388a68ccfeec7933beafe2508aa93c4f23a41e840f91d655",
+        "batch_sha256": "5c93c2e00f466794e8f676e25148085b4b53c7bee8cf00c5f50df45ce059e73d"
+      },
+      {
+        "candidate": {
+          "id": "strict-2",
+          "stol": 1e-06,
+          "threads": 2
+        },
+        "repeat": 1,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 4.6694219,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317322,
+            "max_speed_m_s": 0.01442654560428405,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317322,
+            "max_speed_m_s": 0.01442654560428405,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263,
+            "mass_relative_error": 0.000829857165677949
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 2.2792720335632345e-16,
+            "max_speed_m_s": 1.2024524259374123e-16,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.0
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 34.75,
+        "solved_sha256": "534e2de55974b09fe38eac3d218af551c9d5fbb6fae582f6c07c303cfdd8c10b",
+        "console_sha256": "f75e75e9cd4acb37714d4ada18377a08ec74b4d7bd5489c0c306fdf3aa883047",
+        "batch_sha256": "d795eaa0814020cb9c41ef1c04a7669ec518a9d081b8c170f250646dc8c86490"
+      },
+      {
+        "candidate": {
+          "id": "balanced-2",
+          "stol": 1e-05,
+          "threads": 2
+        },
+        "repeat": 1,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 5.1412283,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954440768379,
+            "max_speed_m_s": 0.01442654268950082,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291384
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954440768379,
+            "max_speed_m_s": 0.01442654268950082,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291384,
+            "mass_relative_error": 0.0008298583039226612
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.139190305135454e-09,
+            "max_speed_m_s": 2.0204304706318222e-07,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.2087538820207472e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 34.203999999997905,
+        "solved_sha256": "757794251b19cf838cf3654c53267cdb291a11581296390c64428731cd761aba",
+        "console_sha256": "32a70f1f1c7f6e07fbdce8afc7f5e5932bfe4a9233880ee53b108e9e07c91dd0",
+        "batch_sha256": "c088865002960e9f4e13c63b5a67e5cbe4310ac24020f2129e51f7d924b3a6de"
+      },
+      {
+        "candidate": {
+          "id": "loose-2",
+          "stol": 0.0001,
+          "threads": 2
+        },
+        "repeat": 1,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 4.3115067,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709543979815023,
+            "max_speed_m_s": 0.014426518355283989,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492122
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709543979815023,
+            "max_speed_m_s": 0.014426518355283989,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492122,
+            "mass_relative_error": 0.0008298670807179062
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 9.923275085830779e-09,
+            "max_speed_m_s": 1.8888097546510313e-06,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 9.642447925033416e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 31.01600000000326,
+        "solved_sha256": "1ce5f7aaeeb284b1ee734e0c27a0dadde09e58592e0a873d6188501ec6457cab",
+        "console_sha256": "73094e8cabe27459b2c622e590ffc913e98ffd1175afbbf13ad6d1c13ec7818d",
+        "batch_sha256": "326c09fbbd4817eb5162826abe5bd0aa5268247644eed94a8c61dfb2404dd40a"
+      },
+      {
+        "candidate": {
+          "id": "strict-2",
+          "stol": 1e-06,
+          "threads": 2
+        },
+        "repeat": 2,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 5.5911025,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544463173227,
+            "max_speed_m_s": 0.014426545604284049,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544463173227,
+            "max_speed_m_s": 0.014426545604284049,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263,
+            "mass_relative_error": 0.0008298571656778351
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.1396360167816173e-16,
+            "max_speed_m_s": 2.4049048518748246e-16,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.0
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 32.09300000000076,
+        "solved_sha256": "3fc03d7e131faba33c800d60d223ff5a85ab2444701b23177f1684b9faab8758",
+        "console_sha256": "7a56f20abac7aabba004559971d21f2058607cd6ae2bfcba3d92b5a123edeb43",
+        "batch_sha256": "ac9345ad45256181028a35b3f35676ef2adf8a3e835a863b05d58303d50b04f3"
+      },
+      {
+        "candidate": {
+          "id": "balanced-2",
+          "stol": 1e-05,
+          "threads": 2
+        },
+        "repeat": 2,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 5.202326,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954440768377,
+            "max_speed_m_s": 0.014426542689500818,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291384
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954440768377,
+            "max_speed_m_s": 0.014426542689500818,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291384,
+            "mass_relative_error": 0.0008298583039231166
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.1391907609898607e-09,
+            "max_speed_m_s": 2.0204304718342746e-07,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.2087538820207472e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 31.57800000000134,
+        "solved_sha256": "d5052d4ed5dfc05fced2d43240f62a8539d56880524c000219bdd322a5fc43a7",
+        "console_sha256": "e4ab98015e4c871da98de0b311479c16f104fb87836cb9b6567858693e6f7942",
+        "batch_sha256": "2f0153ca579af044a1e51cbb9722b22b87116726d7bc0b77d88c873f64a9320d"
+      },
+      {
+        "candidate": {
+          "id": "loose-2",
+          "stol": 0.0001,
+          "threads": 2
+        },
+        "repeat": 2,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 4.604932,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954397981503,
+            "max_speed_m_s": 0.014426518355283982,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492123
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954397981503,
+            "max_speed_m_s": 0.014426518355283982,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492123,
+            "mass_relative_error": 0.0008298670807177923
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 9.923274971867178e-09,
+            "max_speed_m_s": 1.8888097551320121e-06,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 9.642447926822159e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 32.17199999999866,
+        "solved_sha256": "ba0a55853a4c91dd24d6f02562ffa02bf6c5334b024d54b82de143c6d45b5db8",
+        "console_sha256": "2e78a5c82bb1a57d8b57161ab8d44139030d6f2060b13b70caa557b509aae443",
+        "batch_sha256": "e1d6a33a3ae1aa9837e55a3915ce6e2748511f6c64c8402f7b7bf679f6930977"
+      },
+      {
+        "candidate": {
+          "id": "strict-1",
+          "stol": 1e-06,
+          "threads": 1
+        },
+        "repeat": 2,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 6.4643169,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264,
+            "mass_relative_error": 0.0008298571656776074
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.1396360167816173e-16,
+            "max_speed_m_s": 0.0,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.7887425596180651e-16
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 35.625,
+        "solved_sha256": "a76745a948a727297848c94032200a6014f3ef026466177a2e4af95cb453dd50",
+        "console_sha256": "41f539c560f4d2a70739c1b42a6c03a28865def4b9873abe9bc0bbd6375a2b9d",
+        "batch_sha256": "a19d00147f47cfcf4e93c73df5e181fa6ea94949b2b2117fca16757b828fea63"
+      },
+      {
+        "candidate": {
+          "id": "balanced-2",
+          "stol": 1e-05,
+          "threads": 2
+        },
+        "repeat": 3,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 5.1335161,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544407683775,
+            "max_speed_m_s": 0.014426542689500811,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291385
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544407683775,
+            "max_speed_m_s": 0.014426542689500811,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758405149291385,
+            "mass_relative_error": 0.0008298583039230028
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.139190647026259e-09,
+            "max_speed_m_s": 2.0204304766440843e-07,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.20875388380949e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 31.577999999994063,
+        "solved_sha256": "4de16d33c81a183ff3c337bc153b6df8481a483aea85b4c9c03b5ea4d97d7eca",
+        "console_sha256": "8c107eb30b0a13e6a2a53ee9199dad3b9c075254575027c71bec600376dbab42",
+        "batch_sha256": "aac8e4a7aa56bc7df7be2360da4a92d26858fdf86a52a0ca7aab9185de732a93"
+      },
+      {
+        "candidate": {
+          "id": "loose-2",
+          "stol": 0.0001,
+          "threads": 2
+        },
+        "repeat": 3,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 5.3993465,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709543979815023,
+            "max_speed_m_s": 0.014426518355283989,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492126
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709543979815023,
+            "max_speed_m_s": 0.014426518355283989,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758411692492126,
+            "mass_relative_error": 0.0008298670807179062
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 9.923275085830779e-09,
+            "max_speed_m_s": 1.8888097546510313e-06,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 9.642447930399645e-07
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 35.29699999999866,
+        "solved_sha256": "c5fbd73da3e219406a1c0aac5b64a7c991060e6c2705a332e2304d344b49123d",
+        "console_sha256": "68219cadb26f0ca6a4a91f4c28d15518adfa3d4a2a436404e7d6e89cf618616a",
+        "batch_sha256": "1eae4b788be52511a1fe277010053d8ba5cff69134d9c87a71f749383ecd2a90"
+      },
+      {
+        "candidate": {
+          "id": "strict-1",
+          "stol": 1e-06,
+          "threads": 1
+        },
+        "repeat": 3,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 7.8561644,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.4870954446317324,
+            "max_speed_m_s": 0.014426545604284052,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491264,
+            "mass_relative_error": 0.0008298571656776074
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 1.1396360167816173e-16,
+            "max_speed_m_s": 0.0,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 1.7887425596180651e-16
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 40.03100000000268,
+        "solved_sha256": "015e8393186886e64e864a9dd490c3dd1e90c8123e3759aaedfbd43a1dc808cf",
+        "console_sha256": "c90478c5f84f53e004175e519555ac0d89078ea26159b6556accfe2aa91bfe42",
+        "batch_sha256": "30d3e99801c054b41a85ff5335c8187af1b1cbed7f757f44514daba35d25b72c"
+      },
+      {
+        "candidate": {
+          "id": "strict-2",
+          "stol": 1e-06,
+          "threads": 2
+        },
+        "repeat": 3,
+        "evidence": {
+          "schema_version": "baseline-solve-0.1",
+          "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+          "solution_cleared_before_solve": true,
+          "solution_present_after_solve": true,
+          "solver_run": true,
+          "solver_tag": "sol1",
+          "solve_seconds": 6.2160401,
+          "solver_warning": "",
+          "solver_error": "",
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544463173216,
+            "max_speed_m_s": 0.014426545604284049,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263
+          }
+        },
+        "analysis": {
+          "metrics": {
+            "mass_in_kg_m_s": 0.4875000000000002,
+            "mass_out_kg_m_s": 0.48709544463173216,
+            "max_speed_m_s": 0.014426545604284049,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.07758404211491263,
+            "mass_relative_error": 0.0008298571656780629
+          },
+          "reference_relative_drift": {
+            "mass_in_kg_m_s": 0.0,
+            "mass_out_kg_m_s": 3.4189080503448523e-16,
+            "max_speed_m_s": 2.4049048518748246e-16,
+            "wall_interior_speed_m_s": 0.0,
+            "min_u_m_s": 0.0,
+            "pressure_drop_pa": 0.0
+          },
+          "engineering_checks": {
+            "positive_mass_flow": true,
+            "mass_balance_below_1e_3": true,
+            "max_speed_in_baseline_range": true,
+            "wall_interior_speed_below_1e_8": true,
+            "no_reverse_u_above_tolerance": true,
+            "positive_pressure_drop": true,
+            "no_solver_error": true,
+            "historical_metrics_within_1e_5": true
+          },
+          "engineering_checks_passed": true
+        },
+        "process_seconds": 37.51600000000326,
+        "solved_sha256": "32d03b10887a35bc8fe298ffc033df95e53dd0cfc247d1ed3a818a18f5149494",
+        "console_sha256": "0e61dc760d8941c29cedf035201eda81edb9f59bbd951fb20ebb65620ee38422",
+        "batch_sha256": "2ede7cea4c259996fae445c5ecf61ef0f17e748b02f30ad0e50a7ea6bf0e3c35"
+      }
+    ],
+    "finished_at": "2026-10-14T03:03:29.123875+00:00"
+  },
+  "independent_validation": false,
+  "expert_review": "pending"
+}

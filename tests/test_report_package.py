@@ -55,6 +55,8 @@ class ReportPackageTest(unittest.TestCase):
         self.assertEqual(loaded["view"]["items"][0]["code"], "MISSING_INLET")
         self.assertIn("声明边界", (directory / "overview.txt").read_text(encoding="utf-8"))
         self.assertIn("不证明物理正确", (directory / "report.md").read_text(encoding="utf-8"))
+        self.assertTrue((directory / "report.md").read_text(encoding="utf-8").startswith("# FlowPlot 协作检查报告"))
+        self.assertTrue((directory / "README.md").read_text(encoding="utf-8").startswith("# FlowPlot 协作报告包"))
 
     def test_fixed_allowlist_excludes_models_logs_paths_and_untrusted_markdown(self):
         package.export_package(self.source, self.output)

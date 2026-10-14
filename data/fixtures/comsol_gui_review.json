@@ -1,0 +1,111 @@
+{
+  "schema_version": "comsol-gui-review-0.1",
+  "date": "2026-10-13",
+  "reviewer_kind": "coding_agent",
+  "expert_review_status": "pending",
+  "expert_reviewed_by": null,
+  "expert_reviewed_date": null,
+  "independent_acceptance_set": false,
+  "solver_run": false,
+  "model_saved": false,
+  "role_specific_gui_review_complete": true,
+  "original_local_modification_preserved": true,
+  "baseline_plots": {
+    "gui_viewed": true,
+    "original_source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "review_model_sha256": "7dbe9e35b33fe8cfef74b31a35789d4aace0217378f18ae7a6255b0dc76fe405",
+    "solution_tag": "sol1",
+    "surface_expression": "spf.U",
+    "surface_unit": "m/s",
+    "profiles_x_m": [0.1, 0.25, 0.5, 0.9],
+    "profile_x_axis": "y/H",
+    "profile_y_axis": "velocity x-component (m/s)"
+  },
+  "cases": [
+    {
+      "case_id": "missing_inlet",
+      "gui_status": "partial",
+      "sha256": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+      "inlet_node_present": false,
+      "outlet_declared_boundary_ids": [4],
+      "outlet_effective_boundary_ids": [4],
+      "outlet_mode": "PressureNoViscousStress",
+      "outlet_pressure_expression": "p_out",
+      "outlet_pressure_unit": "Pa",
+      "wall_declared_boundary_ids": [1, 2, 3, 4],
+      "wall_effective_boundary_ids": [1, 2, 3],
+      "wall_mode": "NoSlip",
+      "save_prompt_resolution": "user_confirmed_no_save"
+    },
+    {
+      "case_id": "missing_outlet",
+      "gui_status": "partial",
+      "sha256": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+      "outlet_node_present": false,
+      "inlet_declared_boundary_ids": [1],
+      "inlet_effective_boundary_ids": [1],
+      "inlet_mode": "Velocity",
+      "inlet_component_mode": "NormalInflowVelocity",
+      "inlet_velocity_expression": "Uin",
+      "inlet_velocity_unit": "m/s",
+      "inlet_velocity_value_m_s": 0.01,
+      "wall_declared_boundary_ids": [1, 2, 3, 4],
+      "wall_effective_boundary_ids": [2, 3, 4],
+      "wall_mode": "NoSlip",
+      "parameters": {
+        "length_m": 1,
+        "height_m": 0.05,
+        "density_kg_m3": 1000,
+        "dynamic_viscosity_pa_s": 0.001,
+        "outlet_gauge_pressure_pa": 0,
+        "nominal_re_h": 500
+      },
+      "save_prompt_resolution": "user_confirmed_no_save"
+    },
+    {
+      "case_id": "selection_overlap",
+      "gui_status": "partial",
+      "sha256": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+      "nodes": [
+        {"gui_label": "Velocity Inlet", "declared_boundary_ids": [1], "effective_boundary_ids": [], "mode": "Velocity", "expression": "Uin", "unit": "m/s"},
+        {"gui_label": "Pressure Outlet", "declared_boundary_ids": [4], "effective_boundary_ids": [4], "mode": "PressureNoViscousStress", "expression": "p_out", "unit": "Pa"},
+        {"gui_label": "出口", "declared_boundary_ids": [1], "effective_boundary_ids": [1], "mode": "PressureNoViscousStress", "expression": "p_out", "unit": "Pa"},
+        {"gui_label": "No-Slip Walls", "declared_boundary_ids": [1, 2, 3, 4], "effective_boundary_ids": [2, 3], "mode": "NoSlip"}
+      ],
+      "save_prompt_resolution": "user_confirmed_no_save"
+    },
+    {
+      "case_id": "reversed_inlet",
+      "gui_status": "partial",
+      "sha256": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+      "inlet_velocity_value_m_s": -0.01,
+      "inlet_component_mode": "NormalInflowVelocity",
+      "gui_signed_re_h": -500,
+      "diagnostic_absolute_re_h": 500,
+      "nodes": [
+        {"gui_label": "Velocity Inlet", "declared_boundary_ids": [1], "effective_boundary_ids": [1], "mode": "Velocity", "expression": "Uin", "unit": "m/s"},
+        {"gui_label": "Pressure Outlet", "declared_boundary_ids": [4], "effective_boundary_ids": [4], "mode": "PressureNoViscousStress", "expression": "p_out", "unit": "Pa"},
+        {"gui_label": "No-Slip Walls", "declared_boundary_ids": [1, 2, 3, 4], "effective_boundary_ids": [2, 3], "mode": "NoSlip"}
+      ],
+      "save_prompt_pending_at_recording": true
+    },
+    {
+      "case_id": "high_reynolds",
+      "gui_status": "partial",
+      "sha256": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+      "opened_in_separate_window": true,
+      "inlet_velocity_value_m_s": 0.1,
+      "inlet_component_mode": "NormalInflowVelocity",
+      "gui_signed_re_h": 5000,
+      "diagnostic_absolute_re_h": 5000,
+      "flow_compressibility": "Incompressible",
+      "turbulence_model": "None",
+      "nodes": [
+        {"gui_label": "Velocity Inlet", "declared_boundary_ids": [1], "effective_boundary_ids": [1], "mode": "Velocity", "expression": "Uin", "unit": "m/s"},
+        {"gui_label": "Pressure Outlet", "declared_boundary_ids": [4], "effective_boundary_ids": [4], "mode": "PressureNoViscousStress", "expression": "p_out", "unit": "Pa"},
+        {"gui_label": "No-Slip Walls", "declared_boundary_ids": [1, 2, 3, 4], "effective_boundary_ids": [2, 3], "mode": "NoSlip"}
+      ]
+    }
+  ],
+  "note": "GUI observations only. All five cases have role-specific node observations; partial means not a full model or professional review. High-reynolds was opened separately without touching the reversed-inlet save dialog. GUI labels are not internal tags. No professional or independent acceptance claimed."
+}

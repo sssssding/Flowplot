@@ -2,6 +2,8 @@
 
 ## 环境
 
+验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。
+
 - COMSOL Multiphysics 6.3，已验证构建号 290。
 - PowerShell 7（Windows）。
 - Python 3.12 64 位（当前验证环境），以及 `requirements-dev.txt` 中的 JSON Schema 验证依赖。
@@ -81,13 +83,21 @@ python -m venv .venv
 
 使用 [批量检查入口](BATCH_CHECK.md) 对清单中的模型串行只读检查，或直接复核已有报告。汇总区分完整检查覆盖率、模型级 code 集合匹配和独立验收资格；未审核的开发标签不能变成独立 Recall 结论。
 
+评分资格现在额外复用真正冻结门槛和全部开发登记，旧条件不足时保留开发指标但阻止独立达标声明，见 [资格一致性](ACCEPTANCE_ELIGIBILITY.md)。这会改变 `check_suite.py` 字节指纹；旧冻结/正式记录不能手改哈希升级。当前隐藏桌面来源绑定以 `desktop_smoke_eligibility_gate.json` 的新实测为准，旧摘要保留历史。
+
+后续 [批量稳定性加固](BATCH_STABILITY.md) 增加同字节清单绑定、前后来源/报告核对及实际输出复核；检测到变化或写入失败不发布成功终态。当前隐藏桌面来源绑定以更新的 `desktop_smoke_batch_stability.json` 为准，前两份记录保留历史。正式读取器验证新增可选绑定，但不补造旧记录的稳定性证明。
+
+最新 [报告目录边界](REPORT_BOUNDARIES.md) 要求收到的普通/协作报告根目录为实际目录，通用/正式运行输出在输入报告树之外，创建目录前检查；运行中目录变链接失败停止。当前来源记录为 `desktop_smoke_report_boundaries.json`，前三份桌面证据原样保留；本轮无规则、Java 或模型改动，涉及的正式源码指纹不可手改旧记录适配。
+
+当前 [轻量协作包导出](REPORT_PACKAGE.md) 另补容量预检和最终重新导入/快照一致性检查。`report_package.py` 不属于正式冻结源码集合，本轮不改变冻结版本。此次未重跑 COMSOL；来源验证分层保留 `desktop_smoke_report_boundaries.json` 的未变模块记录，并使用 `report_export_offline_smoke.json` 核对当前导出模块和六份旧报告的离线隐藏窗口/新包往返。四份旧完整桌面摘要不改字节，不把本轮离线检查说成新 COMSOL 或按钮集成运行。
+
 ## 受控模型变体回归
 
 使用 [真实变体入口](REGRESSION_FAMILY.md) 在新目录生成 14 个未求解 COMSOL 模型，随后走正式批量检查，核对问题集合、尺寸、SI 求值和空选择证据。输入基准固定哈希；尺寸重建后更新坐标选择，不硬编码边界编号。独立验收标记始终为 false，不能把这些开发数据用于声明独立 Recall 或 AI 推荐成绩。阈值规则变动后，应重跑原六模型及桌面流程，保留历史失败结果，不改旧指纹。
 
 ## 本地桌面检查
 
-桌面操作见 [本地桌面界面](DESKTOP.md)：双击 `FlowPilot.cmd` 或运行 `python src/flowpilot/desktop.py`。桌面调用同一个只读入口，通过独立会话和取消请求控制自己的后台进程；新增离线测试不依赖 Tk 窗口，真实隐藏窗口集成测试另行运行。
+桌面操作见 [本地桌面界面](DESKTOP.md)：双击 `FlowPlot.cmd`（旧 `FlowPilot.cmd` 兼容）或运行 `python src/flowpilot/desktop.py`。桌面调用同一个只读入口，通过独立会话和取消请求控制自己的后台进程；新增离线测试不依赖 Tk 窗口，真实隐藏窗口集成测试另行运行。内部包与环境变量不改名，历史证据处理见 [命名约定](NAMING.md)。
 
 阶段提示读取有大小限制的 `progress.jsonl`，忽略残缺/异常条目，不以进度事件判定成功。窗口记录保存失败按失败收尾，取消请求保存失败保持运行并允许重试；相关异常通过离线故障注入测试覆盖，不需要修改安装或目录权限。
 
@@ -111,7 +121,25 @@ python -m venv .venv
 
 报告消费入口统一走 [共同报告核验](REPORT_VALIDATION.md)，批量可额外限制来源，但不能降低条目结构/状态一致性或绕过协作包校验。共享字节读取在 `report_io.py`，不要解析后另读文件计算来源指纹。相应离线合成记录测试与真实隐藏窗口证据分开，改动读取模块后需更新桌面实测源码指纹。
 
-## API 参考
+## 正式验收集的冻结与核验
+
+准备清单时先用 [草稿只读预检](ACCEPTANCE_PREFLIGHT.md) 的 `acceptance_preflight.py --manifest ... --model-root ... [--json]`，查看多字段缺项及逐模型状态。入口只读且复用真正冻结门槛，不产生模型/审核数据、冻结目录或验收成绩；0 仅表示可进入准备，2 为待补，1 为输入/登记无效。
+
+按 [验收集冻结](ACCEPTANCE_FREEZE.md) 使用 `acceptance_dataset.py freeze / verify / run`。输入来自真实专业审核，至少 10 个未见模型；原六模型和已登记 14 变体不能重标为独立集。程序只固定输入并检查指纹，不认证身份/源头，也不提供填好“审核通过”的示例数据。
+
+新增离线测试明确使用模拟字节与合成声明，不能当作真实独立模型通过的证据。缺少真实验收集时先保留验收待办，不填造人名、日期、独立 Recall 或 AI 推荐结果。通用批量入口仍兼容，正式流程应核验冻结集及顶层 `result.json` / `run.json`，不绕过失败去引用中间子目录成绩。
+
+正式运行/结果格式为 0.2，绑定结果和批量产物；使用 [结果复核](ACCEPTANCE_RESULTS.md) 的 `acceptance_result.py` 核对来源并从单模型报告重算，不能直接读取保存分数当作通过。结果复核退出码 0 只表示完整记录有效读取，Recall 是否达标另看指标；不认证身份、物理或界面验收。复核程序也纳入冻结源码指纹，旧格式不自动升级。
+
+## 正式验收证据交接
+
+正式结果需要交给另一台电脑重算时，使用 [证据交接包](ACCEPTANCE_BUNDLE.md) 的 `acceptance_bundle.py export / verify`。导出须显式 `--include-models`，只复制到新目录，不自动上传；接收方先核对完整性再重算，不能只信包内中文摘要。包包含冻结 MPH 和审核信息，与桌面轻量单模型报告包严格区分；测试均为模拟输入，不补造真实独立验收集。
+
+## 本地 AI 推荐原型
+
+使用 `FlowPlotAI.cmd`，或 `python src/flowpilot/recommend_ui.py`，在原检查流程上增加推荐页签。独立副本校准、学习模型构建与离线推荐见 [AI_RECOMMENDATION.md](AI_RECOMMENDATION.md)。仅校准入口实际求解；训练、推理和读取报告不调用 COMSOL。不使用开发基准的重复测量宣称独立模型推荐达标。
+
+## API 参考（原只读功能）
 
 - [COMSOL 6.3 Named selections](https://doc.comsol.com/6.3/doc/com.comsol.help.comsol/comsol_api_general.47.56.html)
 - 本机 COMSOL 帮助：Java API、Stationary solver 与 COMSOL Commands on Windows。

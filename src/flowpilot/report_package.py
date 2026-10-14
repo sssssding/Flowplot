@@ -18,6 +18,7 @@ from flowpilot.desktop_session import DISCLAIMER, load_completed_check
 from flowpilot.model_overview import build_overview
 from flowpilot.package_integrity import MAX_FILE_BYTES, verify_package
 from flowpilot.diagnostics import is_finite_number
+from flowpilot.report_io import MAX_METADATA_BYTES
 
 PRIVACY_NOTICE = ("不会复制 .mph 模型、运行日志或本机路径元数据字段。"
                   "模型名称、参数、表达式、标签和诊断自由文本仍可能包含敏感信息（包括路径）；"
@@ -58,7 +59,7 @@ def _render_report(loaded, metadata):
     view = loaded["view"]
     def safe(value):
         return _markdown_text(html.escape(str(value)))
-    lines = ["# FlowPilot 协作检查报告", "", DISCLAIMER, "", PRIVACY_NOTICE, "",
+    lines = ["# FlowPlot 协作检查报告", "", DISCLAIMER, "", PRIVACY_NOTICE, "",
              "模型：" + safe(metadata["source"]["filename"]),
              "模型 SHA-256：`" + metadata["source"]["sha256"] + "`",
              "COMSOL：" + safe(metadata.get("comsol_version", "原记录未提供")),
@@ -77,7 +78,10 @@ def _render_report(loaded, metadata):
 def export_package(report_dir, output_dir):
     """Validate again; write only a new folder, with run.json published last."""
     loaded = load_completed_check(report_dir)
-    directory = Path(output_dir).resolve()
+    target = Path(output_dir)
+    if target.exists() or target.is_symlink() or target.is_junction():
+        raise FileExistsError("导出目录已存在或是链接/联接，拒绝覆盖：" + target.name)
+    directory = target.resolve()
     if directory == loaded["directory"] or loaded["directory"] in directory.parents:
         raise CheckError("导出目录不能放在原报告目录内。")
     diagnosis = _json_bytes(loaded["report"])
@@ -85,7 +89,7 @@ def export_package(report_dir, output_dir):
     payloads = {"diagnosis.json": diagnosis, "run.json": _json_bytes(metadata),
                 "report.md": _render_report(loaded, metadata).encode("utf-8"),
                 "overview.txt": build_overview(loaded["report"])["text"].encode("utf-8"),
-                "README.md": ("# FlowPilot 协作报告包\n\n"
+                "README.md": ("# FlowPlot 协作报告包\n\n"
                     "先阅读 report.md 和 overview.txt。安装项目依赖后，可在桌面点击“读取已有报告”并选择本文件夹；"
                     "不需要源模型或 COMSOL 即可离线阅读。可手动压缩整个文件夹发送，接收方解压后选择该文件夹。\n\n"
                     + PRIVACY_NOTICE + "\n\n不要只发送单个文件或修改包内文件。读取时核对全部五份文件的大小与 SHA-256；"
@@ -93,20 +97,32 @@ def export_package(report_dir, output_dir):
                     "如导出中途失败，目录可能不完整；不要分享，重新导出到新目录。\n").encode("utf-8")}
     if any(len(payload) > MAX_FILE_BYTES for payload in payloads.values()):
         raise CheckError("报告过大，不能导出为当前版本的协作报告包（单文件上限 10 MiB）。")
+    if len(payloads["run.json"]) > MAX_METADATA_BYTES:
+        raise CheckError("导出运行元数据超过接收端 64 KiB 上限；未创建目录。")
     manifest = {"schema_version": "report-package-0.1", "created_at": datetime.now(timezone.utc).isoformat(),
                 "original_run_sha256": loaded["run_sha256"],
                 "original_diagnosis_sha256": loaded["metadata"]["diagnosis_sha256"],
                 "privacy_notice": PRIVACY_NOTICE,
                 "files": {name: {"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()}
                           for name, payload in payloads.items()}}
+    manifest_bytes = _json_bytes(manifest)
+    if len(manifest_bytes) > MAX_METADATA_BYTES:
+        raise CheckError("导出包清单超过接收端 64 KiB 上限；未创建目录。")
     directory.mkdir(parents=True, exist_ok=False)
     with (directory / "package.json").open("xb") as stream:
-        stream.write(_json_bytes(manifest))
+        stream.write(manifest_bytes)
     # Completed run is the last file: interrupted export cannot look like a completed legacy report.
     for name in [name for name in payloads if name != "run.json"] + ["run.json"]:
         with (directory / name).open("xb") as stream:
             stream.write(payloads[name])
     verify_package(directory)
+    # Byte integrity alone does not prove that our output is consumable or is
+    # the same structured snapshot the user asked to export.
+    published = load_completed_check(directory)
+    options = {"sort_keys": True, "allow_nan": False, "ensure_ascii": True}
+    if (json.dumps(published["report"], **options) != json.dumps(loaded["report"], **options)
+            or json.dumps(published["metadata"], **options) != json.dumps(metadata, **options)):
+        raise CheckError("导出包重读与原诊断/便携元数据不一致，不应分享此目录。")
     return directory
 
 

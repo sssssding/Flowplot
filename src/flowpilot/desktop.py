@@ -19,6 +19,13 @@ from flowpilot.model_overview import build_overview
 from flowpilot.report_package import PRIVACY_NOTICE, export_package
 
 
+def initial_window_size(screen_width, screen_height):
+    """Reserve desktop margins instead of requesting a window taller than the screen."""
+    if any(type(value) is not int or value <= 0 for value in (screen_width, screen_height)):
+        raise ValueError("screen dimensions must be positive integers")
+    return max(1, min(1100, screen_width - 80)), max(1, min(850, screen_height - 100))
+
+
 def open_local_path(path):
     path = Path(path).resolve(strict=True)
     if os.name == "nt":
@@ -47,9 +54,10 @@ class DesktopApp:
         self.loads, self.timeout, self.reynolds = (tk.StringVar(root, value) for value in ("2", "300", "2000"))
         self.status = tk.StringVar(root, "选择模型和 COMSOL 目录后，点击“开始检查”。")
         self.source = tk.StringVar(root, "尚未加载报告。")
-        root.title("FlowPilot · 模型边界检查")
-        root.geometry("1000x760")
-        root.minsize(860, 650)
+        root.title("FlowPlot · 模型边界检查")
+        width, height = initial_window_size(root.winfo_screenwidth(), root.winfo_screenheight())
+        root.geometry(f"{width}x{height}")
+        root.minsize(min(860, width), min(650, height))
         root.protocol("WM_DELETE_WINDOW", self.close)
         style = ttk.Style(root)
         if "vista" in style.theme_names():
@@ -57,11 +65,11 @@ class DesktopApp:
         style.configure("Heading.TLabel", font=("Microsoft YaHei UI", 18, "bold"))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
-        main = ttk.Frame(root, padding=18)
+        main = ttk.Frame(root, padding=12)
         main.grid(row=0, column=0, sticky="nsew")
         main.columnconfigure(0, weight=1)
         main.rowconfigure(5, weight=1)
-        ttk.Label(main, text="FlowPilot 模型边界检查", style="Heading.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(main, text="FlowPlot 模型边界检查", style="Heading.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Label(main, text="二维稳态层流 · 原模型只读 · 中文证据与建议").grid(row=1, column=0, sticky="w", pady=(3, 12))
         form = ttk.LabelFrame(main, text="1. 选择文件与环境", padding=10)
         form.grid(row=2, column=0, sticky="ew")
@@ -120,7 +128,7 @@ class DesktopApp:
         self.result_tabs.grid(row=1, column=0, sticky="nsew")
         self.findings_tab = ttk.Frame(self.result_tabs, padding=6)
         self.findings_tab.columnconfigure(0, weight=1)
-        self.findings_tab.rowconfigure(1, weight=1)
+        self.findings_tab.rowconfigure(0, weight=1)
         self.overview_tab = ttk.Frame(self.result_tabs, padding=6)
         self.overview_tab.columnconfigure(0, weight=1)
         self.overview_tab.rowconfigure(0, weight=1)
@@ -129,21 +137,28 @@ class DesktopApp:
         self.overview_text = ScrolledText(self.overview_tab, wrap="word", height=12, font=("Microsoft YaHei UI", 10), padx=8, pady=8)
         self.overview_text.grid(row=0, column=0, sticky="nsew")
         self.set_overview("尚无模型概览；完成检查或读取报告后显示。")
-        tree_frame = ttk.Frame(self.findings_tab)
-        tree_frame.grid(row=0, column=0, sticky="ew")
+        self.findings_pane = ttk.Panedwindow(self.findings_tab, orient="vertical")
+        self.findings_pane.grid(row=0, column=0, sticky="nsew")
+        tree_frame = ttk.Frame(self.findings_pane)
+        self.findings_pane.add(tree_frame, weight=1)
         tree_frame.columnconfigure(0, weight=1)
-        self.tree = ttk.Treeview(tree_frame, columns=("level", "title", "nodes", "boundaries"), show="headings", height=5)
+        tree_frame.rowconfigure(0, weight=1)
+        self.tree = ttk.Treeview(tree_frame, columns=("level", "title", "nodes", "boundaries"), show="headings", height=3)
         for key, label, width in (("level", "等级", 130), ("title", "问题", 280),
                                   ("nodes", "相关节点", 180), ("boundaries", "边界编号", 130)):
             self.tree.heading(key, text=label)
             self.tree.column(key, width=width, minwidth=70, stretch=True)
-        self.tree.grid(row=0, column=0, sticky="ew")
+        self.tree.grid(row=0, column=0, sticky="nsew")
         scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.tree.configure(yscrollcommand=scrollbar.set)
         self.tree.bind("<<TreeviewSelect>>", self.select_finding)
-        self.details = ScrolledText(self.findings_tab, wrap="word", height=9, font=("Microsoft YaHei UI", 10), padx=8, pady=8)
-        self.details.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        details_frame = ttk.Frame(self.findings_pane)
+        details_frame.columnconfigure(0, weight=1)
+        details_frame.rowconfigure(0, weight=1)
+        self.findings_pane.add(details_frame, weight=3)
+        self.details = ScrolledText(details_frame, wrap="word", height=7, font=("Microsoft YaHei UI", 10), padx=8, pady=8)
+        self.details.grid(row=0, column=0, sticky="nsew")
         self.set_details("这里将显示检查结果。\n\n" + DISCLAIMER)
         ttk.Label(main, text=DISCLAIMER, wraplength=920).grid(row=6, column=0, sticky="w")
 
@@ -321,7 +336,7 @@ class DesktopApp:
     def show_comparison(self, summary):
         from tkinter.scrolledtext import ScrolledText
         window = self.tk.Toplevel(self.root)
-        window.title("FlowPilot · 前次 / 本次检查对比")
+        window.title("FlowPlot · 前次 / 本次检查对比")
         window.geometry("820x640")
         window.minsize(640, 460)
         window.columnconfigure(0, weight=1)
@@ -384,7 +399,7 @@ class DesktopApp:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="FlowPilot local desktop model checker")
+    parser = argparse.ArgumentParser(description="FlowPlot local desktop model checker")
     parser.add_argument("--model", type=Path)
     parser.add_argument("--comsol-root", type=Path)
     parser.add_argument("--output-root", type=Path)

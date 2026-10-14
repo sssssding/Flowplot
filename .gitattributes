@@ -6,6 +6,7 @@
 *.py text eol=lf
 *.java text eol=lf
 *.java.in text eol=lf
+*.cmd text eol=lf
 
 # COMSOL models must stay binary even after the global text rule.
 *.mph filter=lfs diff=lfs merge=lfs -text

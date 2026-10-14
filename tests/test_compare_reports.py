@@ -48,6 +48,7 @@ class ComparisonTest(unittest.TestCase):
         self.assertTrue(result["same_model_sha256"])
         self.assertIn("不等于修复成功", result["disclaimer"])
         self.assertNotIn("repair_passed", result)
+        self.assertTrue(comparison.render_comparison(result).startswith("# FlowPlot 检查报告对比"))
 
     def test_new_finding_is_added(self):
         empty = {**self.report, "findings": []}

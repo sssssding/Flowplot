@@ -16,7 +16,7 @@ class HistoryBrowser:
         self.tk, self.dialogs, self.messages = tk, filedialog, messagebox
         self.on_open, self.on_directory = on_open, on_directory
         self.window = tk.Toplevel(root)
-        self.window.title("FlowPilot · 检查历史")
+        self.window.title("FlowPlot · 检查历史")
         self.window.geometry("940x620")
         self.window.minsize(720, 460)
         self.window.columnconfigure(0, weight=1)

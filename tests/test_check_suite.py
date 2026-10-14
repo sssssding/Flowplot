@@ -94,19 +94,33 @@ class CheckSuiteTest(unittest.TestCase):
 
     def independent_manifest(self):
         manifest = copy.deepcopy(self.manifest)
-        manifest.update(independent_acceptance_set=True, label_status="expert_reviewed")
+        manifest.update(independent_acceptance_set=True, label_status="expert_reviewed",
+            acceptance_declaration={"dataset_id": "synthetic scoring test, not real independent data",
+                "independence_reviewed_by": "synthetic test reviewer",
+                "independence_reviewed_date": "2000-01-01",
+                "models_not_derived_from_development": True, "labels_fixed_before_diagnosis": True,
+                "creators_and_reviewers_not_rule_developers": True})
+        for index in range(4):
+            manifest["cases"].append({"case_id": f"synthetic-extra-{index}", "model_path": f"extra-{index}.mph",
+                                      "expected_codes": []})
         for index, case in enumerate(manifest["cases"], 1):
             case.update(sha256=f"{index:064x}", reviewed_by="synthetic test reviewer", reviewed_date="2026-10-11",
-                        used_for_rule_development=False)
+                        used_for_rule_development=False, created_by="synthetic test author",
+                        origin_reference="synthetic declaration, not physical data",
+                        independence_group=f"synthetic-group-{index % 2}")
         return manifest
+
+    def declared_outcomes(self, manifest):
+        return {case["case_id"]: {"status": "checked", "predicted_codes": case["expected_codes"][:]}
+                for case in manifest["cases"]}
 
     def test_independent_declarations_require_review_and_rule_coverage(self):
         manifest = self.independent_manifest()
-        result = suite.evaluate_dataset(manifest, self.outcomes)
+        result = suite.evaluate_dataset(manifest, self.declared_outcomes(manifest))
         self.assertTrue(result["acceptance_eligible"])
         self.assertTrue(result["meets_recall_above_90_percent"])
         manifest["cases"][1].pop("reviewed_date")
-        self.assertFalse(suite.evaluate_dataset(manifest, self.outcomes)["acceptance_eligible"])
+        self.assertFalse(suite.evaluate_dataset(manifest, self.declared_outcomes(manifest))["acceptance_eligible"])
         manifest = self.independent_manifest()
         manifest["cases"][0]["used_for_rule_development"] = True
         self.assertIn("case_development_usage_not_excluded", suite.acceptance_reasons(manifest))
@@ -117,6 +131,89 @@ class CheckSuiteTest(unittest.TestCase):
         manifest = self.independent_manifest()
         manifest["cases"][0]["sha256"] = self.manifest["cases"][0]["sha256"]
         self.assertIn("overlaps_known_development_models", suite.acceptance_reasons(manifest))
+
+    def assert_strictly_blocked(self, manifest, outcomes=None):
+        result = suite.evaluate_dataset(manifest, self.declared_outcomes(manifest) if outcomes is None else outcomes)
+        self.assertEqual(result["checked_cases"], len(manifest["cases"]))
+        self.assertFalse(result["acceptance_eligible"])
+        self.assertEqual(result["evaluation_kind"], "development_or_unreviewed")
+        self.assertIsNone(result["meets_recall_above_90_percent"])
+        self.assertIn("formal_freeze_requirements_not_met", result["acceptance_blockers"])
+        self.assertIn("不能宣称独立验收", suite.render_report(result))
+        return result
+
+    def test_six_fully_declared_cases_still_do_not_meet_formal_minimum(self):
+        manifest = self.independent_manifest()
+        manifest["cases"] = manifest["cases"][:6]
+        self.assertEqual(suite.acceptance_reasons(manifest), [])  # Reproduce the old gate's gap.
+        result = self.assert_strictly_blocked(manifest)
+        self.assertEqual(result["metrics_on_checked_cases_only"]["recall"], 1)
+
+    def test_missing_independence_declaration_cannot_be_promoted_by_generic_evaluation(self):
+        manifest = self.independent_manifest()
+        manifest.pop("acceptance_declaration")
+        self.assertEqual(suite.acceptance_reasons(manifest), [])
+        self.assert_strictly_blocked(manifest)
+
+    def test_all_known_variants_are_excluded_by_the_formal_gate(self):
+        variations = json.loads((ROOT / "data/fixtures/regression_family.json").read_text(encoding="utf-8"))
+        for case in variations["cases"]:
+            manifest = self.independent_manifest()
+            manifest["cases"][0]["sha256"] = case["source_sha256"]
+            self.assertEqual(suite.acceptance_reasons(manifest), [])
+            self.assert_strictly_blocked(manifest)
+
+    def test_future_and_noncanonical_review_dates_are_not_independent_results(self):
+        for value in ("2099-01-01", "20000101"):
+            manifest = self.independent_manifest()
+            manifest["cases"][0]["reviewed_date"] = value
+            self.assertEqual(suite.acceptance_reasons(manifest), [])
+            self.assert_strictly_blocked(manifest)
+
+    def test_missing_model_source_fields_are_not_independent_results(self):
+        for field in ("created_by", "origin_reference", "independence_group"):
+            manifest = self.independent_manifest()
+            manifest["cases"][0].pop(field)
+            self.assert_strictly_blocked(manifest)
+
+    def test_false_or_truthy_independence_confirmations_cannot_pass(self):
+        for value in (False, 1, "true", None):
+            manifest = self.independent_manifest()
+            manifest["acceptance_declaration"]["labels_fixed_before_diagnosis"] = value
+            self.assert_strictly_blocked(manifest)
+
+    def test_one_normalized_source_group_is_insufficient(self):
+        manifest = self.independent_manifest()
+        for index, case in enumerate(manifest["cases"]):
+            case["independence_group"] = " GROUP " if index % 2 else "group"
+        self.assert_strictly_blocked(manifest)
+
+    def test_case_insensitive_identity_or_path_collision_is_not_independent(self):
+        for field in ("case_id", "model_path"):
+            manifest = self.independent_manifest()
+            manifest["cases"][1][field] = manifest["cases"][0][field].upper()
+            self.assert_strictly_blocked(manifest)
+
+    def test_robustness_label_cannot_be_used_as_formal_supported_case(self):
+        manifest = self.independent_manifest()
+        manifest["cases"][0]["expected_codes"] = ["EVALUATION_UNAVAILABLE"]
+        outcomes = self.declared_outcomes(manifest)
+        outcomes["baseline"]["predicted_codes"] = []
+        self.assert_strictly_blocked(manifest, outcomes)
+
+    def test_unavailable_registry_fails_closed_without_discarding_development_metrics(self):
+        from flowpilot import acceptance_dataset as dataset
+        manifest = self.independent_manifest()
+        with patch.object(dataset, "fingerprints", side_effect=OSError("synthetic unavailable registry")):
+            result = self.assert_strictly_blocked(manifest)
+        self.assertEqual(result["metrics_on_checked_cases_only"]["recall"], 1)
+
+    def test_generic_evaluator_cannot_bypass_a_new_formal_gate_requirement(self):
+        from flowpilot import acceptance_dataset as dataset
+        manifest = self.independent_manifest()
+        with patch.object(dataset, "validate_acceptance", side_effect=ValueError("synthetic additional requirement")) as gate:
+            self.assert_strictly_blocked(manifest)
+        gate.assert_called_once()
 
     def test_unsafe_ids_duplicate_hashes_and_unknown_codes_rejected(self):
         mutations = [lambda m: m["cases"][0].update(case_id="../escape"),

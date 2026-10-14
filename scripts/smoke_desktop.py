@@ -19,6 +19,16 @@ from flowpilot.report_package import export_package
 from flowpilot.package_integrity import verify_package
 from flowpilot.diagnostics import check
 from flowpilot.check_suite import read_outcome
+from flowpilot.preflight import check_models
+
+
+def resolve_models(model_root, cases):
+    root = Path(model_root).resolve(strict=True)
+    checks = check_models(cases, root)
+    if any(item["status"] != "ok" for item in checks):
+        raise CheckError("Smoke models do not match manifest: " + ", ".join(
+            item["case_id"] + ":" + item["status"] for item in checks if item["status"] != "ok"))
+    return {case["case_id"]: root / case["model_path"] for case in cases}
 
 
 def main():
@@ -26,7 +36,10 @@ def main():
     parser.add_argument("--comsol-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--reports-root", type=Path, help="optional existing batch directory for report-view checks")
+    parser.add_argument("--model-root", type=Path, default=ROOT, help="explicit root containing manifest-matching model copies")
     args = parser.parse_args()
+    manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8-sig"))
+    models = resolve_models(args.model_root, manifest["cases"])
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=False)
     import tkinter as tk
@@ -41,9 +54,8 @@ def main():
                                 "src/flowpilot/report_history.py", "src/flowpilot/history_window.py",
                                 "src/flowpilot/model_overview.py", "src/flowpilot/diagnostics.py",
                                 "src/flowpilot/report_package.py", "src/flowpilot/package_integrity.py",
-                                "src/flowpilot/report_io.py", "src/flowpilot/check_suite.py", "scripts/smoke_desktop.py")}
-    manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8-sig"))
-    before = {case["case_id"]: sha256(ROOT / case["model_path"]) for case in manifest["cases"]}
+                                "src/flowpilot/report_io.py", "src/flowpilot/check_suite.py", "src/flowpilot/preflight.py", "scripts/smoke_desktop.py")}
+    before = {case["case_id"]: sha256(models[case["case_id"]]) for case in manifest["cases"]}
     assert all(before[case["case_id"]].lower() == case["sha256"].lower() for case in manifest["cases"])
     result["source_model_sha256"] = before
     errors, beats = [], [0]
@@ -105,7 +117,7 @@ def main():
         with patch.object(app.messages, "showerror", side_effect=lambda title, message, **kw: (_ for _ in ()).throw(CheckError(message))):
             for identity in ("baseline", "missing_inlet"):
                 case = next(case for case in manifest["cases"] if case["case_id"] == identity)
-                app.model.set(str(ROOT / case["model_path"]))
+                app.model.set(str(models[case["case_id"]]))
                 app.start_check()
                 assert app.start_button.instate(["disabled"])
                 live_stages = wait_for_session()
@@ -249,7 +261,7 @@ def main():
                                                           "reason": reason, "diagnosis_status": "partial",
                                                           "desktop_tone": app.current_view["tone"],
                                                           "package_reimport_verified": True})
-            app.model.set(str(ROOT / manifest["cases"][0]["model_path"]))
+            app.model.set(str(models[manifest["cases"][0]["case_id"]]))
             app.start_check()
             assert app.compare_button.instate(["disabled"])
             assert app.history_button.instate(["disabled"])
@@ -297,7 +309,7 @@ def main():
                                           "cancelled_report_open_disabled": True, "scan_ran_in_worker": True}
         result["event_loop_heartbeat_count"] = beats[0]
         assert beats[0] > 0
-        result["source_hashes_unchanged"] = all(sha256(ROOT / case["model_path"]) == before[case["case_id"]]
+        result["source_hashes_unchanged"] = all(sha256(models[case["case_id"]]) == before[case["case_id"]]
                                                 for case in manifest["cases"])
         assert result["source_hashes_unchanged"]
         result["passed"] = True

@@ -1,4 +1,4 @@
-# FlowPilot MVP Scope
+# FlowPlot MVP Scope
 
 ## Supported
 

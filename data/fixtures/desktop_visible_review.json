@@ -1,0 +1,41 @@
+{
+  "schema_version": "desktop-visible-review-0.1",
+  "date": "2026-10-12",
+  "reviewer_kind": "coding_agent",
+  "visual_review": true,
+  "new_user_timing_validated": false,
+  "expert_review": false,
+  "comsol_gui_settings_reviewed": false,
+  "unseen_models_validated": 0,
+  "offline_tests_passed": 296,
+  "baseline_check_before_layout_change": {
+    "status": "completed",
+    "verified_loads": 2,
+    "headline": "当前规则未发现问题",
+    "ui_run_sha256": "d606a560c499ab90771c12649f3b9efef05c3a6e99acb981fd87ea4e10d61622"
+  },
+  "missing_inlet_check_after_layout_change": {
+    "status": "completed",
+    "verified_loads": 2,
+    "codes": ["MISSING_INLET"],
+    "ui_run_sha256": "e70ee2557340c3620de79f69bf1b6d65fff20e1358c284ba4ecd39be32e53377"
+  },
+  "selection_overlap_report_import": {
+    "codes": ["BC_SELECTION_OVERLAP", "MISSING_INLET"],
+    "both_rows_visible": true,
+    "both_details_reviewed": true,
+    "diagnosis_sha256": "07552ed7fe9f5af817f239f41ffa943c9e143351cfedce0ab57142af0d1aab7b"
+  },
+  "divider_drag_verified": true,
+  "lf_launcher_environment_exit_code": 0,
+  "lf_launcher_help_exit_code": 0,
+  "overview_scrolling_verified": true,
+  "original_local_model_unchanged": true,
+  "model_solver_run": false,
+  "source_sha256": {
+    "src/flowpilot/desktop.py": "7062e8a67da8272b6a24801e1c71c1c2e3c0b8fb3c8f540a0083e43993e7316a",
+    "src/flowpilot/launcher.py": "84a9c35fb5cb104c3667bad7fd0e42473ac8882601418e043aa14d3cc6cd90d0",
+    "FlowPilot.cmd": "305748bf9b3eb2630d9818cea6e52aedc514dfcc277c1d7cdf0876f2c177e042"
+  },
+  "note": "Coding-agent visual engineering check; not new-user, independent-model, COMSOL GUI, or expert acceptance."
+}
