@@ -11,7 +11,8 @@ if __package__ in (None, ""):
 from flowpilot.desktop import DesktopApp
 from flowpilot.check_model import CheckError
 from flowpilot.desktop_session import load_completed_check
-from flowpilot.recommend import DEFAULT_MODEL, NOTICE, recommend_report, render
+from flowpilot.recommend import DEFAULT_PORTABLE_MODEL as DEFAULT_MODEL, recommend_report, render
+from flowpilot.portable_recommend import NOTICE
 
 
 class RecommendationApp(DesktopApp):

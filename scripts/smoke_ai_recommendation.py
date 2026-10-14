@@ -60,11 +60,15 @@ def main():
                   "all_passed": all(tests.values()), "checks": tests, "solver_run_in_smoke": False,
                   "visible_user_acceptance": False, "independent_performance_validation": False,
                   "source_sha256": {p: sha256(ROOT / p) for p in ("src/flowpilot/recommend.py",
+                      "src/flowpilot/portable_recommend.py", "src/flowpilot/benchmark_portable.py", "src/comsol/PortableFamily.java",
+                      "src/flowpilot/acceptance_dataset.py", "data/fixtures/ai_development_registry.json",
                       "src/flowpilot/recommend_ui.py", "src/flowpilot/calibrate_solver.py",
                       "src/flowpilot/desktop.py", "src/flowpilot/ai_launcher.py", "FlowPlotAI.cmd",
                       "scripts/smoke_ai_recommendation.py")},
                   "learned_model_sha256": sha256(args.learned_model),
-                  "calibration_observations": len(read_json(args.learned_model)["dataset"]["observations"])}
+                  "calibration_observations": (sum(len(c["observations"]) for c in read_json(args.learned_model)["data"]["cases"])
+                      if read_json(args.learned_model).get("schema_version") == "solver-ranker-0.2"
+                      else len(read_json(args.learned_model)["dataset"]["observations"]))}
         _write_json(args.output, result)
         if not result["all_passed"]:
             raise AssertionError(tests)

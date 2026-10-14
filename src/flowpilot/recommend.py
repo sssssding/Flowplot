@@ -21,6 +21,7 @@ from flowpilot.solve_baseline import analyze_solve, JAVA_SOURCE, REFERENCE
 from flowpilot.review_baseline import MANIFEST
 
 DEFAULT_MODEL = ROOT / "data/ai/solver_ranker.json"
+DEFAULT_PORTABLE_MODEL = ROOT / "data/ai/portable_ranker.json"
 CANDIDATES = (
     {"id": "strict-1", "stol": 1e-6, "threads": 1},
     {"id": "strict-2", "stol": 1e-6, "threads": 2},
@@ -157,21 +158,28 @@ def rank(model, source_sha256, *, cohort=None):
     return result
 
 
-def recommend_report(directory, model_path=DEFAULT_MODEL):
+def recommend_report(directory, model_path=None):
+    from flowpilot.portable_recommend import NOTICE as portable_notice, rank as portable_rank
     loaded = load_completed_check(directory)
     source = loaded["metadata"]["source"]["sha256"].lower()
     if loaded["report"]["status"] != "checked" or loaded["report"]["findings"]:
-        return {"status": "unavailable", "source_sha256": source, "notice": NOTICE,
+        return {"status": "unavailable", "source_sha256": source, "notice": portable_notice,
                 "reason": "存在诊断问题或检查不完整，请先处理；推荐不得覆盖规则证据。", "ranking": [], "selected": None}
-    raw = read_regular_file(model_path, max_bytes=1024 * 1024)
-    result = rank(decode_json(raw), source)
+    raw = read_regular_file(model_path or DEFAULT_PORTABLE_MODEL, max_bytes=1024 * 1024)
+    learned = decode_json(raw)
+    result = (portable_rank(learned, loaded["report"]["model"], source)
+              if isinstance(learned, dict) and learned.get("schema_version") == "solver-ranker-0.2"
+              else rank(learned, source))
     result["learned_model_sha256"] = hashlib.sha256(raw).hexdigest()
     result["diagnosis_sha256"] = loaded["diagnosis_sha256"]
     return result
 
 
 def render(result):
-    lines = ["FlowPlot · AI 参数推荐（本地学习原型）", "", NOTICE, "", result["reason"]]
+    if result.get("method") == "feature-relative-knn-v1":
+        from flowpilot.portable_recommend import render as portable_render
+        return portable_render(result)
+    lines = ["FlowPlot · AI 参数推荐", "", result.get("notice", NOTICE), "", result["reason"]]
     if result.get("selected"):
         c = result["selected"]
         lines += ["", f"建议：稳态相对容差 {c['stol']:g}；计算线程数 {c['threads']}。",
@@ -191,12 +199,17 @@ def main():
     train.add_argument("--output", type=Path, required=True)
     infer = commands.add_parser("recommend")
     infer.add_argument("--report", type=Path, required=True)
-    infer.add_argument("--learned-model", type=Path, default=DEFAULT_MODEL)
+    infer.add_argument("--learned-model", type=Path, default=DEFAULT_PORTABLE_MODEL)
     infer.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
         if args.command == "train":
-            result = fit(read_json(args.dataset))
+            dataset = read_json(args.dataset)
+            if dataset.get("schema_version") == "solver-transfer-data-0.1":
+                from flowpilot.portable_recommend import fit as portable_fit
+                result = portable_fit(dataset)
+            else:
+                result = fit(dataset)
             args.output.parent.mkdir(parents=True, exist_ok=True)
             _write_json(args.output, result)
             print(f"Learned local ranker saved: {args.output}")

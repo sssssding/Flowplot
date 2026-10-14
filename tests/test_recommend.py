@@ -147,14 +147,16 @@ class RecommendationTest(unittest.TestCase):
     def test_functional_smoke_is_bound_to_current_sources_not_visible_acceptance(self):
         self.assertEqual(sha256(ROOT / "data/fixtures/ai_functional_smoke.json"),
                          "e198aa2590e31e4a9440e5024ae6b1ee4922b0da8b0a8cac45a31f2e26634765")
-        record = ai.read_json(ROOT / "data/fixtures/ai_offline_preview_smoke.json")
+        self.assertEqual(sha256(ROOT / "data/fixtures/ai_offline_preview_smoke.json"),
+                         "5831daee73b34e695410172e03da515a7afcc1c319c7a672a9b96aaf94ca39e3")
+        record = ai.read_json(ROOT / "data/fixtures/ai_portable_smoke.json")
         self.assertTrue(record["all_passed"])
         self.assertEqual(len(record["checks"]), 15)
         self.assertTrue(all(record["checks"].values()))
         self.assertFalse(record["solver_run_in_smoke"])
         self.assertFalse(record["visible_user_acceptance"])
         self.assertFalse(record["independent_performance_validation"])
-        self.assertEqual(record["learned_model_sha256"], sha256(ai.DEFAULT_MODEL))
+        self.assertEqual(record["learned_model_sha256"], sha256(ai.DEFAULT_PORTABLE_MODEL))
         for name, digest in record["source_sha256"].items():
             self.assertEqual(sha256(ROOT / name), digest)
 

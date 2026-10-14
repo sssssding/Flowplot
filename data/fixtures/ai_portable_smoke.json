@@ -1,0 +1,41 @@
+{
+  "schema_version": "ai-functional-smoke-0.1",
+  "mode": "hidden-tk-existing-real-reports",
+  "all_passed": true,
+  "checks": {
+    "baseline_recommendation_displayed": true,
+    "learned_model_bound": true,
+    "ai_tab_present": true,
+    "offline_preview_selects_ai_tab": true,
+    "no_automatic_apply": true,
+    "missing_inlet_abstained": true,
+    "missing_outlet_abstained": true,
+    "selection_overlap_abstained": true,
+    "reversed_inlet_abstained": true,
+    "high_reynolds_abstained": true,
+    "stale_recommendation_cleared": true,
+    "missing_model_not_stale": true,
+    "busy_buttons_disabled": true,
+    "idle_buttons_enabled": true,
+    "invalid_preview_clears_old_recommendation": true
+  },
+  "solver_run_in_smoke": false,
+  "visible_user_acceptance": false,
+  "independent_performance_validation": false,
+  "source_sha256": {
+    "src/flowpilot/recommend.py": "854c6568147804231bcb09c36fe29498d6732817eef1b8320bc7e1bf112d8419",
+    "src/flowpilot/portable_recommend.py": "3e38ae8da1ae224a46bec8f8e92c03ab96f48f427cfa2fc073449062b032f333",
+    "src/flowpilot/benchmark_portable.py": "d2f8069f2522bbc52cb9b7b6a3037977603a056cac87091067d1ac0469bd59c8",
+    "src/comsol/PortableFamily.java": "8e015bd1c2ddce776f38a7ac86f9edcd10b2f700e84ece5d359622e9107f79fb",
+    "src/flowpilot/acceptance_dataset.py": "e3600538d0c3b25b54d28939174521c8dbf6a7d6ab1d2724f5bb05b46705810a",
+    "data/fixtures/ai_development_registry.json": "464c76a95832c6b81692c8bc7df397673fbe99f33e20cc37883b5c5f35228a89",
+    "src/flowpilot/recommend_ui.py": "58a3b64598d19edd33fb197ab7742c6d5ce97e5db54fdea5e28b79bda169b622",
+    "src/flowpilot/calibrate_solver.py": "6739651c1bc46a7cf349c810d7d1b7e25ebb690364824ad648b35abb0dc9569a",
+    "src/flowpilot/desktop.py": "ded5c9cb5697d73853e9944ef4814aa3ec881c5b5f64db85717a6729c5b44538",
+    "src/flowpilot/ai_launcher.py": "b24d20a1b9f1670dfff32e16d6dcb03f0ced6c03b2e19d7f2f45779d0c080d02",
+    "FlowPlotAI.cmd": "ce6021cf662088ef463c5a3039656fa0300e8ec89cba5a3bfd71ce4bdd86533c",
+    "scripts/smoke_ai_recommendation.py": "f6b32a8f8c19e149f20d4cfe4a3302c661be2611c84f18f61ce05e6053df1aec"
+  },
+  "learned_model_sha256": "13d78a0f86258a4828ebb71bf22f50993089d9391c68cbca9460e2ef86f362fe",
+  "calibration_observations": 36
+}

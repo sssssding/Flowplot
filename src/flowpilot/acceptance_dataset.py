@@ -25,7 +25,8 @@ SOURCES = (
     "src/flowpilot/acceptance_dataset.py",
     "src/flowpilot/acceptance_result.py",
 )
-REGISTRIES = ("data/fixtures/cases/manifest.json", "data/fixtures/regression_family.json")
+REGISTRIES = ("data/fixtures/cases/manifest.json", "data/fixtures/regression_family.json",
+              "data/fixtures/ai_development_registry.json")
 DECLARATIONS = ("models_not_derived_from_development", "labels_fixed_before_diagnosis",
                 "creators_and_reviewers_not_rule_developers")
 DISCLAIMER = ("冻结仅固定已提供的文件和声明，不认证审核身份、标签正确性或真实独立性；"
@@ -59,6 +60,16 @@ def fingerprints():
     variations = decode_json(payloads[REGISTRIES[1]])
     known = {case["sha256"].lower() for case in original["cases"]}
     known.update(case["source_sha256"].lower() for case in variations["cases"])
+    ai_models = decode_json(payloads[REGISTRIES[2]])
+    if (not isinstance(ai_models, dict) or ai_models.get("schema_version") != "ai-development-registry-0.1"
+            or ai_models.get("development_only") is not True or ai_models.get("independent_acceptance_set") is not False
+            or not isinstance(ai_models.get("cases"), list) or not ai_models["cases"]):
+        raise ValueError("AI 开发模型登记无效，不能冻结正式验收集")
+    for case in ai_models["cases"]:
+        digest = case.get("source_sha256") if isinstance(case, dict) else None
+        if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest):
+            raise ValueError("AI 开发模型指纹无效")
+        known.add(digest)
     if len(known) < 20:
         raise ValueError("已知开发集登记不完整，不能冻结正式验收集")
     return hashes, known

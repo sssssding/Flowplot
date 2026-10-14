@@ -1,0 +1,11 @@
+{
+  "schema_version": "ai-development-registry-0.1",
+  "development_only": true,
+  "independent_acceptance_set": false,
+  "cases": [
+    {"case_id": "portable-001-short-narrow-rejected", "source_sha256": "a16ce908d2ae4bd959cf4fe4ce685ee953788d38ecf0770c42b51195c91bd649", "recommendation_blocked": true, "failure": "strict_reference_mass_balance"},
+    {"case_id": "portable-001-long-wide-generated", "source_sha256": "eeb707cc9a8baed259ca71b9062e00d4ce34b6ac339a9dfea72f493c0d57b787"},
+    {"case_id": "portable-002-short-narrow", "source_sha256": "e84b18264b20fecf126deb9fbe9078de7c862affea5e8767401cb7d0e4defaa9"},
+    {"case_id": "portable-002-long-wide", "source_sha256": "a087f25e0273cffb607b26063f1c3467664b3c3c19a0a4a43ec9f67565382d32"}
+  ]
+}

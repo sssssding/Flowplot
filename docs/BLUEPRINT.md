@@ -15,7 +15,7 @@ Canonical JSON + Schema Validation
     │
     ├──► Rule Engine ──► 诊断与风险等级
     │
-    └──► Feature Builder ──► 求解参数推荐（后续阶段）
+    └──► Feature Builder ──► 求解参数候选（特征迁移；需本机验证）
                                   │
                                   ▼
                          COMSOL 批量验证与指标对比

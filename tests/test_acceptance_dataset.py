@@ -150,6 +150,13 @@ class AcceptanceDatasetTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.validate()
 
+    def test_ai_training_and_rejected_generated_models_are_not_independent(self):
+        registry = json.loads((ROOT / dataset.REGISTRIES[2]).read_text(encoding="utf-8"))
+        for case in registry["cases"]:
+            self.manifest["cases"][0]["sha256"] = case["source_sha256"]
+            with self.subTest(case=case["case_id"]), self.assertRaises(ValueError):
+                self.validate()
+
     def test_single_source_group_and_unavailable_evaluation_not_formal_cases(self):
         original = copy.deepcopy(self.manifest)
         for case in self.manifest["cases"]:

@@ -15,6 +15,7 @@
 | [BASELINE_REVIEW.md](BASELINE_REVIEW.md) | 保存解速度云图、截面采样与专业复核材料 | 图像复核材料变化时更新 |
 | [BASELINE_SOLVES.md](BASELINE_SOLVES.md) | 基准五次重新求解、日志采集与结果一致性 | 自动求解入口或验证证据变化时更新 |
 | [AI_RECOMMENDATION.md](AI_RECOMMENDATION.md) | 本地参数学习、真实校准、推荐页签及拒绝/验收边界 | 推荐候选、数据或功能变化时更新 |
+| [AI_PORTABILITY.md](AI_PORTABILITY.md) | 跨机器/模型特征推荐、相对耗时、资源与覆盖限制及开发登记 | 便携学习模型或范围变化时更新 |
 | [DECISIONS.md](DECISIONS.md) | 重要技术决策记录 | 决策被采纳时追加 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 环境、运行命令和验证范围 | 开发入口变化时更新 |
 | [MODEL_CHECK.md](MODEL_CHECK.md) | 指定 MPH 文件的只读检查入口、报告和失败处理 | 文件检查流程变化时更新 |
