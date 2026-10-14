@@ -10,6 +10,7 @@ if __package__ in (None, ""):
 
 from flowpilot.desktop import DesktopApp
 from flowpilot.check_model import CheckError
+from flowpilot.desktop_session import load_completed_check
 from flowpilot.recommend import DEFAULT_MODEL, NOTICE, recommend_report, render
 
 
@@ -64,6 +65,18 @@ class RecommendationApp(DesktopApp):
             self.learned_model = Path(path)
             self.refresh_recommendation()
 
+    def open_report(self, directory):
+        """Explicit offline preview; use the same verified reader as report import."""
+        if self.session.busy:
+            raise CheckError("检查仍在运行，请等待结束后再打开已有报告。")
+        try:
+            self.show_result(load_completed_check(directory))
+            self.result_tabs.select(self.ai_tab)
+        except (OSError, ValueError, TypeError, KeyError, CheckError):
+            self.clear_result()
+            self.status.set("已有报告未能验证，未展示诊断或推荐。")
+            raise
+
     def refresh_recommendation(self, *, expected=None):
         if self.session.busy:
             return
@@ -82,21 +95,30 @@ class RecommendationApp(DesktopApp):
                              + str(error) + "\n\n" + NOTICE)
 
 
-def main():
+def main(arguments=None):
     parser = argparse.ArgumentParser(description="FlowPlot checker with local AI parameter recommendations")
     parser.add_argument("--model", type=Path)
     parser.add_argument("--comsol-root", type=Path)
     parser.add_argument("--output-root", type=Path)
     parser.add_argument("--learned-model", type=Path, default=DEFAULT_MODEL)
-    args = parser.parse_args()
+    parser.add_argument("--report", type=Path, help="open an existing verified report, without COMSOL")
+    args = parser.parse_args(arguments)
+    # Refuse invalid inputs before creating a window. This option never starts a check.
+    try:
+        loaded = load_completed_check(args.report) if args.report else None
+    except (OSError, ValueError, TypeError, KeyError, CheckError) as error:
+        parser.exit(1, f"Cannot preview report: {error}\n")
     try:
         import tkinter as tk
     except ImportError as error:
         parser.exit(1, f"Cannot initialize recommendation UI: {error}\n")
     try:
         root = tk.Tk()
-        RecommendationApp(root, model=args.model, comsol_root=args.comsol_root,
-                          output_root=args.output_root, learned_model=args.learned_model)
+        app = RecommendationApp(root, model=args.model, comsol_root=args.comsol_root,
+                                output_root=args.output_root, learned_model=args.learned_model)
+        if loaded:
+            app.show_result(loaded)
+            app.result_tabs.select(app.ai_tab)
         root.mainloop()
     except tk.TclError as error:
         parser.exit(1, f"Cannot initialize recommendation UI: {error}\n")

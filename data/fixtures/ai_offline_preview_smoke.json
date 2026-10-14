@@ -1,0 +1,36 @@
+{
+  "schema_version": "ai-functional-smoke-0.1",
+  "mode": "hidden-tk-existing-real-reports",
+  "all_passed": true,
+  "checks": {
+    "baseline_recommendation_displayed": true,
+    "learned_model_bound": true,
+    "ai_tab_present": true,
+    "offline_preview_selects_ai_tab": true,
+    "no_automatic_apply": true,
+    "missing_inlet_abstained": true,
+    "missing_outlet_abstained": true,
+    "selection_overlap_abstained": true,
+    "reversed_inlet_abstained": true,
+    "high_reynolds_abstained": true,
+    "stale_recommendation_cleared": true,
+    "missing_model_not_stale": true,
+    "busy_buttons_disabled": true,
+    "idle_buttons_enabled": true,
+    "invalid_preview_clears_old_recommendation": true
+  },
+  "solver_run_in_smoke": false,
+  "visible_user_acceptance": false,
+  "independent_performance_validation": false,
+  "source_sha256": {
+    "src/flowpilot/recommend.py": "2f66b6a5d17fead33e2278fe1a78938a5ec0465422adab52792efc9c15c8ebc0",
+    "src/flowpilot/recommend_ui.py": "53484747ec2a26bf3d9d2bb339cafb54fadd51748829255da64b4123e0d9911f",
+    "src/flowpilot/calibrate_solver.py": "6739651c1bc46a7cf349c810d7d1b7e25ebb690364824ad648b35abb0dc9569a",
+    "src/flowpilot/desktop.py": "ded5c9cb5697d73853e9944ef4814aa3ec881c5b5f64db85717a6729c5b44538",
+    "src/flowpilot/ai_launcher.py": "b24d20a1b9f1670dfff32e16d6dcb03f0ced6c03b2e19d7f2f45779d0c080d02",
+    "FlowPlotAI.cmd": "ce6021cf662088ef463c5a3039656fa0300e8ec89cba5a3bfd71ce4bdd86533c",
+    "scripts/smoke_ai_recommendation.py": "e04fabcb1b224913ef2c1f4fdcd7dd4f77aece66c401e82845aeac4e66a10da1"
+  },
+  "learned_model_sha256": "e654c030ab25b256b31950dbbde26b3888a0aca7da41c5f85baf9ab9f43e02f1",
+  "calibration_observations": 12
+}

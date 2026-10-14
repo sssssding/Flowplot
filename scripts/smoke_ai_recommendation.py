@@ -26,11 +26,12 @@ def main():
     tests = {}
     try:
         baseline = load_completed_check(args.reports_root / "baseline")
-        app.show_result(baseline)
+        app.open_report(args.reports_root / "baseline")
         root.update()
         tests["baseline_recommendation_displayed"] = app.ai_result["status"] == "recommended"
         tests["learned_model_bound"] = app.ai_result["learned_model_sha256"] == sha256(args.learned_model)
         tests["ai_tab_present"] = "AI 参数推荐" in [app.result_tabs.tab(tab, "text") for tab in app.result_tabs.tabs()]
+        tests["offline_preview_selects_ai_tab"] = app.result_tabs.select() == str(app.ai_tab)
         tests["no_automatic_apply"] = "不自动修改" in app.ai_text.get("1.0", "end")
         for case in ("missing_inlet", "missing_outlet", "selection_overlap", "reversed_inlet", "high_reynolds"):
             app.show_result(load_completed_check(args.reports_root / case))
@@ -47,6 +48,14 @@ def main():
         tests["busy_buttons_disabled"] = str(app.ai_refresh_button["state"]) == "disabled"
         app.set_busy(False)
         tests["idle_buttons_enabled"] = str(app.ai_refresh_button["state"]) == "normal"
+        app.open_report(args.reports_root / "baseline")
+        try:
+            app.open_report(args.reports_root / "missing-report-directory")
+        except (OSError, ValueError, RuntimeError):
+            pass
+        else:
+            raise AssertionError("Missing report must be rejected")
+        tests["invalid_preview_clears_old_recommendation"] = app.ai_result is None and app.current_view is None
         result = {"schema_version": "ai-functional-smoke-0.1", "mode": "hidden-tk-existing-real-reports",
                   "all_passed": all(tests.values()), "checks": tests, "solver_run_in_smoke": False,
                   "visible_user_acceptance": False, "independent_performance_validation": False,

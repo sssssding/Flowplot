@@ -13,6 +13,7 @@ from flowpilot import recommend as ai
 from flowpilot import calibrate_solver as calibration
 from flowpilot import solve_baseline as solve
 from flowpilot import ai_launcher
+from flowpilot import recommend_ui
 from flowpilot.check_model import CheckError, sha256
 
 BASELINE_HASH = next(c for c in ai.read_json(ai.MANIFEST)["cases"] if c["case_id"] == "baseline")["sha256"].lower()
@@ -144,9 +145,11 @@ class RecommendationTest(unittest.TestCase):
         self.assertEqual(len(result["ranking"]), 4)
 
     def test_functional_smoke_is_bound_to_current_sources_not_visible_acceptance(self):
-        record = ai.read_json(ROOT / "data/fixtures/ai_functional_smoke.json")
+        self.assertEqual(sha256(ROOT / "data/fixtures/ai_functional_smoke.json"),
+                         "e198aa2590e31e4a9440e5024ae6b1ee4922b0da8b0a8cac45a31f2e26634765")
+        record = ai.read_json(ROOT / "data/fixtures/ai_offline_preview_smoke.json")
         self.assertTrue(record["all_passed"])
-        self.assertEqual(len(record["checks"]), 13)
+        self.assertEqual(len(record["checks"]), 15)
         self.assertTrue(all(record["checks"].values()))
         self.assertFalse(record["solver_run_in_smoke"])
         self.assertFalse(record["visible_user_acceptance"])
@@ -159,6 +162,23 @@ class RecommendationTest(unittest.TestCase):
         with patch.object(ai_launcher, "check_environment", return_value=[{"name": "jsonschema", "status": "error"}]), \
                 patch.object(ai_launcher.subprocess, "run", side_effect=AssertionError("Must not open UI")):
             self.assertEqual(ai_launcher.launch([]), 1)
+
+    def test_bad_preview_report_exits_before_initializing_tk(self):
+        with patch.object(recommend_ui, "load_completed_check", side_effect=CheckError("damaged report")), \
+                patch("tkinter.Tk", side_effect=AssertionError("Invalid report must not open window")):
+            with self.assertRaises(SystemExit) as result:
+                recommend_ui.main(["--report", "bad directory"])
+            self.assertEqual(result.exception.code, 1)
+
+    def test_preview_startup_never_starts_a_model_check(self):
+        loaded = {"test": "synthetic startup payload"}
+        with patch.object(recommend_ui, "load_completed_check", return_value=loaded), \
+                patch("tkinter.Tk") as root, patch.object(recommend_ui, "RecommendationApp") as app:
+            recommend_ui.main(["--report", "report with spaces"])
+            app.return_value.show_result.assert_called_once_with(loaded)
+            app.return_value.result_tabs.select.assert_called_once_with(app.return_value.ai_tab)
+            app.return_value.start_check.assert_not_called()
+            root.return_value.mainloop.assert_called_once()
 
     def test_launcher_preserves_literal_arguments_and_does_not_require_license(self):
         with patch.object(ai_launcher, "check_environment", return_value=[{"name": "comsol", "status": "error"}]), \
