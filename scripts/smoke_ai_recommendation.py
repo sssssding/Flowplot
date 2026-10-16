@@ -41,6 +41,20 @@ def main():
         tests["ai_tab_present"] = "AI 参数推荐" in [app.result_tabs.tab(tab, "text") for tab in app.result_tabs.tabs()]
         tests["offline_preview_selects_ai_tab"] = app.result_tabs.select() == str(app.ai_tab)
         tests["no_automatic_apply"] = "不自动修改" in app.ai_text.get("1.0", "end")
+        portable_run = app.ai_result.get("method") == portable_recommend.METHOD
+        if portable_run:
+            shown = app.ai_text.get("1.0", "end")
+            tests["training_coverage_and_development_scope_visible"] = ("训练依据" in shown
+                and "不是独立模型数" in shown and app.ai_result["training_coverage"]["observations"] > 0)
+            tests["target_features_visible"] = "当前报告" in shown and "L/H=" in shown
+            tests["mesh_uncertainty_visible"] = ("网格限制" in shown
+                and app.ai_result["training_coverage"]["mesh_features_available"] is False)
+            tests["validation_next_action_visible"] = "至少三次冷求解" in shown and "质量失败不接受速度收益" in shown
+            with patch("flowpilot.portable_recommend.os.cpu_count", return_value=1):
+                app.refresh_recommendation()
+            tests["single_cpu_explanation_is_not_speed_claim"] = (app.ai_result["selected"]["threads"] == 1
+                and "资源约束" in app.ai_text.get("1.0", "end"))
+            app.refresh_recommendation()
         for case in ("missing_inlet", "missing_outlet", "selection_overlap", "reversed_inlet", "high_reynolds"):
             app.show_result(load_completed_check(args.reports_root / case))
             root.update()
@@ -121,6 +135,20 @@ def main():
                 and "重新读取报告" in app.ai_text.get("1.0", "end"))
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
+            if portable_run:
+                synthetic = directory / "synthetic-outside-coverage"
+                synthetic.mkdir()
+                changed_model = copy.deepcopy(baseline["report"]["model"])
+                changed_model["geometry"]["length_m"] = 5.
+                changed_report = {"model": changed_model, **check(changed_model)}
+                _write_json(synthetic / "diagnosis.json", changed_report)
+                changed_metadata = copy.deepcopy(baseline["metadata"])
+                changed_metadata.update(diagnosis_sha256=sha256(synthetic / "diagnosis.json"),
+                                        diagnosis_status=changed_report["status"])
+                _write_json(synthetic / "run.json", changed_metadata)
+                app.open_report(synthetic)
+                tests["outside_coverage_explains_dimension_and_range"] = (app.ai_result["status"] == "unavailable"
+                    and "长度 L=5" in app.ai_text.get("1.0", "end") and "0.5–2" in app.ai_text.get("1.0", "end"))
             package = export_package(args.reports_root / "baseline", directory / "package")
             try:
                 export_recommendation(package, package / "candidate.json", args.learned_model)
@@ -138,6 +166,7 @@ def main():
                   "all_passed": all(tests.values()), "checks": tests, "solver_run_in_smoke": False,
                   "visible_user_acceptance": False, "independent_performance_validation": False,
                   "snapshot_regression_inputs_synthetic": True,
+                  "explanation_regression_inputs_synthetic": portable_run,
                   "source_sha256": {p: sha256(ROOT / p) for p in ("src/flowpilot/recommend.py",
                       "src/flowpilot/portable_recommend.py", "src/flowpilot/benchmark_portable.py", "src/comsol/PortableFamily.java",
                       "src/flowpilot/acceptance_dataset.py", "data/fixtures/ai_development_registry.json",

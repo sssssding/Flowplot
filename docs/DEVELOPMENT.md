@@ -6,6 +6,8 @@
 
 第二台 Win10/COMSOL 6.3 操作见 [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md)。`validate_recommendation.py` 只分析同机已有冷求解数据，本身不求解；新增十项合成专项及实际历史基准分析不作为独立性能结论。当前完整目标证据见 [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)。
 
+后续推荐解释字段与数字显示测试位于 `test_portable_recommend.py`，最新完整 AI 来源为 `ai_explanation_smoke.json`（29 项隐藏 Tk），之前五份摘要原字节保留。旧工程摘要中的便携推荐模块指纹只说明当时版本；本次不改检查链路、训练文件或正式冻结集合。网格迁移约束见 [MESH_TRANSFER.md](MESH_TRANSFER.md)，不是新增网格识别能力。
+
 ## 环境
 
 验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。

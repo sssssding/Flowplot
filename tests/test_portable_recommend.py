@@ -1,5 +1,6 @@
 """Portable ranking unit tests use synthetic measurements, not physical acceptance."""
 import copy
+import math
 from pathlib import Path
 import sys
 import unittest
@@ -148,6 +149,59 @@ class PortableTest(unittest.TestCase):
         result=portable.rank(portable.fit(self.data),self.target,rejected,logical_cpus=8)
         self.assertEqual(result["status"],"unavailable")
         self.assertIsNone(result["selected"])
+
+    def test_training_coverage_is_computed_from_validated_data_not_hardcoded(self):
+        result = self.result()
+        coverage = result["training_coverage"]
+        self.assertEqual(coverage["geometry_configurations"], 3)
+        self.assertEqual(coverage["observations"], 36)
+        self.assertEqual(coverage["ranges"]["length_m"], [.5, 2.])
+        self.assertAlmostEqual(coverage["ranges"]["reynolds"][0], 200.)
+        self.assertAlmostEqual(coverage["ranges"]["log10_aspect_ratio"][1], math.log10(25.))
+        self.assertFalse(coverage["mesh_features_available"])
+        self.assertFalse(coverage["independent_validation"])
+        changed = copy.deepcopy(self.data)
+        case = changed["cases"][-1]
+        model = copy.deepcopy(case["diagnostic_model"])
+        model["geometry"]["length_m"] = 4.
+        changed["cases"][-1] = make_case(case["id"], case["source_sha256"], model,
+                                         case["observations"], case["environment_id"])
+        self.assertEqual(self.result(data=changed)["training_coverage"]["ranges"]["length_m"], [.5, 4.])
+
+    def test_out_of_range_explains_actual_value_and_training_limits(self):
+        target = copy.deepcopy(self.target)
+        target["geometry"]["length_m"] = 5.
+        result = self.result(target=target)
+        self.assertEqual(result["status"], "unavailable")
+        self.assertIn("长度 L=5", result["reason"])
+        self.assertIn("0.5–2", result["reason"])
+        self.assertIn("训练依据", portable.render(result))
+
+    def test_single_cpu_explanation_is_a_resource_constraint_not_a_gain_claim(self):
+        result = self.result(cpus=1)
+        self.assertEqual(result["selection_basis"], "resource-constrained-single-thread")
+        self.assertIn("资源约束", result["reason"])
+        self.assertIn("逻辑 CPU：1", portable.render(result))
+
+    def test_noisy_training_explains_why_strict_default_was_kept(self):
+        data = copy.deepcopy(self.data)
+        for case in data["cases"]:
+            for row in case["observations"]:
+                row["evidence"]["solve_seconds"] = 4. if row["candidate"]["id"] == "strict-2" else 3.9
+        result = self.result(data=data)
+        self.assertEqual(result["selected"]["id"], "strict-2")
+        self.assertEqual(result["selection_basis"], "conservative-strict-default")
+        self.assertIn("保留严格", result["reason"])
+        self.assertIn("不声称加速", result["reason"])
+
+    def test_current_display_explains_target_coverage_mesh_and_next_action(self):
+        text = portable.render(self.result())
+        for phrase in ("3 种几何配置", "36 条观测", "当前报告", "网格限制", "不保证所有组合", "至少三次冷求解"):
+            self.assertIn(phrase, text)
+
+    def test_aspect_display_does_not_overflow_or_underflow_finite_log_features(self):
+        self.assertEqual(portable._feature_text("log10_aspect_ratio", 600.), "10^600")
+        self.assertEqual(portable._feature_text("log10_aspect_ratio", -600.), "10^-600")
 
 
 if __name__=="__main__": unittest.main()
