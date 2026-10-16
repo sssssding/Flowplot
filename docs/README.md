@@ -2,6 +2,7 @@
 
 | 文档 | 用途 | 维护时机 |
 |---|---|---|
+| [DELIVERY_PLAN.md](DELIVERY_PLAN.md) | 当前策划任务、实现方交付格式、优先级与用户验收门槛 | 每轮实施及策划复核后更新 |
 | [PROJECT_SCOPE.md](PROJECT_SCOPE.md) | MVP 边界、支持项和非目标 | 范围变化前先更新 |
 | [NAMING.md](NAMING.md) | FlowPlot 当前应用名、旧入口/内部标识兼容及历史证据边界 | 团队决定改名或迁移入口时更新 |
 | [BLUEPRINT.md](BLUEPRINT.md) | 系统架构、数据流和里程碑 | 架构评审后更新 |
