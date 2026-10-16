@@ -1,5 +1,11 @@
 # 开发与验证
 
+## 可复现检验与第二台电脑
+
+新增 `scripts/verify_delivery.py --model-root '<清单原件所在根目录>' --comsol-root '<Multiphysics>' --output-dir '<输入根目录以外的新目录>'`，记录全量测试与六模型各两次只读检查、离线复算和输入稳定性。省略 COMSOL 参数时仅为离线核验，不提升真实模型/界面/许可证状态；输出不是完整项目验收结论。已有本地模型修改时，使用经过 manifest 核对的独立原件树，不恢复原文件。
+
+第二台 Win10/COMSOL 6.3 操作见 [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md)。`validate_recommendation.py` 只分析同机已有冷求解数据，本身不求解；新增十项合成专项及实际历史基准分析不作为独立性能结论。当前完整目标证据见 [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)。
+
 ## 环境
 
 验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。

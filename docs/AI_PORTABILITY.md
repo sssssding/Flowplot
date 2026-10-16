@@ -42,6 +42,8 @@ python src/flowpilot/portable_recommend.py --dataset '<实测 dataset.json>' --o
 
 ## 测试与回退
 
+第二台 Win10 / COMSOL 6.3 实测步骤见 [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md)。使用原校准入口在独立副本取得 12 条实际冷求解，再由 `validate_recommendation.py` 核对同机/同模型来源并比较默认与所选配置的中位数、范围和离散性；质量失败优先于速度。评估本身不求解。当前开发基准参与过训练，换电脑仍不能把它称为独立测试集，默认/经验/随机和未见模型的正式门槛保留。
+
 验证分为真实副本测量、明确合成的跨平台/新哈希/新特征/资源反例和隐藏 Tk 功能核对；结果见 `PROGRESS.md`。未取得第二台机器实际性能实验，未达到 T13 的独立性能标准。以前两份 GUI 功能记录保留原字节，新实测独立保存。
 
 验收修复后新实测为 `ai_review_safety_smoke.json`，19 项隐藏 Tk 检查含四项临时合成快照反例；之前三份 AI 功能摘要均保持原字节。正常流程使用本机真实只读报告，没有重新求解或重采训练数据，隐藏检查不代替可见/新用户或性能验收。
