@@ -5,6 +5,7 @@
 | [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md) | 完整软件目标逐项核验、权威证据和未完成门槛 | 每轮有新实现或真实检验结果后 |
 | [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md) | Win10/COMSOL 6.3 第二台电脑的功能复现、冷求解与推荐实测步骤 | 收到第二台电脑实际结果后 |
 | [MESH_TRANSFER.md](MESH_TRANSFER.md) | 网格差异的真实开发记录、当前迁移约束与后续数据契约 | 网格采集/实验或迁移条件变化前后 |
+| [UI_VERIFICATION_BLOCKER.md](UI_VERIFICATION_BLOCKER.md) | 实际窗口工具阻塞、标识实验边界与报告按钮缺陷的修复证据 | 工具恢复或收到可见操作记录后 |
 | [DELIVERY_PLAN.md](DELIVERY_PLAN.md) | 当前策划任务、实现方交付格式、优先级与用户验收门槛 | 每轮实施及策划复核后更新 |
 | [PROJECT_SCOPE.md](PROJECT_SCOPE.md) | MVP 边界、支持项和非目标 | 范围变化前先更新 |
 | [NAMING.md](NAMING.md) | FlowPlot 当前应用名、旧入口/内部标识兼容及历史证据边界 | 团队决定改名或迁移入口时更新 |

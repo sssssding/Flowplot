@@ -56,4 +56,6 @@ python src/flowpilot/portable_recommend.py --dataset '<实测 dataset.json>' --o
 
 随后推荐说明补齐的新来源绑定为 `ai_explanation_smoke.json`，29 项隐藏 Tk 检查；前五份 AI 功能摘要原字节保留。单核资源与超范围说明反例明确使用模拟资源/临时合成报告，不冒充真实单核电脑或独立模型。真实基准更新前后的候选排序和所选配置已核对相同。该记录不替代可见界面、真实新用户、第二台电脑或性能验收。
 
+后续修复 AI 窗口“查看完整报告”按钮的零参数回调冲突；当前来源绑定为 `ai_report_button_smoke.json`（30 项隐藏 Tk），之前六份 AI 摘要原字节保留。新增项实际 invoke 绑定的按钮、拦截默认查看器打开动作，核对当前 Markdown 路径；不以此宣称可见点击或用户理解验收。实验及阻塞细节见 [UI_VERIFICATION_BLOCKER.md](UI_VERIFICATION_BLOCKER.md)。
+
 回退推荐时在窗口选择旧 `solver_ranker.json`，或使用 CLI 的 `--learned-model` 指定旧文件。旧版仍只能对原基准/本机推荐。不要移除新开发登记来绕过正式验收门槛，也不要上传本机原始模型与运行日志。

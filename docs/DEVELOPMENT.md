@@ -8,6 +8,8 @@
 
 后续推荐解释字段与数字显示测试位于 `test_portable_recommend.py`，最新完整 AI 来源为 `ai_explanation_smoke.json`（29 项隐藏 Tk），之前五份摘要原字节保留。旧工程摘要中的便携推荐模块指纹只说明当时版本；本次不改检查链路、训练文件或正式冻结集合。网格迁移约束见 [MESH_TRANSFER.md](MESH_TRANSFER.md)，不是新增网格识别能力。
 
+报告按钮修复后的当前来源为 `ai_report_button_smoke.json`（30 项隐藏 Tk，外部查看器打开被拦截）；专项 `test_recommend_report_button.py` 验证零参数按钮与显式预览目录两种调用约定。父类新增按钮/回调时应核对子类签名，不只直接调用显式预览 API。前六份 AI 摘要保持原字节；可见核验仍按 [UI_VERIFICATION_BLOCKER.md](UI_VERIFICATION_BLOCKER.md) 保留未完成。
+
 ## 环境
 
 验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。

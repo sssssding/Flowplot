@@ -41,6 +41,10 @@ def main():
         tests["ai_tab_present"] = "AI 参数推荐" in [app.result_tabs.tab(tab, "text") for tab in app.result_tabs.tabs()]
         tests["offline_preview_selects_ai_tab"] = app.result_tabs.select() == str(app.ai_tab)
         tests["no_automatic_apply"] = "不自动修改" in app.ai_text.get("1.0", "end")
+        opened = []
+        with patch.object(app, "_open", side_effect=opened.append):
+            app.report_button.invoke()
+        tests["report_button_opens_current_markdown_without_import"] = opened == [baseline["directory"] / "report.md"]
         portable_run = app.ai_result.get("method") == portable_recommend.METHOD
         if portable_run:
             shown = app.ai_text.get("1.0", "end")
@@ -167,6 +171,7 @@ def main():
                   "visible_user_acceptance": False, "independent_performance_validation": False,
                   "snapshot_regression_inputs_synthetic": True,
                   "explanation_regression_inputs_synthetic": portable_run,
+                  "report_button_default_viewer_mocked": True,
                   "source_sha256": {p: sha256(ROOT / p) for p in ("src/flowpilot/recommend.py",
                       "src/flowpilot/portable_recommend.py", "src/flowpilot/benchmark_portable.py", "src/comsol/PortableFamily.java",
                       "src/flowpilot/acceptance_dataset.py", "data/fixtures/ai_development_registry.json",
