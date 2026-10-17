@@ -1,61 +1,43 @@
-# 第二台电脑检验（Windows 10 / COMSOL 6.3）
+# Win10 / COMSOL 6.3 验证复测
 
-2026-10-17 实际执行结果已记录在 [本机检验摘要](validation/2026-10-17/README.md)：对 `e77df9c` 的正常权限自动工程检验通过，12 次副本冷求解质量检查通过；用户填写了 12 项正常/通过及 1 项未验证的可见操作记录。推荐仍选择严格双线程默认配置。范围外/部分模型、新用户计时及专业/独立验收仍未完成，具体限制和体验反馈见摘要。以下保留原操作方案。
+实际操作结果和原始证据统一见 [2026-10-17 摘要](validation/2026-10-17/README.md)、[工程 JSON](validation/2026-10-17/engineering-summary.json)、[推荐评估](validation/2026-10-17/recommendation-evaluation.json) 与 [可见操作记录](validation/2026-10-17/visible-ui-record.md)。本页只说明复测步骤；当前状态以 [PROGRESS.md](PROGRESS.md) 为准。
 
-2026-10-16：用户确认可提供此环境并执行步骤。以下是操作方案，不是第二台电脑已经通过的记录。先完成 A，再按需要执行 B；每次使用新的输出位置，不删除或覆盖上次结果。
+## A. 工程检查与可见操作
 
-两阶段尽量保持同一代码提交，不在检查或求解期间更新工作文件。推荐说明更新后会显示覆盖、当前参数、网格限制及默认保留原因；旧版本输出仍须按其实际来源记录，不手改结果适配新版。
-
-## A. 功能与真实模型复现
-
-准备：Git/Git LFS、带 Tk 的 Python 3.12/3.13、可使用的 COMSOL 6.3 许可证，及至少两个逻辑 CPU。已有自己的代码或模型改动先保存，勿强制重置。拉取当前开发分支后创建自己的检验分支；分支名已存在时另选。
+准备 Git/LFS、Python 3.12 或 3.13（带 Tk）、COMSOL 6.3 许可证和至少两个逻辑 CPU。先保存已有代码/模型修改。PR 合并后从 `origin/main` 建立新分支；使用新的输出目录，不覆盖工作文件。
 
 ```powershell
 git fetch origin
-git switch -c codex/second-pc-validation origin/codex/post-handoff-finish
+git switch -c codex/pc2-recheck origin/main
 git lfs install
 git lfs pull
 python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
-# 改为这台电脑的实际 Multiphysics 安装目录，不要照抄交出方路径
-$flowplotComsol = 'D:\COMSOL63\Multiphysics'
-./.venv/Scripts/python.exe -X utf8 scripts/verify_delivery.py --model-root . --comsol-root $flowplotComsol --output-dir ../FlowPlot-validation/pc2-001
+$comsolRoot = '<本机 Multiphysics 安装目录>'
+./.venv/Scripts/python.exe -X utf8 scripts/verify_delivery.py --model-root . --comsol-root $comsolRoot --output-dir ../FlowPlot-validation/pc2-recheck-001
 ```
 
-检验输出放在仓库旁边，避免写进输入根目录。脚本会记录解释器/依赖版本、真实退出码、测试数量、源码指纹及前后模型哈希。六个开发模型各读取两次，随后离线重算；不求解或保存源模型。失败时保留整个目录，先查看 verification.json 和对应阶段日志，不挑成功的子项宣称全套通过。
+若分支或输出目录已存在，换新名称。检查输出必须在仓库和模型输入树之外。失败时保留目录并检查 JSON 与阶段日志；不要只选成功的子项汇报。工程复现需要全量测试成功、六模型完整且 code 集合 6/6 匹配、离线复算一致、源码和输入哈希不变。该结果只覆盖本机工程复现。
 
-全量测试退出成功、六模型完整且 6/6 code 集合匹配、离线重算一致、前后文件不变，才能说这一台电脑的自动工程复现通过。仍不是专业审核或独立模型验收。
-
-打开可见界面：
+可见 UI 使用新生成的基准报告：
 
 ```powershell
-./.venv/Scripts/python.exe -X utf8 src/flowpilot/recommend_ui.py --report ../FlowPlot-validation/pc2-001/checks/baseline --comsol-root $flowplotComsol
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/recommend_ui.py --report ../FlowPlot-validation/pc2-recheck-001/checks/baseline --comsol-root $comsolRoot
 ```
 
-人工实际操作并记录：正常模型、缺少入口、入口重叠、Re 风险、检查失败/超出范围、运行后取消与重试、历史/对比/报告包往返，以及推荐刷新和拒绝推荐。已有报告从检查目录的具体模型子目录读取。不要为了触发失败改坏原模型；可用不存在的模型路径验证失败，范围外/部分模型需要对应真实样本，缺少样本就明确留待验证。
+记录系统/COMSOL 版本、实际提示和结果。覆盖正常模型、缺少入口、入口重叠、Re 风险、失败/范围外、取消重试、历史、对比、报告包往返、查看完整报告及推荐刷新/拒绝。不要修改模型来制造失败；缺少真实范围外样本就标记“未验证”。
 
-还需点击“查看完整报告”，确认打开当前模型的 Markdown，而不是报错或显示上次报告。AI 窗口的该按钮曾有参数签名冲突，当前修复及自动回调证据见 UI_VERIFICATION_BLOCKER.md；请使用包含修复的新提交测试，不因旧版本失败覆盖新结果。
+## B. 同机候选质量与耗时
 
-至少记录实际系统/COMSOL 版本、各步骤结果、错误提示和截图。没有未参与开发的真实参与者及计时，不能填写“新用户五分钟通过”。本机助手窗口工具的归属错误不是 Win10 端的已知软件故障，需以这台电脑实际体验判断。
-
-## B. 推荐的本机实际耗时与质量
-
-这一部分明确运行求解器：在仓库基准的独立副本上比较四个容差/线程候选，各三次冷求解。不会编辑源模型，也不会求解异常模型；运行期间避免同时执行其他大型计算，以减少噪声。
+此阶段会运行 COMSOL。仅在基准独立副本上比较四个容差/线程候选，各三次冷求解；不要求解异常模型，并避免同时运行大型计算。使用新输出路径：
 
 ```powershell
-./.venv/Scripts/python.exe -X utf8 src/flowpilot/calibrate_solver.py --model models/baseline_pipe_2d_laminar.mph --comsol-root $flowplotComsol --output-dir ../FlowPlot-validation/pc2-calibration-001
-./.venv/Scripts/python.exe -X utf8 src/flowpilot/validate_recommendation.py --report ../FlowPlot-validation/pc2-001/checks/baseline --calibration ../FlowPlot-validation/pc2-calibration-001/dataset.json --output ../FlowPlot-validation/pc2-ai-evaluation-001.json
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/calibrate_solver.py --model models/baseline_pipe_2d_laminar.mph --comsol-root $comsolRoot --output-dir ../FlowPlot-validation/pc2-calibration-001
+./.venv/Scripts/python.exe -X utf8 src/flowpilot/validate_recommendation.py --report ../FlowPlot-validation/pc2-recheck-001/checks/baseline --calibration ../FlowPlot-validation/pc2-calibration-001/dataset.json --output ../FlowPlot-validation/pc2-ai-evaluation-001.json
 ```
 
-评估在实际测量的同一电脑运行，核对原模型、当前报告、校准环境和工程质量，再比较被选候选与严格双线程默认配置的中位数、范围和离散性。质量失败优先于速度；若未满足超过 5% 且测量范围不重叠，明确写“没有稳定收益证据”，不把速度排序当加速证明。所选配置就是默认时也不声称加速。
+质量优先于速度。收益需超过 5% 且测量区间不重叠；否则结论为“没有稳定收益证据”。若所选配置与默认相同，不声称加速。评估器不启动 COMSOL，输入测量必须来自同一台电脑。
 
-评估不启动 COMSOL，结果记录输入指纹但不是作者签名。输入报告和测量文件不能放到其他电脑后冒充当地实际耗时。这个开发基准参与过训练，即使换电脑也仍不是独立模型测试；正式 T13 还需未见模型及默认/经验/随机参照设计。
+## 尚未完成的门槛
 
-## 回传哪些材料
-
-- verification.json、本机界面操作记录，以及 B 的 pc2-ai-evaluation-001.json。
-- 若需复查耗时/质量，可在人工审阅后单独提供 dataset.json；它不是许可证文件，但仍应检查项目参数和来源。
-- 不直接上传整个验证目录：其中含 MPH 副本、原生日志及本机路径。不要共享许可证、账户、环境目录或原模型修改。
-- 可以只回报失败阶段和提示先排查；不要把尚未执行的步骤填为通过。
-
-当前代码及命令实际发布状态以 Git 为准；找不到新脚本时先核对是否拉到了包含本页的提交，而不是从旧 main 开始。
+真实范围外/部分模型界面、新用户五分钟计时、专业复核、至少 10 个独立来源未见模型，以及推荐优于经验/随机参照的证据仍缺。开发基准参与过训练；本流程不能证明独立模型或跨硬件性能。只回传工程 JSON、人工结果和推荐评估 JSON；不要上传模型副本、原生日志、许可证、账户信息或本机路径。

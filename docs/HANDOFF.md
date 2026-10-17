@@ -1,31 +1,27 @@
 # 当前接手说明
 
-## 基线与状态
-
-当前远程基线为 `codex/second-pc-validation-20261017`，提交 `d1f8a314a865f2c52f154075ad6a56c9419f3c9d`，基于 `e77df9c` 增加 5 份 2026-10-17 验证记录。该记录报告 555 项测试中 554 通过、1 项权限跳过；六个模型两次只读检查和离线重算 6/6 匹配；12 次副本冷求解质量检查通过。严格双线程默认配置未显示稳定收益。可见操作 13 项中 12 项正常/通过，范围外或部分模型 1 项未验证。
-
-本结果只覆盖记录中的电脑、开发模型和可见操作。完整软件目标仍未完成：真实专业审核、独立未见模型集、完整可见验收和真实新用户五分钟计时未完成。不要将同机开发基准或隐藏窗口测试写成独立性能、专业验收或完整交付通过。
+本次文档整理以 `d1f8a314a865f2c52f154075ad6a56c9419f3c9d` 为来源基线；该提交用于定位 2026-10-17 验证记录，不是后续开发分支入口。最新测试数字和实际结果只维护于 [PROGRESS.md](PROGRESS.md)，完整用户门槛与证据见 [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)。
 
 ## 继续开发
 
-从远程基线创建自己的分支；已有工作树先保存修改，不要强制重置或覆盖模型：
+PR 合并后，从 `origin/main` 建立个人分支：
 
 ```powershell
 git fetch origin
-git switch -c codex/your-task origin/codex/second-pc-validation-20261017
+git switch -c codex/your-task origin/main
 git lfs pull
 python -X utf8 src/flowpilot/preflight.py
 python -X utf8 -m unittest discover -s tests -q
 ```
 
-检查环境和其它实际模型前，先按 [DEVELOPMENT.md](DEVELOPMENT.md) 选择相应命令。不要把验证输出放入输入模型/报告树。
+分支名已存在时另选新名。先保存任何用户修改；不得强制重置或覆盖基准模型、配置和本地证据。模型检查输出放到输入根目录以外的新路径。完整环境与可运行验证命令见 [DEVELOPMENT.md](DEVELOPMENT.md)。
 
-## 首选入口
+## 按需阅读
 
-- [PROGRESS.md](PROGRESS.md)：当前状态和明确未完成项。
-- [DELIVERY_PLAN.md](DELIVERY_PLAN.md)：剩余任务与验收条件。
-- [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)：原始用户目标的证据审计。
-- [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md)：可复现步骤；[2026-10-17 摘要](validation/2026-10-17/README.md)记录实际结果。
-- [PROJECT_SCOPE.md](PROJECT_SCOPE.md) 与 [DEVELOPMENT.md](DEVELOPMENT.md)：范围、命令和技术限制。
+- [PROGRESS.md](PROGRESS.md)：当前实测结果及明确未完成项。
+- [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)：原始产品目标、各自证据和验收缺口。
+- [DELIVERY_PLAN.md](DELIVERY_PLAN.md)：下一步顺序及完成条件。
+- [SECOND_PC_VALIDATION.md](SECOND_PC_VALIDATION.md)：可复测命令；10 月 17 日的实际结果链接至日期摘要。
+- [PROJECT_SCOPE.md](PROJECT_SCOPE.md)、[DEVELOPMENT.md](DEVELOPMENT.md)：受支持范围、操作约束与开发命令。
 
-原始 JSON、摘要文本及哈希作为证据保留在仓库；大型模型副本、原生日志、截图和本机路径留在本机。
+历史逐轮过程可从 Git 提交追溯；模型副本、原生日志、截图、许可证和本机路径不随文档同步。

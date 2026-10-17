@@ -2,11 +2,11 @@
 
 ## 当前验证状态
 
-2026-10-17 工程结果：555 项中 554 通过、1 项符号链接权限跳过；六个受控模型各只读加载两次，code 集合及离线重算均 6/6 匹配。12 次副本冷求解质量检查通过，但没有稳定收益证据。该记录不等于专业审核、独立模型、新用户或完整可见界面验收。详见 [日期摘要](validation/2026-10-17/README.md) 与 [完成审计](COMPLETION_AUDIT.md)。
+最新测试和实测数字只维护于 [PROGRESS.md](PROGRESS.md)；完整目标及各自证据见 [COMPLETION_AUDIT.md](COMPLETION_AUDIT.md)。
 
 ## 环境与保护
 
-使用 Git、Git LFS、Windows PowerShell、Python 3.12 64 位及 `requirements-dev.txt` 依赖。真实模型验证使用 COMSOL 6.3 构建 290。可见界面需要 Tk。不要将安装目录写入源码；下方 `<COMSOL_ROOT>` 指含 `bin/win64` 的 Multiphysics 目录。
+使用 Git、Git LFS、Windows PowerShell、Python 3.12/3.13 64 位及 `requirements-dev.txt` 依赖。真实模型验证使用 COMSOL 6.3 构建 290。可见界面需要 Tk。不要将安装目录写入源码；下方 `<COMSOL_ROOT>` 指含 `bin/win64` 的 Multiphysics 目录。
 
 先保存工作树中的用户修改。只读检查不求解或保存源模型。输出必须位于模型/报告输入树外的新目录；已存在的文件不覆盖。失败目录保留供复核。不要上传许可证、模型副本、原生日志、截图或本机绝对路径。
 
@@ -14,7 +14,7 @@
 
 ```powershell
 git fetch origin
-git switch -c codex/your-task origin/codex/second-pc-validation-20261017
+git switch -c codex/your-task origin/main
 git lfs pull
 python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements-dev.txt

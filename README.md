@@ -4,7 +4,7 @@ FlowPlot 是面向 COMSOL 二维、单域、稳态层流矩形模型的检查原
 
 ## 当前状态
 
-截至 2026-10-17，第二台电脑记录了全量 555 项测试（554 通过、1 项符号链接权限跳过）、六个模型各两次只读检查及离线重算匹配；12 次副本冷求解完成。推荐仍保留严格双线程默认值，没有稳定收益证据。可见操作记录 13 项中 12 项通过、范围外/部分模型 1 项未验证。完整目标仍未完成：专业审核、独立未见模型、完整可见验收和新用户计时尚缺。
+最新工程结果与未完成的正式验收门槛集中记录在 [PROGRESS.md](docs/PROGRESS.md) 和 [COMPLETION_AUDIT.md](docs/COMPLETION_AUDIT.md)。10 月 17 日原始验证文件不可覆盖或改写。
 
 权威当前状态见 [接手说明](docs/HANDOFF.md)、[进度](docs/PROGRESS.md) 与 [完成审计](docs/COMPLETION_AUDIT.md)。第二台电脑原始摘要、可见记录和 JSON 指纹保存在 [validation/2026-10-17](docs/validation/2026-10-17/README.md)。
 

@@ -19,7 +19,11 @@
 - [DEVELOPMENT.md](DEVELOPMENT.md)：环境、可运行命令和验证边界。
 - [COLLABORATION.md](COLLABORATION.md)、[NOTES.md](NOTES.md)、[DECISIONS.md](DECISIONS.md)：协作、安全注意事项和已采纳决策。
 - [NAMING.md](NAMING.md)：当前名称与兼容约定。
-- [PREFLIGHT.md](PREFLIGHT.md)、[LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md)：接手预检和本机复现。
+- [PREFLIGHT.md](PREFLIGHT.md)：只读接手预检。
+
+## 历史记录
+
+- [LOCAL_ACCEPTANCE.md](LOCAL_ACCEPTANCE.md)：早期本机接手验证摘要入口；当前状态请看 [PROGRESS.md](PROGRESS.md)。
 
 ## 功能契约
 
