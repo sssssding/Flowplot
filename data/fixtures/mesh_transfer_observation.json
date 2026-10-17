@@ -1,0 +1,39 @@
+{
+  "schema_version": "mesh-transfer-observation-0.1",
+  "reviewed_date": "2026-10-16",
+  "basis": "historical real development solves, not new solves or independent acceptance",
+  "development_only": true,
+  "independent_validation": false,
+  "geometric_dimensions_m": {
+    "height": 0.020000000000000004,
+    "length": 0.5
+  },
+  "candidate": {
+    "id": "strict-2",
+    "stol": 0.000001,
+    "threads": 2
+  },
+  "repeat_compared": 1,
+  "mass_error_gate": 0.001,
+  "coarse": {
+    "generator_sha256": "e6f229923e042ed0c53272919dbdf25f31fd069d46a229365a83c67e36e8fd28",
+    "observation_sha256": "ec2846935ad0bb1937d73ca39a5d1cebdbc1c6acc2ad6d5f67a27faf0dec41de",
+    "minimum_size": "H/100",
+    "quality_passed": false,
+    "source_sha256": "a16ce908d2ae4bd959cf4fe4ce685ee953788d38ecf0770c42b51195c91bd649",
+    "mass_relative_error": 0.0012388064766960959,
+    "maximum_size": "H/20"
+  },
+  "refined": {
+    "generator_sha256": "8e015bd1c2ddce776f38a7ac86f9edcd10b2f700e84ece5d359622e9107f79fb",
+    "observation_sha256": "7e180c4f52c13707e194c25d455cdaa5fe1836d79ea4de82ecc9673ce979fcf8",
+    "minimum_size": "H/200",
+    "quality_passed": true,
+    "source_sha256": "e84b18264b20fecf126deb9fbe9078de7c862affea5e8767401cb7d0e4defaa9",
+    "mass_relative_error": 0.0004721292694869826,
+    "maximum_size": "H/40"
+  },
+  "mesh_independence_demonstrated": false,
+  "cross_hardware_performance_verified": false,
+  "note": "Same geometry and candidate; generator diff changes mesh size only (plus comment). One reference observation per mesh is not a convergence study or performance benchmark."
+}

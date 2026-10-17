@@ -1,0 +1,165 @@
+{
+  "schema_version": "local-recommendation-validation-0.1",
+  "status": "measured",
+  "development_only": true,
+  "independent_validation": false,
+  "software_goal_complete": false,
+  "solver_run_in_evaluation": false,
+  "measurement_environment_id": "0ee7747439e4f687bfa6d805a82fae71d2e90b27c9dd93ade98d5f2dcd5cc7cb",
+  "source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+  "run_sha256": "931d0d07be66e6fa8ca13c61067438a9ec4439677d6740245c16e965c3443d74",
+  "diagnosis_sha256": "ba747689a9e303c3e773616710ffd60af7393fb384c86d7c4fb2f27790b526e2",
+  "calibration_sha256": "c527e732a10e741eb4ae2e57218d5d5b1b3692358052bca8bb43632be501a002",
+  "evaluator_sha256": "f2ccece0bc4efe3ce020c1a018b7336618576c0d7703b324f16f1eecf26bcc04",
+  "recommendation": {
+    "schema_version": "solver-recommendation-0.2",
+    "status": "recommended",
+    "notice": "跨机器、按模型特征匹配的实验性候选建议。排序使用相对耗时，不能保证本机秒数或加速；必须在副本验证，不自动修改模型，不代表物理/独立性能验收通过。",
+    "method": "feature-relative-knn-v1",
+    "source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "ranking": [
+      {
+        "candidate": {
+          "id": "loose-2",
+          "stol": 0.0001,
+          "threads": 2
+        },
+        "predicted_relative_runtime": 0.8709095164032806,
+        "observed_relative_range": [
+          0.6936098594344653,
+          1.1563201217692496
+        ],
+        "supporting_models": 1,
+        "samples": 3
+      },
+      {
+        "candidate": {
+          "id": "balanced-2",
+          "stol": 1e-05,
+          "threads": 2
+        },
+        "predicted_relative_runtime": 0.9458051358561124,
+        "observed_relative_range": [
+          0.8258499008074288,
+          1.1141263546992832
+        ],
+        "supporting_models": 1,
+        "samples": 3
+      },
+      {
+        "candidate": {
+          "id": "strict-2",
+          "stol": 1e-06,
+          "threads": 2
+        },
+        "predicted_relative_runtime": 1.0,
+        "observed_relative_range": [
+          0.7511891533646959,
+          1.3312226295079483
+        ],
+        "supporting_models": 1,
+        "samples": 3
+      },
+      {
+        "candidate": {
+          "id": "strict-1",
+          "stol": 1e-06,
+          "threads": 1
+        },
+        "predicted_relative_runtime": 1.3771388411644339,
+        "observed_relative_range": [
+          1.0399413124764108,
+          1.7873567389573428
+        ],
+        "supporting_models": 1,
+        "samples": 3
+      }
+    ],
+    "selected": {
+      "id": "strict-2",
+      "stol": 1e-06,
+      "threads": 2
+    },
+    "requires_local_validation": true,
+    "independent_validation": false,
+    "absolute_runtime_prediction": null,
+    "machine_hash_required": false,
+    "training_coverage": {
+      "geometry_configurations": 3,
+      "observations": 36,
+      "comsol_series": "6.3",
+      "ranges": {
+        "length_m": [
+          0.5,
+          2.0
+        ],
+        "height_m": [
+          0.020000000000000004,
+          0.10000000000000002
+        ],
+        "reynolds": [
+          200.00000000000003,
+          1000.0000000000002
+        ],
+        "log10_aspect_ratio": [
+          1.301029995663981,
+          1.3979400086720375
+        ]
+      },
+      "mesh_features_available": false,
+      "independent_validation": false
+    },
+    "mesh_notice": "未采集当前模型的网格自由度/质量，几何相近不证明网格相同，不能据此保证精度或速度。请保留原网格，在独立副本比较默认与候选，先核对质量再看耗时。",
+    "target_features": {
+      "vector": [
+        0.0,
+        -1.301029995663981,
+        2.6989700043360187,
+        1.301029995663981
+      ],
+      "length_m": 1.0,
+      "height_m": 0.05000000000000001,
+      "reynolds": 500.0000000000001,
+      "velocity_m_s": 0.01,
+      "density_kg_m3": 1000.0,
+      "viscosity_pa_s": 0.001,
+      "comsol_series": "6.3"
+    },
+    "reason": "候选的训练收益不足 5% 或测量范围重叠，保留严格双线程默认配置；不声称加速。",
+    "selection_basis": "conservative-strict-default",
+    "supported_by": [
+      "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b"
+    ],
+    "feature_distance": 0.0,
+    "available_logical_cpus": 12,
+    "confidence": "experimental-transfer",
+    "comsol_series": "6.3",
+    "learned_model_sha256": "13d78a0f86258a4828ebb71bf22f50993089d9391c68cbca9460e2ef86f362fe",
+    "run_sha256": "931d0d07be66e6fa8ca13c61067438a9ec4439677d6740245c16e965c3443d74",
+    "diagnosis_sha256": "ba747689a9e303c3e773616710ffd60af7393fb384c86d7c4fb2f27790b526e2"
+  },
+  "comparison": {
+    "default_candidate": "strict-2",
+    "selected_candidate": "strict-2",
+    "default": {
+      "samples": 3,
+      "median_seconds": 3.5727541,
+      "minimum_seconds": 3.458184,
+      "maximum_seconds": 3.5790729,
+      "stdev_seconds": 0.06804454569209291
+    },
+    "selected": {
+      "samples": 3,
+      "median_seconds": 3.5727541,
+      "minimum_seconds": 3.458184,
+      "maximum_seconds": 3.5790729,
+      "stdev_seconds": 0.06804454569209291
+    },
+    "selected_over_default": 1.0,
+    "observed_gain_above_noise": false,
+    "quality_checks_passed": true,
+    "speed_scope": "runAll-only-not-startup-loading-saving"
+  },
+  "notice": "仅核对当前电脑、已登记开发基准的实测；不是未见模型、专业审核或独立性能验收。",
+  "reason": "没有满足大于 5% 且测量范围不重叠的收益证据；保留严格配置，不声称加速。"
+}

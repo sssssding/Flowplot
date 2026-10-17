@@ -69,8 +69,10 @@ class RecommendationApp(DesktopApp):
             self.learned_model = Path(path)
             self.refresh_recommendation()
 
-    def open_report(self, directory):
-        """Explicit offline preview; use the same verified reader as report import."""
+    def open_report(self, directory=None):
+        """Preserve the inherited report button and explicit verified preview API."""
+        if directory is None:
+            return super().open_report()
         if self.session.busy:
             raise CheckError("检查仍在运行，请等待结束后再打开已有报告。")
         try:

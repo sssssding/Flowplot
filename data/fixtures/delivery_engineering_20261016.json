@@ -1,0 +1,55 @@
+{
+  "schema_version": "delivery-engineering-review-0.1",
+  "date": "2026-10-16",
+  "base_commit": "bd84451b85d6fd51936876bbfaba26f0a5d12ff6",
+  "software_goal_complete": false,
+  "expert_review": false,
+  "independent_acceptance": false,
+  "cross_hardware_measured": false,
+  "offline_tests": {
+    "command": "python -X utf8 -m unittest discover -s tests -q",
+    "run": 544,
+    "passed": 543,
+    "skip_reason": "real symlink privilege unavailable",
+    "skipped": 1
+  },
+  "comsol_readonly": {
+    "checked": 6,
+    "matching": 6,
+    "loads_each": 2,
+    "offline_matching": 6,
+    "summary_sha256": "bfb6990c0e148fdf3e5c869689ed1816594c30ab2cbb0d106e7b52a8682c706d"
+  },
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "baseline_reloads": 10,
+  "hidden_tk_checks": {
+    "all_passed": true,
+    "passed": 23,
+    "synthetic_snapshot_mutations": true,
+    "visible_user_acceptance": false
+  },
+  "visible_ui": {
+    "status": "blocked_by_window_ownership_helper",
+    "capture_attempts": 2,
+    "inputs_sent": 0
+  },
+  "inputs_preserved": true,
+  "user_baseline_sha256": "e43ead4f16b18d90a77f07da0381b7ece4fb9dcd5f1efb08b67b1d221245dac9",
+  "local_ai": {
+    "status": "measured",
+    "basis": "historical measured canonical development baseline on same machine",
+    "selected": "strict-2",
+    "independent_validation": false,
+    "observed_gain_above_noise": false
+  },
+  "source_sha256": {
+    "scripts/verify_delivery.py": "fb253ee72d05d43cf17d6a74e5a53a01eb03d54db89d9c58f4e23c5d3eb77be9",
+    "src/flowpilot/validate_recommendation.py": "f2ccece0bc4efe3ce020c1a018b7336618576c0d7703b324f16f1eecf26bcc04",
+    "src/flowpilot/check_model.py": "8c5ce4adfd944d7e99b81e89012fb3b3644fdb2901cd3c6d6e11d434ad4f1493",
+    "src/flowpilot/check_suite.py": "a77bbfaf7ecbdc8a605e67a73fe0c101b93d020a840b468ebe5652b06d2b0af5",
+    "src/flowpilot/diagnostics.py": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+    "src/flowpilot/recommend.py": "b2a8f110fbf1f7b6519202c8700502b04ef344136ca795e766c2080e5901e51f",
+    "src/flowpilot/portable_recommend.py": "3e38ae8da1ae224a46bec8f8e92c03ab96f48f427cfa2fc073449062b032f333",
+    "tests/test_local_recommendation_validation.py": "827e836da898368af1ee4f55370ba9836b532785a70d3265f5618c684d6c5099"
+  }
+}
