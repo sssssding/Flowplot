@@ -26,6 +26,7 @@ def _provenance(loaded):
     settings = metadata.get("settings")
     return {"source": {key: metadata["source"][key] for key in ("filename", "sha256")},
             "diagnosis_status": loaded["report"]["status"],
+            "diagnosis_contract": loaded["report"]["schema_version"],
             "rule_engine_sha256": metadata.get("rule_engine_sha256"),
             "inventory_source_sha256": metadata.get("inventory_source_sha256"),
             "comsol_version": metadata.get("comsol_version"),
@@ -38,7 +39,8 @@ def _provenance(loaded):
 def _groups(findings):
     groups = {}
     for item in findings:
-        key = (item["code"], tuple(sorted(item["feature_tags"])), tuple(sorted(item["boundary_ids"])))
+        key = (item["code"], tuple(sorted(item["feature_tags"])), tuple(sorted(item["boundary_ids"])),
+               json.dumps(item.get("source"), sort_keys=True, ensure_ascii=True), item.get("module", ""))
         canonical = {**item, "feature_tags": list(key[1]), "boundary_ids": list(key[2])}
         groups.setdefault(key, []).append(canonical)
     for values in groups.values():
@@ -51,6 +53,8 @@ def compare_reports(before_dir, after_dir):
     before, after = (load_completed_check(path) for path in (before_dir, after_dir))
     sides = [_provenance(loaded) for loaded in (before, after)]
     reasons = []
+    if sides[0]["diagnosis_contract"] != sides[1]["diagnosis_contract"]:
+        reasons.append("两份报告的诊断契约版本不同。")
     if any(side["diagnosis_status"] != "checked" for side in sides):
         reasons.append("至少一份报告未完成全部规则（partial / unsupported），不能推断问题新增或消失。")
     for field, label in (("rule_engine_sha256", "规则源码"), ("inventory_source_sha256", "模型读取源码")):
@@ -77,7 +81,7 @@ def compare_reports(before_dir, after_dir):
             old, new = left.get(key, []), right.get(key, [])
             identical = json.dumps(old, sort_keys=True, allow_nan=False) == json.dumps(new, sort_keys=True, allow_nan=False)
             kind = "added" if not old else "removed" if not new else "unchanged" if identical else "changed"
-            rows.append({"kind": kind, "code": key[0], "title": TITLES[key[0]],
+            rows.append({"kind": kind, "code": key[0], "title": TITLES.get(key[0], key[0]),
                          "feature_tags": list(key[1]), "boundary_ids": list(key[2]), "before": old, "after": new})
     counts = {kind: sum(row["kind"] == kind for row in rows) for kind in CHANGE_LABELS} if not reasons else None
     return {"schema_version": "report-comparison-0.1", "status": "not_comparable" if reasons else "compared",

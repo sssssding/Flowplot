@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from flowpilot import compare_reports as comparison
 from flowpilot.desktop import DesktopApp
-from flowpilot.diagnostics import diagnose_inventory
+from flowpilot.diagnostics import check, normalize
 
 
 class ComparisonTest(unittest.TestCase):
@@ -21,7 +21,7 @@ class ComparisonTest(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=ROOT / "outputs")
         self.addCleanup(self.temporary.cleanup)
         self.directory = Path(self.temporary.name)
-        self.report = diagnose_inventory(json.loads((ROOT / "data/fixtures/cases/high_reynolds.json").read_text(encoding="utf-8-sig")))
+        self.report = check(normalize(json.loads((ROOT / "data/fixtures/cases/high_reynolds.json").read_text(encoding="utf-8-sig"))))
         self.before, self.after = self.directory / "前次报告", self.directory / "本次报告"
 
     def write_check(self, directory, *, report=None, metadata=None):

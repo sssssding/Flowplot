@@ -15,6 +15,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from flowpilot.check_model import CheckError, ROOT, check_model, sha256, _write_json
+from flowpilot.engine_fingerprint import engine_fingerprint, fingerprint_from_sources
 from flowpilot.diagnostics import is_finite_number
 from flowpilot.desktop_session import load_completed_check
 from flowpilot.report_io import MAX_METADATA_BYTES, MAX_DIAGNOSIS_BYTES, decode_json, read_regular_file
@@ -173,12 +174,12 @@ def read_outcome(directory, case, threshold):
         if (metadata.get("schema_version") != "check-run-0.1" or metadata.get("status") != "completed"
                 or metadata.get("source", {}).get("sha256", "").lower() != case["sha256"].lower()
                 or not is_finite_number(recorded_threshold) or recorded_threshold <= 0 or recorded_threshold != threshold
-                or metadata.get("rule_engine_sha256") != sha256(RULE_SOURCE)
+                or metadata.get("rule_engine_sha256") != (engine_fingerprint() if report.get("schema_version") == "diagnosis-0.2" else sha256(RULE_SOURCE))
                 or metadata.get("inventory_source_sha256") != sha256(INVENTORY_SOURCE)
                 or metadata.get("diagnosis_sha256") != loaded["diagnosis_sha256"]):
             raise ValueError("Source hash, rule source, inventory source, settings or completion state mismatch")
         status = report.get("status")
-        if (report.get("schema_version") != "diagnosis-0.1" or status not in ("checked", "partial", "unsupported")
+        if (report.get("schema_version") not in ("diagnosis-0.1", "diagnosis-0.2") or status not in ("checked", "partial", "unsupported")
                 or metadata.get("diagnosis_status") != status or not isinstance(report.get("findings"), list)):
             raise ValueError("Malformed diagnosis or status mismatch")
         codes = [finding["code"] for finding in report["findings"]]
@@ -251,7 +252,7 @@ def run_suite(manifest_path, *, output_dir, comsol_root=None, model_root=ROOT,
                 "started_at": datetime.now(timezone.utc).isoformat(),
                 "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
                 "mode": "check" if reports_root is None else "evaluate", "attempted_cases": 0,
-                "rule_engine_sha256": source_fingerprints["src/flowpilot/diagnostics.py"],
+                "rule_engine_sha256": fingerprint_from_sources(source_fingerprints),
                 "inventory_source_sha256": source_fingerprints["src/comsol/ModelInventory.java"],
                 "source_fingerprints": source_fingerprints, "input_stability_verified": False,
                 "settings": {"loads": loads if reports_root is None else None,

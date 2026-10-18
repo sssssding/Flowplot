@@ -2,6 +2,9 @@
 
 | 文档 | 用途 | 维护时机 |
 |---|---|---|
+| [M0.md](M0.md) | 模块链路、覆盖状态、契约兼容及本轮验证入口 | M0范围或兼容行为变化时更新 |
+| [M0_BASELINE.md](M0_BASELINE.md) | 原五项改动归属、基线失败及安全回退 | 基线审计补充时更新 |
+| [M0_API.md](M0_API.md) | COMSOL 6.3真实接口、耦合归属和缺属性读取证据 | 采集API或真实验证变化时更新 |
 | [PROJECT_SCOPE.md](PROJECT_SCOPE.md) | MVP 边界、支持项和非目标 | 范围变化前先更新 |
 | [NAMING.md](NAMING.md) | FlowPlot 当前应用名、旧入口/内部标识兼容及历史证据边界 | 团队决定改名或迁移入口时更新 |
 | [BLUEPRINT.md](BLUEPRINT.md) | 系统架构、数据流和里程碑 | 架构评审后更新 |

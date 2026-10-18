@@ -20,6 +20,8 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from flowpilot.diagnostics import diagnose_inventory, is_finite_number
+from flowpilot.engine_fingerprint import engine_fingerprint
+from flowpilot.coverage_view import coverage_text
 
 ROOT = Path(__file__).resolve().parents[2]
 JAVA_SOURCE = ROOT / "src" / "comsol" / "ModelInventory.java"
@@ -174,17 +176,27 @@ def render_report(report, metadata):
               if metadata['verified_loads'] > 1 else "加载：1 次（未检查重复一致性）"), ""]
     if report["status"] == "unsupported":
         lines += ["原因：" + _markdown_text(report["reason"]), ""]
-    elif not report["findings"]:
+    elif not report["findings"] and report["status"] == "checked":
         lines += ["当前规则未发现问题。", ""]
+    coverage = coverage_text(report)
+    if coverage:
+        lines += [_markdown_text(line) + "  " for line in coverage.splitlines()] + [""]
     for finding in report["findings"]:
         lines += [f"## {finding['code']} · {finding['severity']}", "",
-                  _markdown_text(finding["explanation"]), "",
+                  _markdown_text(finding["explanation"]), ""]
+        if "source" in finding:
+            lines += ["模块：" + _markdown_text(finding["module"]),
+                      "来源：" + _markdown_text(json.dumps(finding["source"], ensure_ascii=False, sort_keys=True)), ""]
+        lines += [
                   "相关节点：" + _markdown_text(", ".join(finding["feature_tags"]) or "—"),
                   "边界编号：" + _markdown_text(", ".join(map(str, finding["boundary_ids"])) or "—"), "",
                   "证据：", "", "```json", json.dumps(finding["evidence"], ensure_ascii=False, indent=2),
                   "```", "", "建议：" + ACTIONS.get(finding["code"], "请结合 COMSOL 设置人工核对。"), ""]
-    lines += ["检查范围：当前仅验证二维、单域、米制、轴对齐矩形通道的稳态牛顿层流配置；"
-              "入口限法向速度、出口限压力、壁面限 No Slip。", "",
+    scope = ("检查范围以模块及逐条规则覆盖记录为准；流动检查限已核验的二维平面配置。"
+             if report.get("schema_version") == "diagnosis-0.2" else
+             "检查范围：当前仅验证二维、单域、米制、轴对齐矩形通道的稳态牛顿层流配置；"
+             "入口限法向速度、出口限压力、壁面限 No Slip。")
+    lines += [scope, "",
               f"Re 筛查阈值：{metadata['settings']['reynolds_warning']:g}，以通道高度 H 计算。",
               "本报告是配置检查，不证明求解收敛或物理正确性；未执行求解。", ""]
     policy = report.get("numeric_policy")
@@ -226,7 +238,7 @@ def check_model(model_path, *, comsol_root, output_dir, loads=1, timeout=300.0,
                 "started_at": datetime.now(timezone.utc).isoformat(),
                 "source": {"filename": model_path.name, "sha256": source_hash},
                 "python_version": sys.version.split()[0],
-                "rule_engine_sha256": sha256(ROOT / "src/flowpilot/diagnostics.py"),
+                "rule_engine_sha256": engine_fingerprint(),
                 "inventory_source_sha256": sha256(JAVA_SOURCE),
                 "settings": {"loads": loads, "timeout_seconds_per_process": timeout,
                              "reynolds_warning": reynolds_warning}, "stage": "snapshot"}

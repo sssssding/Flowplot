@@ -16,6 +16,7 @@ if __package__ in (None, ""):
 from flowpilot.acceptance_dataset import DISCLAIMER, _new_output, _root, verify_dataset
 from flowpilot.check_model import CheckError, _markdown_text, _write_json
 from flowpilot.check_suite import evaluate_dataset, read_outcome
+from flowpilot.engine_fingerprint import fingerprint_from_sources
 from flowpilot.report_io import MAX_DIAGNOSIS_BYTES, MAX_METADATA_BYTES, decode_json, read_regular_file
 
 EXTRA_FIELDS = {"manifest_sha256", "mode", "rule_engine_sha256", "inventory_source_sha256", "reynolds_warning"}
@@ -58,7 +59,7 @@ def check_suite_record(snapshot, loaded, mode):
     settings = loaded["manifest"]["reynolds_warning"]
     expected = {"status": status, "attempted_cases": count, "checked_cases": checked, "mode": mode,
                 "manifest_sha256": loaded["metadata"]["manifest_sha256"],
-                "rule_engine_sha256": source["src/flowpilot/diagnostics.py"],
+                "rule_engine_sha256": fingerprint_from_sources(source),
                 "inventory_source_sha256": source["src/comsol/ModelInventory.java"]}
     if (any(not same_json(run.get(key), value) for key, value in expected.items())
             or not isinstance(run.get("settings"), dict)

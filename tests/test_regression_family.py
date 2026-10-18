@@ -1,4 +1,5 @@
 """Offline generator failure tests; real COMSOL evidence lives in the versioned summary."""
+from historical_sources import SOURCES as PRE_M0_SOURCES
 import copy
 import json
 from pathlib import Path
@@ -233,7 +234,7 @@ class RegressionFamilyTest(unittest.TestCase):
         self.assertFalse(result["verification_passed"])
         self.assertEqual(self.metadata()["status"], "mismatch")
 
-    def test_real_versioned_evidence_and_current_sources(self):
+    def test_real_versioned_evidence_and_historical_sources(self):
         result = json.loads((ROOT / "data/fixtures/regression_family.json").read_text(encoding="utf-8"))
         self.assertTrue(result["verification_passed"])
         self.assertIn("6.3", result["comsol_version"])
@@ -244,8 +245,8 @@ class RegressionFamilyTest(unittest.TestCase):
         self.assertEqual(result["distinct_geometry_count"], 3)
         self.assertEqual(result["builder_sha256"], sha256(Path(family.__file__)))
         self.assertEqual(result["entry_sha256"], sha256(family.ENTRY_SOURCE))
-        self.assertEqual(result["rule_engine_sha256"], sha256(ROOT / "src/flowpilot/diagnostics.py"))
-        self.assertEqual(result["inventory_source_sha256"], sha256(family.JAVA_SOURCE))
+        self.assertEqual(result["rule_engine_sha256"], PRE_M0_SOURCES["src/flowpilot/diagnostics.py"])
+        self.assertEqual(result["inventory_source_sha256"], PRE_M0_SOURCES["src/comsol/ModelInventory.java"])
         self.assertFalse(result["models_solved"])
         self.assertFalse(result["expert_review"])
         self.assertFalse(result["independent_acceptance_set"])

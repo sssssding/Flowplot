@@ -4,6 +4,7 @@ from __future__ import annotations
 from jsonschema import ValidationError
 
 from flowpilot.diagnostics import validate
+from flowpilot.coverage_view import coverage_text
 
 ROLES = {"inlet": "入口", "outlet": "出口", "wall": "壁面"}
 MODES = {"Velocity": "法向速度入口", "PressureNoViscousStress": "压力出口", "NoSlip": "无滑移壁面", "Slip": "滑移壁面"}
@@ -30,7 +31,18 @@ def build_overview(report):
     def unavailable(reason):
         return {"available": False, "reason": reason, "boundaries": [], "coverage": None,
                 "text": "模型概览不可用：" + reason + "\n\n" + NOTICE}
-    if not isinstance(report, dict) or report.get("schema_version") != "diagnosis-0.1":
+    modern = isinstance(report, dict) and report.get("schema_version") == "diagnosis-0.2"
+    if modern:
+        from flowpilot.diagnostics import validate_diagnosis_report
+        try:
+            validate_diagnosis_report(report)
+        except (ValueError, TypeError, KeyError, ValidationError):
+            return unavailable("诊断报告结构或覆盖状态无效。")
+        if not isinstance(report.get("model"), dict):
+            return {"available": True, "reason": "", "boundaries": [], "coverage": None,
+                    "module_coverage": report["coverage"],
+                    "text": "模型概览（报告快照）\n\n" + NOTICE + "\n\n" + coverage_text(report)}
+    if not isinstance(report, dict) or report.get("schema_version") not in ("diagnosis-0.1", "diagnosis-0.2"):
         return unavailable("不是当前版本的诊断报告。")
     if report.get("status") == "unsupported":
         return unavailable("模型超出当前模板；" + str(report.get("reason", "请查看诊断原因。")))
@@ -47,6 +59,8 @@ def build_overview(report):
         return unavailable("归一化模型证据不符合当前结构要求。")
     geometry, source = model["geometry"], model["source"]
     lines = ["模型概览（报告快照）", "", NOTICE, ""]
+    if modern:
+        lines += [coverage_text(report), ""]
     if report["status"] == "partial":
         lines += ["注意：部分检查未完成，未求值参数或无法表示的派生量不能当作正常数值。", ""]
     lines += [f"模板：{model['profile']}", f"组件：{source['component_tag']}；物理场：{source['physics_tag']}；研究：{source['study_tag']}",

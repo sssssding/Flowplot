@@ -16,7 +16,7 @@ from flowpilot.check_model import CheckError, sha256
 from flowpilot.compare_reports import compare_reports
 from flowpilot.desktop import DesktopApp
 from flowpilot.desktop_session import load_completed_check
-from flowpilot.diagnostics import diagnose_inventory
+from flowpilot.diagnostics import check, normalize, diagnose_inventory
 
 
 class ReportPackageTest(unittest.TestCase):
@@ -79,7 +79,10 @@ class ReportPackageTest(unittest.TestCase):
         self.assertEqual(summary["counts"]["unchanged"], 1)
 
     def test_partial_report_stays_partial(self):
-        self.report["status"] = "partial"
+        inventory = json.loads((ROOT / "data/fixtures/cases/missing_inlet.json").read_text(encoding="utf-8-sig"))
+        inventory["components"].append({"tag": "comp2", "physics": [{"tag": "es", "type": "Electrostatics", "enabled": True}]})
+        self.report = diagnose_inventory(inventory)
+        self.assertEqual(self.report["status"], "partial")
         self.save()
         package.export_package(self.source, self.output)
         self.assertEqual(load_completed_check(self.output)["report"]["status"], "partial")
@@ -93,6 +96,8 @@ class ReportPackageTest(unittest.TestCase):
         self.assertIn("不可用", (self.output / "overview.txt").read_text(encoding="utf-8"))
 
     def test_old_minimal_report_does_not_invent_provenance(self):
+        inventory = json.loads((ROOT / "data/fixtures/cases/missing_inlet.json").read_text(encoding="utf-8-sig"))
+        self.report = check(normalize(inventory))
         self.metadata = {key: self.metadata[key] for key in ("schema_version", "status", "source")}
         self.save()
         package.export_package(self.source, self.output)

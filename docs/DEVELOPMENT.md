@@ -1,5 +1,7 @@
 # 开发与验证
 
+M0 新入口及证据见 [M0.md](M0.md)：默认诊断输出 `diagnosis-0.2`，旧流动投影保留 `diagnostic-0.1`。完整引擎指纹覆盖注册表、模块和契约；改动这些文件后需生成新的真实运行记录，不能改写旧报告指纹。下述历史验证范围保留作复现参考。
+
 ## 环境
 
 验收修复合并 main 后，从 `origin/main` 建立个人分支，当前接手入口见 `HANDOFF.md` 顶部。AI 页签按显示快照的 run/diagnosis 指纹核对，测量输出不能位于输入报告树；变更这两条保护时运行 `test_ai_review_safety.py`、`test_benchmark_portable.py` 及全量回归。重新运行 `scripts/smoke_ai_recommendation.py` 后另存新证据，不改前三份历史 AI 摘要的指纹。

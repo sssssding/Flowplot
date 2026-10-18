@@ -1,4 +1,5 @@
 """Synthetic offline fault tests; these are not real solver/calibration evidence."""
+from historical_sources import SOURCES as PRE_M0_SOURCES
 import copy
 import json
 from pathlib import Path
@@ -119,14 +120,14 @@ class RecommendationTest(unittest.TestCase):
 
     def test_findings_partial_and_unsupported_never_recommend(self):
         for status, findings in (("checked", [{}]), ("partial", []), ("unsupported", [])):
-            loaded = {"metadata": {"source": {"sha256": "a"*64}}, "report": {"status": status, "findings": findings},
+            loaded = {"metadata": {"source": {"sha256": "a"*64}}, "report": {"schema_version": "diagnosis-0.1", "status": status, "findings": findings},
                       "run_sha256": "c"*64, "diagnosis_sha256": "b"*64}
             with patch.object(ai, "load_completed_check", return_value=loaded), \
                     patch.object(ai, "read_regular_file", side_effect=AssertionError("Do not load ranker")):
                 self.assertEqual(ai.recommend_report("unused")["status"], "unavailable")
 
     def test_report_inference_binds_exact_loaded_model_bytes(self):
-        loaded = {"metadata": {"source": {"sha256": BASELINE_HASH}}, "report": {"status": "checked", "findings": []},
+        loaded = {"metadata": {"source": {"sha256": BASELINE_HASH}}, "report": {"schema_version": "diagnosis-0.1", "status": "checked", "findings": []},
                   "run_sha256": "c"*64, "diagnosis_sha256": "b"*64}
         with tempfile.TemporaryDirectory(dir=ROOT / "outputs") as directory:
             path = Path(directory) / "model.json"
@@ -145,7 +146,7 @@ class RecommendationTest(unittest.TestCase):
         self.assertEqual(result["calibration_samples"], 12)
         self.assertEqual(len(result["ranking"]), 4)
 
-    def test_functional_smoke_is_bound_to_current_sources_not_visible_acceptance(self):
+    def test_functional_smoke_is_bound_to_historical_sources_not_visible_acceptance(self):
         self.assertEqual(sha256(ROOT / "data/fixtures/ai_functional_smoke.json"),
                          "e198aa2590e31e4a9440e5024ae6b1ee4922b0da8b0a8cac45a31f2e26634765")
         self.assertEqual(sha256(ROOT / "data/fixtures/ai_offline_preview_smoke.json"),
@@ -162,7 +163,7 @@ class RecommendationTest(unittest.TestCase):
         self.assertFalse(record["independent_performance_validation"])
         self.assertEqual(record["learned_model_sha256"], sha256(ai.DEFAULT_PORTABLE_MODEL))
         for name, digest in record["source_sha256"].items():
-            self.assertEqual(sha256(ROOT / name), digest)
+            self.assertEqual(PRE_M0_SOURCES[name], digest)
 
     def test_dependency_failure_never_opens_window(self):
         with patch.object(ai_launcher, "check_environment", return_value=[{"name": "jsonschema", "status": "error"}]), \

@@ -219,7 +219,20 @@ class ModelCheckTest(unittest.TestCase):
             with self.subTest(rotation=rotation), patch.object(cli, "_run", side_effect=self.simulate_comsol):
                 report = self.run_check()
             self.assertEqual(report["status"], "unsupported")
-            self.assertIn("旋转", report["reason"])
+            self.assertIn("非轴对称 API 证据", report["coverage"][0]["reason"])
+
+    def test_explicit_planar_rotation_keeps_boundaries_without_reynolds_height(self):
+        geometry = self.inventory["components"][0]["geometries"][0]
+        geometry.update(rectangle_rotation_expression="45[deg]", axisymmetric=False)
+        with patch.object(cli, "_run", side_effect=self.simulate_comsol):
+            report = self.run_check()
+        self.assertEqual(report["status"], "partial")
+        self.assertEqual(report["model"]["profile"], "planar-boundaries-v1")
+        self.assertNotIn("height_m", report["model"]["geometry"])
+        self.assertNotIn("REYNOLDS_RISK", [f["code"] for f in report["findings"]])
+        rules = {r["rule_id"]: r for r in report["coverage"][0]["rules"]}
+        self.assertEqual(rules["MISSING_INLET"]["status"], "checked")
+        self.assertEqual(rules["REYNOLDS_RISK"]["status"], "skipped")
 
     def test_process_nonzero_exit_includes_local_log(self):
         log = self.directory / "failed-process.log"

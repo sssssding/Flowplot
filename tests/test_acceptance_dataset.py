@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from flowpilot import acceptance_dataset as dataset
 from flowpilot.check_suite import CORE_CODES, evaluate_dataset
+from flowpilot.engine_fingerprint import engine_fingerprint
 
 
 class AcceptanceDatasetTest(unittest.TestCase):
@@ -71,7 +72,7 @@ class AcceptanceDatasetTest(unittest.TestCase):
     def save_suite(self, manifest_path, options, summary):
         mode = "check" if options.get("reports_root") is None else "evaluate"
         provenance = {"manifest_sha256": dataset.sha256(manifest_path), "mode": mode,
-                      "rule_engine_sha256": dataset.sha256(ROOT / "src/flowpilot/diagnostics.py"),
+                      "rule_engine_sha256": engine_fingerprint(),
                       "inventory_source_sha256": dataset.sha256(ROOT / "src/comsol/ModelInventory.java")}
         summary.update(**provenance, reynolds_warning=2000.)
         dataset._write_json(options["output_dir"] / "summary.json", summary)

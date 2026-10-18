@@ -1,271 +1,272 @@
-"""Normalize API evidence; do not evaluate COMSOL expressions in Python."""
+"""Schedule evidence-scoped modules; preserve the legacy flow model API."""
 from __future__ import annotations
 
 import argparse
-from fractions import Fraction
-import itertools
 import json
-import math
 from pathlib import Path
+import sys
 
 from jsonschema import Draft202012Validator, ValidationError
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from flowpilot.diagnostic_modules import MODULES
+from flowpilot.diagnostic_modules.flow import (
+    UnsupportedModel, check, normalize, validate, is_finite_number,
+    REYNOLDS_THRESHOLD_GUARD_ULPS, _reynolds_number,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "schema" / "diagnostic-model.schema.json"
-ROLES = {"Inlet": "inlet", "Outlet": "outlet", "Wall": "wall", "WallBC": "wall"}
-ALLOWED_FEATURES = set(ROLES) | {"FluidProperties", "init"}
-REYNOLDS_THRESHOLD_GUARD_ULPS = 4
+DIAGNOSIS_SCHEMA = ROOT / "schema" / "diagnosis.schema.json"
 
 
-class UnsupportedModel(ValueError):
-    """The currently verified profile does not cover this model."""
+
+def _coupling_coverage(scope, component_tag, pointer):
+    """Legacy tag-only coupling evidence is deliberately unknown, never absent."""
+    tags = scope.get("multiphysics_tags")
+    details = scope.get("multiphysics", [])
+    if tags is None:
+        tags = ["@unrecorded"]
+    if not isinstance(tags, list) or not isinstance(details, list):
+        raise ValueError("coupling tags/details must be arrays")
+    by_tag = {}
+    for index, item in enumerate(details):
+        if not isinstance(item, dict) or not isinstance(item.get("tag"), str):
+            raise ValueError("invalid coupling detail")
+        if item["tag"] in by_tag:
+            raise ValueError("duplicate coupling tags")
+        by_tag[item["tag"]] = (item, f"{pointer}/multiphysics/{index}")
+    entries, blockers = [], []
+    for tag in sorted(set(tags) | set(by_tag)):
+        item, ref = by_tag.get(tag, ({}, f"{pointer}/multiphysics_tags"))
+        inactive = item.get("enabled") is False and item.get("read_status") == "read"
+        entry = {"kind": "coupling", "module": "unsupported",
+                 "source": {"component_tag": component_tag, "coupling_tag": tag},
+                 "status": "skipped" if inactive else "unknown", "applicable": not inactive,
+                 "reason": "API 明确记录耦合已禁用；不影响当前规则。" if inactive else
+                           "M0 未验证该耦合语义或读取证据；作用域内依赖流动语义的规则跳过。",
+                 "evidence_refs": [ref], "rules": []}
+        entries.append(entry)
+        if not inactive:
+            blockers.append(ref)
+    return entries, blockers
 
 
-def is_finite_number(value):
-    """JSON numeric evidence/options must fit a finite float; bool is not a number."""
-    if type(value) not in (int, float):
-        return False
-    try:
-        return math.isfinite(value)
-    except OverflowError:
-        return False
 
+def _scoped_couplings(inventory):
+    """Deduplicate root aliases only with matching API model-path ownership.
 
-def _reynolds_number(rho, speed, height, mu):
-    """Combine recorded decimal numbers exactly; round only the final report value.
-
-    Fraction reads numeric values, never COMSOL expressions. This avoids overflowing
-    or underflowing a product whose final quotient is still representable.
+    A root tag alone never proves component scope. Both listings must record the
+    same unique path and component owner; missing/contradictory evidence remains
+    global so no dependent component silently runs uncoupled.
     """
-    exact = Fraction(str(rho)) * Fraction(str(abs(speed))) * Fraction(str(height)) / Fraction(str(mu))
-    try:
-        value = float(exact)
-    except OverflowError:
-        return None, "above_float_range"
-    if not math.isfinite(value):
-        return None, "above_float_range"
-    if value == 0 and exact != 0:
-        return None, "below_nonzero_float_range"
-    return value, None
-
-
-def _require(condition, explanation):
-    if not condition:
-        raise UnsupportedModel(explanation)
-
-
-def normalize(inventory):
-    """Keep rectangle numerics separate from planar boundary-only diagnostics."""
-    _require(inventory.get("schema_version") == "inventory-0.2", "需要 inventory-0.2 API 证据")
-    _require(not inventory["multiphysics_tags"], "暂不支持耦合物理场")
-    _require(len(inventory["components"]) == 1, "暂仅支持一个组件")
-    component = inventory["components"][0]
-    _require(not component["multiphysics_tags"], "暂不支持组件内耦合")
-    _require(len(component["geometries"]) == 1, "暂仅支持一个几何")
-    geometry = component["geometries"][0]
-    count = geometry["boundary_count"]
-    _require(geometry["dimension"] == 2 and geometry["domain_count"] == 1
-             and type(count) is int and count >= 3, "暂仅支持二维单域平面通道")
-    _require(geometry.get("axisymmetric", False) is False, "暂不支持二维轴对称模型")
-    types = geometry["feature_types"]
-    rectangle = types.count("Rectangle") == 1 and set(types) <= {"Rectangle", "Finalize"}
-    polygon = types.count("Polygon") == 1 and set(types) <= {"Polygon", "Finalize"}
-    _require(rectangle or polygon, "暂仅支持单个矩形或多边形通道，不支持其他或组合几何")
-    rotation = geometry.get("rectangle_rotation_expression", "0")
-    aligned = rectangle and count == 4 and isinstance(rotation, str) and "".join(rotation.split()) in {"0", "0[deg]", "0[rad]"}
-    # Extended profiles require explicit planar evidence from the new API reader.
-    if not aligned:
-        _require(geometry.get("axisymmetric") is False, "扩展几何需要明确的非轴对称 API 证据，请重新读取模型")
-    _require(geometry["length_unit"] == "m", "当前配置仅验证米制几何")
-    bbox = geometry["bounding_box"]
-    _require(len(bbox) == 4 and all(is_finite_number(x) for x in bbox), "几何包围盒不可用")
-    length, height = bbox[1] - bbox[0], bbox[3] - bbox[2]
-    _require(is_finite_number(length) and is_finite_number(height) and length > 0 and height > 0,
-             "几何尺寸必须为有限的正数")
-    _require(len(component["physics"]) == 1, "暂仅支持一个物理场")
-    physics = component["physics"][0]
-    _require(physics["type"] == "LaminarFlow" and physics["enabled"], "需要启用的 LaminarFlow")
-    _require(physics["study_active"], "定常研究未启用该物理场")
-    studies = inventory["studies"]
-    _require(len(studies) == 1 and studies[0]["type"] == "Stationary" and studies[0]["enabled"],
-             "暂仅支持单一定常研究步骤")
-    _require(len(component["materials"]) == 1, "暂仅支持一个材料")
-    material = component["materials"][0]
-    _require(material["enabled"] and material["domain_ids"] == [1], "材料必须覆盖唯一流体域")
-    fluids = [f for f in physics["features"] if f["enabled"] and f["type"] == "FluidProperties"]
-    _require(len(fluids) == 1 and fluids[0]["selected_entity_ids"] == [1], "需要唯一流体属性节点覆盖流体域")
-    fluid = fluids[0]["parameters"]
-    _require(fluid.get("Constitutiverelation") == "Newtonian"
-             and fluid.get("rho_mat") == "from_mat" and fluid.get("mu_mat") == "from_mat",
-             "暂仅支持从材料读取密度/黏度的牛顿流体")
-    boundaries = []
-    for feature in physics["features"]:
-        if not feature["enabled"]:
-            continue
-        _require(feature["type"] in ALLOWED_FEATURES, "不支持的启用节点: " + feature["type"])
-        _require(feature["child_feature_count"] == 0, "暂不支持嵌套物理节点")
-        role = ROLES.get(feature["type"])
-        if role is None:
-            continue
-        _require(feature["selection_dimensions"] == [1], "边界节点的选择维度必须为 1")
-        mode = feature["parameters"].get("BoundaryCondition")
-        _require(mode in {"inlet": {"Velocity"}, "outlet": {"PressureNoViscousStress"}, "wall": {"NoSlip", "Slip"}}[role],
-                 "不支持的边界模式: " + str(mode))
-        if role == "inlet":
-            _require(feature["parameters"].get("ComponentWise") == "NormalInflowVelocity", "暂仅支持法向入口速度，不能用 U0in 代替分量速度")
-        # COMSOL returns all input entities even for the fallback wall.
-        # Treat an unnamed all-boundaries wall as fallback, not an explicit conflict.
-        fallback = (role == "wall" and not feature["named_selection"]
-                    and set(feature["declared_entity_ids"] or []) == set(range(1, count + 1)))
-        boundaries.append({
-            "feature_tag": feature["tag"], "label": feature["label"], "type": role,
-            "boundary_ids": sorted(feature["selected_entity_ids"]),
-            "declared_boundary_ids": feature["declared_entity_ids"], "selection_scope": "fallback" if fallback else "explicit", "mode": mode,
-            "parameters": feature["evaluated_parameters"],
-        })
-    rectangular_profile = aligned and all(b["mode"] == "NoSlip" for b in boundaries if b["type"] == "wall")
-    if not rectangular_profile:
-        _require(geometry.get("axisymmetric") is False, "扩展边界需要明确的非轴对称 API 证据，请重新读取模型")
-    result = {
-        "schema_version": "diagnostic-0.1", "profile": "rectangular-channel-v1" if rectangular_profile else "planar-boundaries-v1",
-        "source": {"comsol_version": inventory["comsol_version"], "component_tag": component["tag"],
-                   "physics_tag": physics["tag"], "study_tag": studies[0]["study_tag"]},
-        "geometry": ({"length_m": length, "height_m": height} if rectangular_profile else
-                     {"bounding_box_m": bbox, "boundary_count": count}),
-        "material": {"density": material["density"], "dynamic_viscosity": material["dynamic_viscosity"]},
-        "boundaries": sorted(boundaries, key=lambda item: item["feature_tag"]),
-    }
-    validate(result)
-    return result
-
-
-def validate(model):
-    def finite(value):
-        if type(value) in (int, float) and not is_finite_number(value):
-            raise ValueError("numeric evidence must fit a finite float")
-        if isinstance(value, dict):
-            for child in value.values():
-                finite(child)
-        elif isinstance(value, list):
-            for child in value:
-                finite(child)
-    finite(model)
-    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-    Draft202012Validator.check_schema(schema)
-    Draft202012Validator(schema).validate(model)
-    tags = [item["feature_tag"] for item in model["boundaries"]]
-    if len(tags) != len(set(tags)):
-        raise ValueError("duplicate boundary feature tags")
-    count = 4 if model["profile"] == "rectangular-channel-v1" else model["geometry"]["boundary_count"]
-    for item in model["boundaries"]:
-        for ids in (item["boundary_ids"], item["declared_boundary_ids"] or []):
-            if any(entity > count for entity in ids):
-                raise ValidationError("boundary ID exceeds geometry boundary count")
-    if model["profile"] == "planar-boundaries-v1":
-        bbox = model["geometry"]["bounding_box_m"]
-        if any(not is_finite_number(bbox[i+1] - bbox[i]) or bbox[i+1] <= bbox[i] for i in (0, 2)):
-            raise ValueError("invalid planar bounding box")
-
-
-def check(model, *, reynolds_warning=2000.0):
-    """Template constraints, not a proof of physical validity or solver success."""
-    validate(model)
-    if not is_finite_number(reynolds_warning) or reynolds_warning <= 0:
-        raise ValueError("Reynolds warning threshold must be finite and positive")
-    findings = []
-
-    def add(code, severity, explanation, tags=(), ids=(), evidence=None):
-        findings.append({"code": code, "severity": severity, "explanation": explanation,
-                         "feature_tags": sorted(tags), "boundary_ids": sorted(ids), "evidence": evidence or {}})
-
-    boundaries = model["boundaries"]
-    if model["profile"] == "planar-boundaries-v1":
-        add("EVALUATION_UNAVAILABLE", "Warning", "已检查平面通道的边界配置；当前几何或壁面设置没有已验证的 Re 筛查配置，"
-            "未将包围盒尺寸当作通道高度，Re 风险筛查未执行。",
-            evidence={"quantity": "reynolds", "reason": "no_verified_reynolds_profile",
-                      "profile": model["profile"], "bounding_box_m": model["geometry"]["bounding_box_m"]})
-    for role in ("inlet", "outlet"):
-        role_nodes = [item for item in boundaries if item["type"] == role]
-        if not any(item["boundary_ids"] for item in role_nodes):
-            add("MISSING_" + role.upper(), "Critical", "当前通道模板缺少有效" + ("入口" if role == "inlet" else "出口")
-                + "；这不是对所有 COMSOL 模型的普遍判错。",
-                tags=[item["feature_tag"] for item in role_nodes],
-                evidence={"required_role": role, "observation_scope": "enabled_normalized_boundary_nodes",
-                          "active_role_node_count": len(role_nodes), "effective_boundary_ids": [],
-                          "absence_kind": "no_enabled_role_node" if not role_nodes else "all_effective_selections_empty",
-                          "active_boundary_nodes": [
-                              {"feature_tag": item["feature_tag"], "role": item["type"],
-                               "declared_boundary_ids": item["declared_boundary_ids"],
-                               "effective_boundary_ids": item["boundary_ids"], "selection_scope": item["selection_scope"]}
-                              for item in sorted(boundaries, key=lambda item: item["feature_tag"])]})
-    # Never interpret an all-boundaries fallback wall as conflicting with overrides.
-    for left, right in itertools.combinations(boundaries, 2):
-        if left["type"] == right["type"] or "fallback" in (left["selection_scope"], right["selection_scope"]):
-            continue
-        overlap = set(left["declared_boundary_ids"] or []) & set(right["declared_boundary_ids"] or [])
-        if overlap:
-            add("BC_SELECTION_OVERLAP", "Warning", "不同边界角色声明了同一边界；COMSOL 可按节点优先级覆盖，需人工核对意图。",
-                (left["feature_tag"], right["feature_tag"]), overlap,
-                {"effective_left": left["boundary_ids"], "effective_right": right["boundary_ids"]})
-
-    def scalar(item, label, tags=()):
-        if item["status"] != "resolved":
-            add("EVALUATION_UNAVAILABLE", "Warning", label + "无法按指定单位求值，相关数值检查未执行。", tags,
-                evidence={"expression": item["expression"], "unit": item["unit"]})
-            return None
-        return item["value"]
-
-    rho = scalar(model["material"]["density"], "密度")
-    mu = scalar(model["material"]["dynamic_viscosity"], "动力黏度")
-    material_valid = (rho is not None and mu is not None and rho > 0 and mu > 0)
-    if (rho is not None and rho <= 0) or (mu is not None and mu <= 0):
-        add("INVALID_MATERIAL_PARAMETER", "Critical", "当前牛顿流体模板要求正密度与正动力黏度。",
-            evidence={"density_kg_m3": rho, "dynamic_viscosity_pa_s": mu})
-    for boundary in boundaries:
-        if not boundary["boundary_ids"]:
-            continue
-        tag, role = boundary["feature_tag"], boundary["type"]
-        if role == "outlet":
-            scalar(boundary["parameters"]["pressure"], "出口压力", (tag,))
-        if role != "inlet":
-            continue
-        speed = scalar(boundary["parameters"]["normal_velocity"], "入口法向速度", (tag,))
-        if speed is None:
-            continue
-        if speed <= 0:
-            add("INLET_DIRECTION", "Warning", "入口法向速度未指向域内或为零；该符号约定只用于法向速度模式。",
-                (tag,), boundary["boundary_ids"], {"normal_velocity_m_s": speed})
-        if material_valid and model["profile"] == "rectangular-channel-v1":
-            height = model["geometry"]["height_m"]
-            reynolds, unavailable = _reynolds_number(rho, speed, height, mu)
-            if unavailable:
-                add("EVALUATION_UNAVAILABLE", "Warning", "名义 Reynolds 数超出当前报告的非零有限数值表示范围；"
-                    "Re 风险筛查未完成，不能按零或正常工况处理。", (tag,), boundary["boundary_ids"],
-                    {"quantity": "reynolds_height_based", "reason": unavailable,
-                     "formula": "rho * abs(Uin) * H / mu", "density_kg_m3": rho,
-                     "normal_velocity_m_s": speed, "height_m": height, "dynamic_viscosity_pa_s": mu,
-                     "threshold": reynolds_warning})
-                continue
-            # Geometry/API values can differ by their last binary digits (e.g. H=0.05
-            # arrives as 0.05000000000000001). Protect the threshold comparison only,
-            # never round the evidence or treat this as a physical uncertainty bound.
-            margin = REYNOLDS_THRESHOLD_GUARD_ULPS * math.ulp(float(reynolds_warning))
-            if reynolds > reynolds_warning and reynolds - reynolds_warning > margin:
-                add("REYNOLDS_RISK", "Warning", "以通道高度计算的名义 Reynolds 数超过可配置筛查阈值及末位浮点比较保护；不是普适转捩判据或湍流结论。",
-                    (tag,), boundary["boundary_ids"], {"reynolds_height_based": reynolds, "threshold": reynolds_warning,
-                                                       "numerical_comparison_margin": margin})
-    return {"schema_version": "diagnosis-0.1", "profile": model["profile"],
-            "status": "partial" if any(x["code"] == "EVALUATION_UNAVAILABLE" for x in findings) else "checked",
-            "numeric_policy": {"reynolds_threshold_guard_ulps": REYNOLDS_THRESHOLD_GUARD_ULPS},
-            "findings": sorted(findings, key=lambda x: (x["code"], x["feature_tags"]))}
+    roots, _ = _coupling_coverage(inventory, "", "")
+    locals_by_component = {}
+    details_by_ref = {}
+    for index, detail in enumerate(inventory.get("multiphysics", [])):
+        details_by_ref[f"/multiphysics/{index}"] = detail
+    for ci, component in enumerate(inventory["components"]):
+        entries, _ = _coupling_coverage(component, component["tag"], f"/components/{ci}")
+        locals_by_component[component["tag"]] = entries
+        for index, detail in enumerate(component.get("multiphysics", [])):
+            details_by_ref[f"/components/{ci}/multiphysics/{index}"] = detail
+    retained_roots = []
+    for root in roots:
+        root_ref = root["evidence_refs"][0]
+        detail = details_by_ref.get(root_ref, {})
+        owner, path = detail.get("component_tag"), detail.get("model_path")
+        candidates = []
+        if detail.get("read_status") in {"read", "partial"} and isinstance(path, str) and path and owner in locals_by_component:
+            for component_tag, entries in locals_by_component.items():
+                for entry in entries:
+                    local = details_by_ref.get(entry["evidence_refs"][0], {})
+                    if local.get("model_path") == path:
+                        candidates.append((component_tag, entry, local))
+        if (len(candidates) == 1 and candidates[0][0] == owner
+                and candidates[0][2].get("component_tag") == owner
+                and candidates[0][2].get("read_status") in {"read", "partial"}):
+            entry = candidates[0][1]
+            entry["evidence_refs"].append(root_ref)
+            if root["applicable"]:
+                entry.update(applicable=True, status="unknown", reason=root["reason"])
+        else:
+            retained_roots.append(root)
+    entries = retained_roots + [entry for local in locals_by_component.values() for entry in local]
+    global_blockers = [ref for entry in retained_roots if entry["applicable"] for ref in entry["evidence_refs"]]
+    local_blockers = {tag: [ref for entry in local if entry["applicable"] for ref in entry["evidence_refs"]]
+                      for tag, local in locals_by_component.items()}
+    return entries, global_blockers, local_blockers
 
 
 def diagnose_inventory(inventory, **options):
-    try:
-        model = normalize(inventory)
-    except UnsupportedModel as error:
-        return {"schema_version": "diagnosis-0.1", "status": "unsupported", "reason": str(error), "findings": []}
-    return {"model": model, **check(model, **options)}
+    """Run registered modules per instance, reporting unsupported evidence scopes."""
+    if inventory.get("schema_version") != "inventory-0.2":
+        raise ValueError("需要 inventory-0.2 API 证据")
+    if set(options) - {"reynolds_warning"}:
+        raise TypeError("unknown diagnosis options")
+    threshold = options.get("reynolds_warning", 2000.0)
+    if not is_finite_number(threshold) or threshold <= 0:
+        raise ValueError("Reynolds warning threshold must be finite and positive")
+    coverage, global_blockers, scoped_blockers = _scoped_couplings(inventory)
+    findings, modules = [], []
+    components = inventory["components"]
+    component_tags = [c["tag"] for c in components]
+    if len(set(component_tags)) != len(component_tags):
+        raise ValueError("duplicate component tags")
+    for ci, component in enumerate(components):
+        local_blockers = scoped_blockers[component["tag"]]
+        physics_tags = [p["tag"] for p in component["physics"]]
+        if len(set(physics_tags)) != len(physics_tags):
+            raise ValueError("duplicate physics tags in component")
+        for pi, physics in enumerate(component["physics"]):
+            source = {"component_tag": component["tag"], "physics_tag": physics["tag"]}
+            geometries = component.get("geometries", [])
+            if len(geometries) == 1:
+                source["geometry_tag"] = geometries[0]["tag"]
+            refs = [f"/components/{ci}/physics/{pi}"]
+            module = MODULES.get(physics["type"])
+            entry = {"kind": "physics", "module": module.MODULE_ID if module else "unsupported",
+                     "source": source, "applicable": physics.get("enabled") is not False,
+                     "evidence_refs": refs, "rules": []}
+            if physics.get("enabled") is False:
+                entry.update(status="skipped", reason="API 明确记录物理场已禁用；未检查。")
+            elif module is None:
+                entry.update(status="unknown", reason="M0 没有该物理场类型的已验证规则模块: " + physics["type"])
+            elif physics.get("enabled") is not True:
+                entry.update(status="unknown", reason="缺少明确的物理场启用证据。")
+            else:
+                result = module.run_instance(inventory, ci, pi, global_blockers + local_blockers, **options)
+                for key in ("status", "reason", "evidence_refs", "rules"):
+                    entry[key] = result[key]
+                module_result = {"module": module.MODULE_ID, "source": source,
+                                 "status": "checked" if result["status"] == "checked" else "partial" if any(
+                                     r["status"] == "checked" for r in result["rules"]) else "unsupported"}
+                if "model" in result:
+                    module_result["model"] = result["model"]
+                modules.append(module_result)
+                findings.extend({**finding, "module": module.MODULE_ID, "source": source}
+                                for finding in result["findings"])
+            coverage.append(entry)
+    if not coverage:
+        coverage.append({"kind": "physics", "module": "unsupported",
+                         "source": {"component_tag": "", "physics_tag": "@unrecorded"},
+                         "status": "unknown", "applicable": True,
+                         "reason": "没有可枚举的物理场实例，检查覆盖未知。", "evidence_refs": ["/components"], "rules": []})
+    report = {"schema_version": "diagnosis-0.2", "run_status": "completed",
+              "status": _coverage_status(coverage),
+              "coverage": coverage, "modules": modules,
+              "findings": sorted(findings, key=lambda f: (f["source"]["component_tag"],
+                                 f["source"]["physics_tag"], f["code"], f["feature_tags"]))}
+    if report["status"] == "unsupported":
+        report["reason"] = "；".join(dict.fromkeys(c["reason"] for c in coverage if c["applicable"])) or "没有可检查的启用物理场实例。"
+    # Preserve the original single-flow consumer contract only for one instance.
+    physics_entries = [c for c in coverage if c["kind"] == "physics"]
+    original_single_scope = (len(components) == 1 and len(components[0]["physics"]) == 1
+                             and len(components[0]["materials"]) == 1)
+    if original_single_scope and len(physics_entries) == 1 and len(modules) == 1 and modules[0]["module"] == "flow" and "model" in modules[0]:
+        report["model"] = modules[0]["model"]
+        report["profile"] = report["model"]["profile"]
+        report["numeric_policy"] = {"reynolds_threshold_guard_ulps": REYNOLDS_THRESHOLD_GUARD_ULPS}
+    validate_diagnosis_report(report)
+    return report
+
+
+def _coverage_status(coverage):
+    active = [entry for entry in coverage if entry["applicable"]]
+    checked = sum(rule["status"] == "checked" for entry in active for rule in entry["rules"])
+    if not checked:
+        return "unsupported"
+    return "checked" if all(entry["status"] == "checked" for entry in active) else "partial"
+
+
+def validate_diagnosis_report(report):
+    """Validate the new envelope and semantic status/source consistency."""
+    schema = json.loads(DIAGNOSIS_SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(report)
+    if report["status"] != _coverage_status(report["coverage"]):
+        raise ValueError("diagnosis status contradicts coverage")
+    seen = set()
+    for entry in report["coverage"]:
+        source = entry["source"]
+        key = (entry["kind"], source["component_tag"], source.get("physics_tag"), source.get("coupling_tag"))
+        if key in seen:
+            raise ValueError("duplicate coverage source")
+        seen.add(key)
+        if entry["kind"] == "physics" and "physics_tag" not in source:
+            raise ValueError("physics coverage requires physics source")
+        if entry["kind"] == "coupling" and "coupling_tag" not in source:
+            raise ValueError("coupling coverage requires coupling source")
+        rules = entry["rules"]
+        registered = next((m for m in MODULES.values() if m.MODULE_ID == entry["module"]), None)
+        if rules and registered is None:
+            raise ValueError("rule coverage requires a registered module")
+        if rules and {r["rule_id"] for r in rules} != {r[0] for r in registered.RULES}:
+            raise ValueError("module rule coverage is incomplete")
+        for rule in rules:
+            cases = rule.get("cases", [])
+            if len({case["feature_tag"] for case in cases}) != len(cases):
+                raise ValueError("duplicate rule case source")
+            if rule["status"] == "checked" and any(case["status"] != "checked" for case in cases):
+                raise ValueError("checked rule has skipped cases")
+        if len({r["rule_id"] for r in rules}) != len(rules):
+            raise ValueError("duplicate rule coverage")
+        if entry["status"] == "checked" and (not rules or any(r["status"] != "checked" for r in rules)):
+            raise ValueError("checked scope must have all rules checked")
+        if rules and entry["status"] != "checked" and all(r["status"] == "checked" for r in rules):
+            raise ValueError("scope status contradicts rule coverage")
+        if not entry["applicable"] and (entry["status"] != "skipped" or rules):
+            raise ValueError("inactive scope must be explicitly skipped")
+    module_sources = set()
+    for module in report["modules"]:
+        source = module["source"]
+        key = ("physics", source["component_tag"], source["physics_tag"], None)
+        if key not in seen or key in module_sources:
+            raise ValueError("module source absent or duplicated in coverage")
+        module_sources.add(key)
+        entry = next((c for c in report["coverage"] if c["kind"] == "physics" and c["source"] == source), None)
+        if entry is None:
+            raise ValueError("module source differs from coverage source")
+        expected = "checked" if entry["status"] == "checked" else "partial" if any(r["status"] == "checked" for r in entry["rules"]) else "unsupported"
+        if module["status"] != expected or module["module"] != entry["module"]:
+            raise ValueError("module status contradicts coverage")
+        if "model" in module:
+            registered = next((m for m in MODULES.values() if m.MODULE_ID == module["module"]), None)
+            if registered is None:
+                raise ValueError("module model requires registered module")
+            registered.validate(module["model"])
+            if any(module["model"]["source"][k] != source[k] for k in ("component_tag", "physics_tag")):
+                raise ValueError("module model source mismatch")
+    expected_module_sources = {("physics", c["source"]["component_tag"], c["source"]["physics_tag"], None)
+                               for c in report["coverage"] if c["kind"] == "physics" and c["rules"]}
+    if module_sources != expected_module_sources:
+        raise ValueError("module results must match all module rule scopes")
+    for finding in report["findings"]:
+        source = finding["source"]
+        key = ("physics", source["component_tag"], source["physics_tag"], None)
+        if key not in module_sources:
+            raise ValueError("finding source lacks a module result")
+        entry = next((c for c in report["coverage"] if c["kind"] == "physics" and c["source"] == source), None)
+        if entry is None:
+            raise ValueError("finding source differs from coverage source")
+        rule = next((r for r in entry["rules"] if r["rule_id"] == finding["code"]), None)
+        executed_tags = {case["feature_tag"] for case in rule.get("cases", [])
+                         if case["status"] == "checked"} if rule else set()
+        matched_cases = bool(finding["feature_tags"]) and set(finding["feature_tags"]) <= executed_tags
+        if entry["module"] != finding["module"] or rule is None or (rule["status"] != "checked" and not matched_cases):
+            raise ValueError("finding lacks executed coverage for its specific rule or node cases")
+    if "model" in report:
+        if len(report["modules"]) != 1 or report["modules"][0]["module"] != "flow" or report["modules"][0].get("model") != report["model"]:
+            raise ValueError("legacy model alias must identify the single module model")
+        validate(report["model"])
+        if report.get("profile") != report["model"]["profile"]:
+            raise ValueError("profile contradicts model")
+    # JSON Schema accepts NaN as a Python number; exported evidence never may.
+    json.dumps(report, allow_nan=False)
+
+
+validate_diagnosis = validate_diagnosis_report
 
 
 def main():

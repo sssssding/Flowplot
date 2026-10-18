@@ -16,7 +16,7 @@ from flowpilot import desktop_session as desktop
 from flowpilot import package_integrity as integrity
 from flowpilot import report_io
 from flowpilot import report_package as package
-from flowpilot.diagnostics import diagnose_inventory
+from flowpilot.diagnostics import check, normalize
 from flowpilot.report_history import load_history_report
 
 
@@ -28,7 +28,7 @@ class ReportReaderTest(unittest.TestCase):
         self.root = Path(self.temporary.name).resolve()
         self.source = self.root / "source"
         self.source.mkdir()
-        self.report = diagnose_inventory(json.loads((ROOT / "data/fixtures/cases/high_reynolds.json").read_text(encoding="utf-8-sig")))
+        self.report = check(normalize(json.loads((ROOT / "data/fixtures/cases/high_reynolds.json").read_text(encoding="utf-8-sig"))))
         manifest = json.loads(suite.DEVELOPMENT_MANIFEST.read_text(encoding="utf-8-sig"))
         self.case = next(item for item in manifest["cases"] if item["case_id"] == "high_reynolds")
         self.metadata = {"schema_version": "check-run-0.1", "status": "completed",
@@ -222,7 +222,7 @@ class ReportReaderTest(unittest.TestCase):
         self.assertEqual(integrity.verify_package(exported)["original_run_sha256"], before_hash)
 
     def test_legacy_report_without_optional_model_or_profile_is_readable(self):
-        self.report.pop("model")
+        self.report.pop("model", None)
         self.report.pop("profile")
         self.save()
         self.assertEqual(desktop.load_completed_check(self.source)["report"], self.report)

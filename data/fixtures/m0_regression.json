@@ -1,0 +1,689 @@
+{
+  "schema_version": "m0-regression-evidence-1",
+  "status": "passed",
+  "verified_at": "2026-10-18T08:24:19.623631+00:00",
+  "baseline_commit": "1241c27",
+  "baseline_source_sha256": {
+    "src/flowpilot/diagnostics.py": "2a91cdcd061988106b8720a4f179652a7b315663a8b7d6d4cd9f29f90af9e616",
+    "schema/diagnostic-model.schema.json": "05ebdef4c846e053a180cda4d50761a387050756c0ebd65d7c53b21ecba866ef",
+    "src/comsol/ModelInventory.java": "1a3e94dc3df8598d155d56a86b9a03e1c8f262ffbe1ba244b039a1e2df2e6b84"
+  },
+  "implementation_sha256": {
+    "data/fixtures/cases/manifest.json": "8bf70a25857d54ccfca426834ce2936d5c009e2231e25808dc88ddfcf38e4ad8",
+    "schema/diagnosis.schema.json": "3ad1d5c9a286b2890752f9afe2301ac27128fb134237a91b400e4d36434ec202",
+    "schema/diagnostic-model.schema.json": "05ebdef4c846e053a180cda4d50761a387050756c0ebd65d7c53b21ecba866ef",
+    "scripts/verify_m0_regression.py": "b286813b991de402b3494cce14a00e868ef9cb1b35c58d7007429e2c11127211",
+    "src/comsol/ModelInventory.java": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+    "src/flowpilot/diagnostic_modules/__init__.py": "c3bee02edcd3ef9e64931afd85e1df4b10f62604dc76ab4223397fdd420e4635",
+    "src/flowpilot/diagnostic_modules/flow.py": "3ffe116c925e02342367040d522e6b5b898a08f2072be8f5981f64f4fb474b91",
+    "src/flowpilot/diagnostics.py": "32a070db3516a0239d1314ff7e06f0667109862ffd867ea1fa9b2bcd4f8ac292",
+    "src/flowpilot/engine_fingerprint.py": "ed091ce15f43e0047bfc55c598d3d625c58718554c91a193e327931e7d59ceb5",
+    "src/flowpilot/regression_family.py": "c29894dd4ae0e1afdc7edfc9e0126e5e70bac2174db7158aabb1a02b3427cf8d"
+  },
+  "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+  "case_count": 20,
+  "fresh_cli_inventory_count": 6,
+  "historical_inventory_replay_count": 14,
+  "new_comsol_execution": false,
+  "solved": false,
+  "independent_acceptance_set": false,
+  "expert_review": false,
+  "scope": "Six newly read real CLI inventories and fourteen previously read controlled inventories; replay does not reread COMSOL.",
+  "cases": [
+    {
+      "case_id": "baseline",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "9e622fbd22e4420ba996dd9d925456f7a89fb296529f6fc1f1eabc3a4116e27f",
+      "inventory_file_sha256": "0f1426e75e8d5b5c34bb8e238d74253543e32bb2ddd4733c22475a411e73f13d",
+      "source_model_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+      "input_diagnosis_sha256": "a07b46c7ec64687b58eae3e375ed1475d91a4a7c4016fb72506a8934a77a7583",
+      "input_run_sha256": "3f59294c7533423f3a6b58f632fa0bdd3df37f9c248fdcf5582aebe4d88b3991",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "e1542152030e069351042db30a2319388e3c81885fce5a4664b07076adf1a09c",
+      "current_diagnosis_canonical_sha256": "0729bf2911be5fb0ba5a5b373234bc35a2828daf66b003f94ead45b5ce26c244",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "missing_inlet",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "MISSING_INLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "049ed64dc4636336bf0ac9a047e4e8b3bf3183bc9a26e423c2529f917a486ca0",
+      "inventory_file_sha256": "59e194494d6c097cfbca3150ebd44d32244cc31898bb0fbba8a29727bdec71c0",
+      "source_model_sha256": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+      "input_diagnosis_sha256": "c31278f807d8eebdbb2387700441aa5e8af356c367913fe82e054b884d030380",
+      "input_run_sha256": "f1a5846807656f9dfdb3f6b7038effb9425aa67fb916314f191a9c7300819601",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "6c330ed0241700810b69c3823a69819af8f484878292658dda596758e5c6c1c2",
+      "current_diagnosis_canonical_sha256": "3a1fa31230d3d91c40f6a574ff25485e66b30f8d1e584ff6b368c445d0f5e952",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "missing_outlet",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "MISSING_OUTLET"
+      ],
+      "actual_codes": [
+        "MISSING_OUTLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "27e0c81ae51525b60878a6f23ec0c2ec33fc46b2bfc33586bbac545f9d29a252",
+      "inventory_file_sha256": "0e208bf99d0fd107ade324eb6823b00050e5fa3a04f385aeffa89c4a3686d90d",
+      "source_model_sha256": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+      "input_diagnosis_sha256": "566773cd06d6ade53b78577ddbb63b118b47044158d3be77498118498002c25d",
+      "input_run_sha256": "3d356189a504a6dbfe719f9048c8bfc0495563893f774d4709d80b98f1fd9884",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "def0212b75a6890251dbc70514165c243f1654ddf92f46bdd90658629b08b2c8",
+      "current_diagnosis_canonical_sha256": "b58091f2deffad79cd9be1e95817dd94c72e308a1ec2b9b5a2b2ed4337954d42",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "selection_overlap",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "b3673bee7a85e7928c9409b81db716e2de587b4b9115aabcb73a660528cc6919",
+      "inventory_file_sha256": "dcc2340f39f6617e4230618dd70fa95554e4b3cfe568187e9735b54f1483b725",
+      "source_model_sha256": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+      "input_diagnosis_sha256": "425fcd4d155f79672d6a21350671e7b2dfaf085ada4bcb22dbdbaad5749622f3",
+      "input_run_sha256": "12741fc1847ca1099d29ed24027b91d2d6d3764cde66782ba5b025ba6dccd4d3",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "6242c63b3182b9cd5cd67833b7777d14ead204dfa2ee7e9888f84d7213ed1db4",
+      "current_diagnosis_canonical_sha256": "79e6f98938d80b7ecbfaef6cf9a4f0c43a2b789cba41770773f4f8171dd163a8",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "reversed_inlet",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "INLET_DIRECTION"
+      ],
+      "actual_codes": [
+        "INLET_DIRECTION"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "1f3ab4378e0f28990b9b7b7a76a7892d425847ff55691d30a6cb42cc4836ac95",
+      "inventory_file_sha256": "293b554b535247e8f4ac0c2c5723775376b0436cee53ffc6b0add4a3f4461f03",
+      "source_model_sha256": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+      "input_diagnosis_sha256": "a25bf7fe4ff6adab1a389c5e1becea6fee7951e5535d2ef3631edd122ab71402",
+      "input_run_sha256": "a2c0eedeedb7e42ac931cc9e7829b0c94cf83777e6ff617f7b47c032f70c0cca",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "c93d64d9b2a7ea5df4fdbed7b2e0c85e23f504b7a4fdb31d023d8baa96ac4b5e",
+      "current_diagnosis_canonical_sha256": "f790285f056717422036d355930881a6844f615284eca580b5fdb5e882257e9c",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "high_reynolds",
+      "origin": "fresh_real_cli_inventory",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "f594b63ff41d6a202382d421a6e842f818eddc44ccc3d56e2c8c21f22423efed",
+      "inventory_file_sha256": "6df59542b3e3dcc4ab7899da68a167deb2947aead12e194d5b7117a79180b6d3",
+      "source_model_sha256": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+      "input_diagnosis_sha256": "10bffafcd1e1f009e11e66a492977a83f18370b852bdc6eeded628c0b276b16b",
+      "input_run_sha256": "0ea6bc2896ec451415514052e5d51cd2493c578467a3e63d8c3f404b586ddbd9",
+      "input_rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "legacy_payload_sha256": "7ebb90a1eab4c80bbf1dbefda45d381a650b68a8965e86b179bead4f64b6cc10",
+      "current_diagnosis_canonical_sha256": "1aa8d72f6a3a39bdad0280b40b820cc7481baf935e81a1e394d0b53f7f26ebd4",
+      "independent_spec_evidence": null
+    },
+    {
+      "case_id": "units_equivalent",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "c09a7aa1cd3b5a79c9b70494b27c8dbc1b72a9f54eb1e4448a291e4f214b5bc1",
+      "inventory_file_sha256": "8415b915ef2373452345a1bd93fb9216dd40962189018bbcbf8c350e24aea7c6",
+      "source_model_sha256": "053b02ccbc2db672c03995031fca310efb75b78e5a55dc46a1f0e8553522129c",
+      "input_diagnosis_sha256": "b33fac2a5b2efae62e5ac67e857452075022404132d695d50c71eadf3ef09206",
+      "input_run_sha256": "be75795e14e33238a2718520fbe75e415b192e3dec40a10135ef7425bf5a509d",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "dc15bd365d3ca14f3af8440636422276b93881538b86fe184927b367b5714166",
+      "current_diagnosis_canonical_sha256": "7ea2d92a91be09385197ea72ca569e730c2095d6b393c35e10a6ccc56ade5a4d",
+      "independent_spec_evidence": {
+        "case_id": "units_equivalent",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 999.9999999999999,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [],
+        "actual_codes": [],
+        "source_sha256": "053b02ccbc2db672c03995031fca310efb75b78e5a55dc46a1f0e8553522129c",
+        "diagnosis_sha256": "7ea2d92a91be09385197ea72ca569e730c2095d6b393c35e10a6ccc56ade5a4d"
+      }
+    },
+    {
+      "case_id": "re_below",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "905a3b252884457ed22eca71b334114d8a50c036704bd36750529072b3ca5dde",
+      "inventory_file_sha256": "abf07d8d9d3ae9f203511927ef3313883814b822893e0dba21c9ab577857995f",
+      "source_model_sha256": "be596c1d7cebc1da5a3a985874750d62cd75a9489743db625c8c4303fb5fc6be",
+      "input_diagnosis_sha256": "27f7d2fa3dce13346fb2f176e6830e40368cb298f755ce84b47397f0c73e9a0d",
+      "input_run_sha256": "66a663d5a8597d4a035792bfd56c41ef3ec54a63712324feb21a6c12a7fe7731",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "14f2810d42053d01cf71eb6c308b7a48cc960a0ee0729f8790f409304ceab91c",
+      "current_diagnosis_canonical_sha256": "e4933f8b6de56e37de8846d21ca98115f2acc7c77bbb2233cb3200b62d762263",
+      "independent_spec_evidence": {
+        "case_id": "re_below",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.03998
+        },
+        "expected_codes": [],
+        "actual_codes": [],
+        "source_sha256": "be596c1d7cebc1da5a3a985874750d62cd75a9489743db625c8c4303fb5fc6be",
+        "diagnosis_sha256": "e4933f8b6de56e37de8846d21ca98115f2acc7c77bbb2233cb3200b62d762263"
+      }
+    },
+    {
+      "case_id": "re_at",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "82cb775ac90b871daa3068c16f9b92f7cc97c3bae969bf32c3473bb4172c9198",
+      "inventory_file_sha256": "d82557a101113ba7dba041cb04f027d857bb8997209d5bf8c80cdde1d2bc858a",
+      "source_model_sha256": "71ff7790b0c4539eb7b55ef7c8873592d9f4dcbb0d70ea5f73d20a7c64add1bb",
+      "input_diagnosis_sha256": "89ce45eac16b7baa46fdd80e04f976a75adce0a1c593da0ec4db6cfb27fd7dad",
+      "input_run_sha256": "86f07a5e1a4d28b42c6c0500ad46d042c9b982ba15077feb083c7d146fc2d4a6",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "ceefb3c73fd68e8958004e8399581c3300f90dd09f61f2a59c446178cfbb0f53",
+      "current_diagnosis_canonical_sha256": "8eceac00d110e579da30170253ecd49f7c402e09c14a25784ee28303a08e848a",
+      "independent_spec_evidence": {
+        "case_id": "re_at",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.04
+        },
+        "expected_codes": [],
+        "actual_codes": [],
+        "source_sha256": "71ff7790b0c4539eb7b55ef7c8873592d9f4dcbb0d70ea5f73d20a7c64add1bb",
+        "diagnosis_sha256": "8eceac00d110e579da30170253ecd49f7c402e09c14a25784ee28303a08e848a"
+      }
+    },
+    {
+      "case_id": "re_above",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "bebb5f9afc681f8c3724fb12eeae780ce6b9a24ce64b78355bfeb03a3d0c0b45",
+      "inventory_file_sha256": "b2a6773db95322f9b3f319dd43b5939fc917832ed750d6e53a46159c86b9ee2b",
+      "source_model_sha256": "90714c4e64f147bd4198bfdb29e4aae5b7e8232ef137fb76511048bccf7709ff",
+      "input_diagnosis_sha256": "b2c88ea38f9f0ba4e3f31926def5a22913ba5b7be14fbfde7a3bf71feddfd9d9",
+      "input_run_sha256": "1de304be12b32ee06b18d65403f4a2fd6edc0b96cd4a89400b2b611c32d05b80",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "0a11bb5b834949e4626ea61b55036b94a002dea62e7fc172effac329cb4e325f",
+      "current_diagnosis_canonical_sha256": "f5a733ba9d1c548c9c9f60987b4c7c209f9959c8ebb4a2eef141f0a6d994c233",
+      "independent_spec_evidence": {
+        "case_id": "re_above",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.04002
+        },
+        "expected_codes": [
+          "REYNOLDS_RISK"
+        ],
+        "actual_codes": [
+          "REYNOLDS_RISK"
+        ],
+        "source_sha256": "90714c4e64f147bd4198bfdb29e4aae5b7e8232ef137fb76511048bccf7709ff",
+        "diagnosis_sha256": "f5a733ba9d1c548c9c9f60987b4c7c209f9959c8ebb4a2eef141f0a6d994c233"
+      }
+    },
+    {
+      "case_id": "zero_velocity",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "INLET_DIRECTION"
+      ],
+      "actual_codes": [
+        "INLET_DIRECTION"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "4b7408c2cd94bc5967df8d03f91d0b7e8009c586eb490c82502da677b2a9df62",
+      "inventory_file_sha256": "2423222fc6ea388a9d1d2dd239af0c64fddbefc89b2958bc2240b55a00bc0fc1",
+      "source_model_sha256": "9253cf34d817d62e08fd138790210359722aef0b7a3d3dbe9dda2814f85a887d",
+      "input_diagnosis_sha256": "a2cb266493f0e97b4c03301c4bfb2571925f51e69a3e72c51cda13a4574e6f7f",
+      "input_run_sha256": "ea27988454b43fb3edf378287c136933133f6434de9c067a0a9624e04049121f",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "0d00a9b2f6b5b064f36587f1fe5a23e47a19c98e3b40e33f9a8f0e039bb4cc58",
+      "current_diagnosis_canonical_sha256": "0d07ecbeb15d7ea82df86f62f33ef5a738b8c6e7a98a95d78a493285cee5b23a",
+      "independent_spec_evidence": {
+        "case_id": "zero_velocity",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.0
+        },
+        "expected_codes": [
+          "INLET_DIRECTION"
+        ],
+        "actual_codes": [
+          "INLET_DIRECTION"
+        ],
+        "source_sha256": "9253cf34d817d62e08fd138790210359722aef0b7a3d3dbe9dda2814f85a887d",
+        "diagnosis_sha256": "0d07ecbeb15d7ea82df86f62f33ef5a738b8c6e7a98a95d78a493285cee5b23a"
+      }
+    },
+    {
+      "case_id": "reversed_fast",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "INLET_DIRECTION",
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "INLET_DIRECTION",
+        "REYNOLDS_RISK"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "0cd253ab4e4349569af4f25bf22af26a26e2d447593281b0ca74e49524f15255",
+      "inventory_file_sha256": "464c40d93d363a5a171896fd077b7005912b5b2045356b630bde1f3747e777c5",
+      "source_model_sha256": "6c16c7d61e39c46eff2a4661858a523e321d0e8542db8e343ee88bbb9a513696",
+      "input_diagnosis_sha256": "dde2d5dcefe06e75cf12da598764437637a884f55036367b06f22304b0da2f35",
+      "input_run_sha256": "289e574cae9ba7cabb49c5e11e6341a6daf5abb8eb45e81486bd3dad6c153ece",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "87bc13f97685f58c5012056373fd07ab200b399811c6025e775aeca8acc4785d",
+      "current_diagnosis_canonical_sha256": "3839478f6f9c977e36067aed3561025c901129f92544f6d3a08a58dbaa98b7df",
+      "independent_spec_evidence": {
+        "case_id": "reversed_fast",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": -0.1
+        },
+        "expected_codes": [
+          "INLET_DIRECTION",
+          "REYNOLDS_RISK"
+        ],
+        "actual_codes": [
+          "INLET_DIRECTION",
+          "REYNOLDS_RISK"
+        ],
+        "source_sha256": "6c16c7d61e39c46eff2a4661858a523e321d0e8542db8e343ee88bbb9a513696",
+        "diagnosis_sha256": "3839478f6f9c977e36067aed3561025c901129f92544f6d3a08a58dbaa98b7df"
+      }
+    },
+    {
+      "case_id": "empty_inlet",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "MISSING_INLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "6bae9fc0857e6f402880365dcd4ae8afc7d97f3cfdc0252d3978ee55ccb4cb5d",
+      "inventory_file_sha256": "15228140b6a1b60fb57ebf81359ed30032bde9099b9da077fbd24d16fbb7df0a",
+      "source_model_sha256": "2ec52a6e5478dbba7c3566c3a4b74de8404d1229dfd0c10e225bdad527823660",
+      "input_diagnosis_sha256": "ffb256320e0ab84015bb3436116388f448d745aa5c5612827cf225c4a11f3833",
+      "input_run_sha256": "4eb9d12013097fd5abe3de1fc8bab5734392b722e4712de1e32f12562a449c7c",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "2d0120800e001505ec534c91a7c52f5ed7dfa214b8298187b7d83c3af18e98e8",
+      "current_diagnosis_canonical_sha256": "281c27ffc6a637a4272833f33478b2a769635e326c170d5b7b4fd0ba43823684",
+      "independent_spec_evidence": {
+        "case_id": "empty_inlet",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [
+          "MISSING_INLET"
+        ],
+        "actual_codes": [
+          "MISSING_INLET"
+        ],
+        "source_sha256": "2ec52a6e5478dbba7c3566c3a4b74de8404d1229dfd0c10e225bdad527823660",
+        "diagnosis_sha256": "281c27ffc6a637a4272833f33478b2a769635e326c170d5b7b4fd0ba43823684"
+      }
+    },
+    {
+      "case_id": "empty_outlet",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "MISSING_OUTLET"
+      ],
+      "actual_codes": [
+        "MISSING_OUTLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "d7a2b5c9755b6c17cf263c697d36d16e180e14776a4316b36e080710e0756915",
+      "inventory_file_sha256": "75dcb536c7da5ac82f939e32af878538e873bbf0e6bbc8a63afe341df59b22ca",
+      "source_model_sha256": "1eec19f69e229c50a714df3ed95e78f391b46b040b9b9bc879e333c531ffba12",
+      "input_diagnosis_sha256": "a0f9e0d8e0bf9e5a13f188af2bf32d7488a7ca6ca20b69cf1dc792e58fff99c6",
+      "input_run_sha256": "16b959104afd09a519a694d55b92ce79be4fc1f8ca9417092d47a037e4105aff",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "ac2bc25682501e2472d9b5ddffa27567537d98da386976a7d9f530f5434c507a",
+      "current_diagnosis_canonical_sha256": "973b7690114bc1a98fc6b6e8140531fc2ebdd47b9c65fd6ebc67d06a7d448e34",
+      "independent_spec_evidence": {
+        "case_id": "empty_outlet",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [
+          "MISSING_OUTLET"
+        ],
+        "actual_codes": [
+          "MISSING_OUTLET"
+        ],
+        "source_sha256": "1eec19f69e229c50a714df3ed95e78f391b46b040b9b9bc879e333c531ffba12",
+        "diagnosis_sha256": "973b7690114bc1a98fc6b6e8140531fc2ebdd47b9c65fd6ebc67d06a7d448e34"
+      }
+    },
+    {
+      "case_id": "both_missing",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "MISSING_INLET",
+        "MISSING_OUTLET"
+      ],
+      "actual_codes": [
+        "MISSING_INLET",
+        "MISSING_OUTLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "8e32dfb33363c3cf56fc7684c2d62ac2314daca87b97619897350c4baeafa9f5",
+      "inventory_file_sha256": "792ca4d56cfb69ab4d9dd1a29e124695b270532d3fa92dc83768ce1fefa520f4",
+      "source_model_sha256": "3b0261bb30dcffe449ff57ad95f01515f137329fc1fac7ffb619d54d3125f642",
+      "input_diagnosis_sha256": "166ad3a257bfe3cf6eb50d7a18ff2e833593bab644f0af0cb27b82c6aac2af2d",
+      "input_run_sha256": "38d41e625a2ef0ad58a2abe09c3f90c0525b14f7bb2ab01002195a69939f0303",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "f7041c2e9a32a28e21cf0320e4c2e3053f374d4e52b0c9e89328854f3a331654",
+      "current_diagnosis_canonical_sha256": "31570a36f4ed257cd7c280261c993fca83b130f5ecd4d6c79c90b6c8f9bd8f8f",
+      "independent_spec_evidence": {
+        "case_id": "both_missing",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001
+        },
+        "expected_codes": [
+          "MISSING_INLET",
+          "MISSING_OUTLET"
+        ],
+        "actual_codes": [
+          "MISSING_INLET",
+          "MISSING_OUTLET"
+        ],
+        "source_sha256": "3b0261bb30dcffe449ff57ad95f01515f137329fc1fac7ffb619d54d3125f642",
+        "diagnosis_sha256": "31570a36f4ed257cd7c280261c993fca83b130f5ecd4d6c79c90b6c8f9bd8f8f"
+      }
+    },
+    {
+      "case_id": "overlap_reversed",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "actual_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "893a2b0e2051e1bdf29d4438ea807051245fafa4bffb000eee919ac2c2d556b2",
+      "inventory_file_sha256": "5608aa345ed6e9bd29b235841fe274f9b0271f5a2893e0da2b11fdbb155d485a",
+      "source_model_sha256": "52dc2d532024dced5e9d388d379473acde6d839a8aa9760b53eab2f4195d3083",
+      "input_diagnosis_sha256": "24edeb238bc3925e1349068b8c8fefca2c1d09f26bfb06a48a5182572bf8870b",
+      "input_run_sha256": "30945be5c8731dea902e7f1409c228b829dbac57841fceb13fd717a9597189e1",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "1cefa4481993ce9cc9bc38cc43feb87dfb0344f8dd0ebd79a99d0f9212475a47",
+      "current_diagnosis_canonical_sha256": "a147419f0330d8a6a30ecc39d397b5fed585930c56b117669d8424a82a06a08b",
+      "independent_spec_evidence": {
+        "case_id": "overlap_reversed",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": -0.1
+        },
+        "expected_codes": [
+          "BC_SELECTION_OVERLAP",
+          "MISSING_INLET"
+        ],
+        "actual_codes": [
+          "BC_SELECTION_OVERLAP",
+          "MISSING_INLET"
+        ],
+        "source_sha256": "52dc2d532024dced5e9d388d379473acde6d839a8aa9760b53eab2f4195d3083",
+        "diagnosis_sha256": "a147419f0330d8a6a30ecc39d397b5fed585930c56b117669d8424a82a06a08b"
+      }
+    },
+    {
+      "case_id": "zero_viscosity",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "INVALID_MATERIAL_PARAMETER"
+      ],
+      "actual_codes": [
+        "INVALID_MATERIAL_PARAMETER"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "6a70f89feda06185728233e1e16554cf78d320b31ac72059b40a67a389473cd1",
+      "inventory_file_sha256": "61f8251cf89e70560d184cda52a6c4c0c4748e6856dd7dea0532c041feefb286",
+      "source_model_sha256": "8e6a68409a276eb6e706e7132a1605ab22197093d6b9579407ec031fdc0a995a",
+      "input_diagnosis_sha256": "22d3699f84a335f7122c52abe936a20e700e353795972225d88ac2045c72506e",
+      "input_run_sha256": "529873defd24744e1062c062da4de6ac52f897f8b01d2a51afdf5909d53378b7",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "7f555c12ff2228281258a302b74f700ef024d18c618345d79190cabd44c4343b",
+      "current_diagnosis_canonical_sha256": "19c2ae6e93a75426265dc536b7c949964c254de39cf6fdc891fcfad043e4cc83",
+      "independent_spec_evidence": {
+        "case_id": "zero_viscosity",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.0,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [
+          "INVALID_MATERIAL_PARAMETER"
+        ],
+        "actual_codes": [
+          "INVALID_MATERIAL_PARAMETER"
+        ],
+        "source_sha256": "8e6a68409a276eb6e706e7132a1605ab22197093d6b9579407ec031fdc0a995a",
+        "diagnosis_sha256": "19c2ae6e93a75426265dc536b7c949964c254de39cf6fdc891fcfad043e4cc83"
+      }
+    },
+    {
+      "case_id": "low_viscosity",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "actual_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "status": "checked",
+      "inventory_canonical_sha256": "ed7fbeebc7b8f84a849a40707382f9042e40ac5a1f1c6448f9374840b9ff9546",
+      "inventory_file_sha256": "16d6e970c18a755af116a341d38096e1a2db5f3ff43816aa5fbe132b35113c66",
+      "source_model_sha256": "32790037f896f476493b190d38f03446da3fd9e73d88c1900ff73329d6c68b2f",
+      "input_diagnosis_sha256": "90e19631380c0c72ea4217b1691bd7660b82fa6fc3fa719bb98aa2c54c873ded",
+      "input_run_sha256": "771a5151ab13ea7c3a89961696ceb331d38149d21c88e8ec01e84cfe263dc90d",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "2293cb3c8f27c848659e4576e79729919d8944a88064c05a3533a41cbf7850a1",
+      "current_diagnosis_canonical_sha256": "b1a6580f3079db08b3fdc8099017874f743c38144d0680fb3cbda96058c4e508",
+      "independent_spec_evidence": {
+        "case_id": "low_viscosity",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 1.0,
+          "height_m": 0.05000000000000001,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.0001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [
+          "REYNOLDS_RISK"
+        ],
+        "actual_codes": [
+          "REYNOLDS_RISK"
+        ],
+        "source_sha256": "32790037f896f476493b190d38f03446da3fd9e73d88c1900ff73329d6c68b2f",
+        "diagnosis_sha256": "b1a6580f3079db08b3fdc8099017874f743c38144d0680fb3cbda96058c4e508"
+      }
+    },
+    {
+      "case_id": "short_narrow",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "0e62e338502bdd54dbe33aeed7f137760fedde23351ff144b1b64cd35d06ae10",
+      "inventory_file_sha256": "8b1345edc7f2ba12ee5ad2d65750d29f647a464978011daecb73eaed0d9372fd",
+      "source_model_sha256": "5abf4d7ea0ce1609f0797cc88cbc2e54f01f8944d6f19f50002b4675d7aaf243",
+      "input_diagnosis_sha256": "9617cedd0b68b987c7d3350b78732fc788dd23fd44fd627a4a428358156fe1df",
+      "input_run_sha256": "e7b6de971af349f27632f9b8ac187d3e68a00fa0d6d138c5551525a5f145769e",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "c58e8a9d966ffd595ae583bda419c06dd901a59c5e96bb9220a0417f3f77d7ce",
+      "current_diagnosis_canonical_sha256": "4b4516602a37f92048943030080148b51abe3edda4a8c1f56be19552ac88e8ff",
+      "independent_spec_evidence": {
+        "case_id": "short_narrow",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 0.5,
+          "height_m": 0.020000000000000004,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [],
+        "actual_codes": [],
+        "source_sha256": "5abf4d7ea0ce1609f0797cc88cbc2e54f01f8944d6f19f50002b4675d7aaf243",
+        "diagnosis_sha256": "4b4516602a37f92048943030080148b51abe3edda4a8c1f56be19552ac88e8ff"
+      }
+    },
+    {
+      "case_id": "long_wide",
+      "origin": "historical_real_inventory_replay",
+      "legacy_payload_equal": true,
+      "expected_codes": [],
+      "actual_codes": [],
+      "status": "checked",
+      "inventory_canonical_sha256": "0dd6e450d1c5c324a0acba012f164eeca838ec4d552b934300f6ca30fb1e5f20",
+      "inventory_file_sha256": "3e02f87685657ed8dc26bbcfe7667e61dacedfa3672a04822aa0395dbffbc9be",
+      "source_model_sha256": "ef3a02bdd7e69fbf766f59359f1cf0c9fceae99d2ad7b2828334f93ad69439b3",
+      "input_diagnosis_sha256": "e48d926cf2280a856e0d1655555d8a6c1d7ef6c3c6f86908db569308bf084622",
+      "input_run_sha256": "7a84a500afa9d80dbf6434b0913b2e27db2e9eb0e5120ac22285ee7c97dd9b84",
+      "input_rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "legacy_payload_sha256": "c8277ea3612f378b4cffaa7c4ae322c55d22971f6a2028dfa264d758890cf528",
+      "current_diagnosis_canonical_sha256": "0222f656f6a9314574b48bc571da11410fd01a85623f09a9836dd27b768e4119",
+      "independent_spec_evidence": {
+        "case_id": "long_wide",
+        "passed": true,
+        "mismatches": [],
+        "actual_values": {
+          "length_m": 2.0,
+          "height_m": 0.10000000000000002,
+          "density": 1000.0,
+          "dynamic_viscosity": 0.001,
+          "normal_velocity_m_s": 0.01
+        },
+        "expected_codes": [],
+        "actual_codes": [],
+        "source_sha256": "ef3a02bdd7e69fbf766f59359f1cf0c9fceae99d2ad7b2828334f93ad69439b3",
+        "diagnosis_sha256": "0222f656f6a9314574b48bc571da11410fd01a85623f09a9836dd27b768e4119"
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import com.comsol.model.Model;
+import com.comsol.model.physics.MultiphysicsCoupling;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class ModelInventory {
       if (i > 0) json.append(',');
       json.append(quote(couplings[i]));
     }
-    json.append("],\"studies\":[");
+    json.append("],\"multiphysics\":").append(couplingInventory(model, null)).append(",\"studies\":[");
     boolean separator = false;
     for (String study : sorted(model.study().tags())) {
       for (String tag : sorted(model.study(study).feature().tags())) {
@@ -55,7 +56,7 @@ public class ModelInventory {
         if (i > 0) json.append(',');
         json.append(quote(couplings[i]));
       }
-      json.append("],\"geometries\":[");
+      json.append("],\"multiphysics\":").append(couplingInventory(model, component)).append(",\"geometries\":[");
       boolean innerSeparator = false;
       for (String geometry : sorted(model.component(component).geom().tags())) {
         if (innerSeparator) json.append(',');
@@ -91,10 +92,9 @@ public class ModelInventory {
             .append(",\"enabled\":").append(model.component(component).material(material).isActive())
             .append(",\"domain_ids\":").append(Arrays.toString(model.component(component).material(material).selection().entities()))
             .append(",\"density\":");
-        String density = model.component(component).material(material).propertyGroup("def").getString("density");
-        String viscosity = model.component(component).material(material).propertyGroup("def").getString("dynamicviscosity");
-        json.append(evaluate(model, density, "kg/m^3")).append(",\"dynamic_viscosity\":")
-            .append(evaluate(model, viscosity, "Pa*s")).append('}');
+        json.append(materialValue(model, component, material, "density", "kg/m^3"))
+            .append(",\"dynamic_viscosity\":")
+            .append(materialValue(model, component, material, "dynamicviscosity", "Pa*s")).append('}');
       }
       json.append("],\"physics\":[");
       innerSeparator = false;
@@ -110,6 +110,9 @@ public class ModelInventory {
           PhysicsFeature feature = model.component(component).physics(physics).feature(tag);
           if (featureSeparator) json.append(',');
           featureSeparator = true;
+          StringBuilder featureJson = json;
+          json = new StringBuilder();
+          try {
           int[] dimensions = feature.selection().dimension();
           String named = feature.selection().named();
           int[] declared = null;
@@ -136,10 +139,11 @@ public class ModelInventory {
             if (propertySeparator) json.append(',');
             propertySeparator = true;
             json.append(quote(property)).append(':');
+            try {
             String type = feature.getValueType(property);
             if ("StringArray".equals(type)) {
-              json.append('[');
               String[] values = feature.getStringArray(property);
+              json.append('[');
               for (int i = 0; i < values.length; i++) {
                 if (i > 0) json.append(',');
                 json.append(quote(values[i]));
@@ -151,6 +155,7 @@ public class ModelInventory {
               // Preserve unsupported property types explicitly rather than inventing values.
               json.append("{\"unread_value_type\":").append(quote(type)).append('}');
             }
+            } catch (Exception error) { json.append("{\"read_status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}'); }
           }
           json.append("},\"evaluated_parameters\":{");
           if ("Inlet".equals(feature.getType()) && "Velocity".equals(feature.getString("BoundaryCondition"))) {
@@ -159,6 +164,19 @@ public class ModelInventory {
             json.append("\"pressure\":").append(evaluate(model, feature.getString("p0"), "Pa"));
           }
           json.append("}}");
+          featureJson.append(json);
+          } catch (Exception error) {
+            featureJson.append("{\"tag\":").append(quote(tag));
+            try {
+              String type = feature.getType();
+              featureJson.append(",\"type\":").append(quote(type));
+            } catch (Exception metadataError) { /* Missing metadata remains unread. */ }
+            try {
+              boolean enabled = feature.isActive();
+              featureJson.append(",\"enabled\":").append(enabled);
+            } catch (Exception metadataError) { /* Do not guess enabled state. */ }
+            featureJson.append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}');
+          } finally { json = featureJson; }
         }
         json.append("]}");
       }
@@ -228,15 +246,106 @@ public class ModelInventory {
   }
 
   private static String evaluate(Model model, String expression, String unit) {
-    String header = "{\"expression\":" + quote(expression) + ",\"unit\":" + quote(unit);
+    String header = "{\"expression\":" + quote(expression == null ? "" : expression) + ",\"unit\":" + quote(unit);
     try {
       double value = model.param().evaluate(expression, unit);
       if (!Double.isFinite(value)) throw new IllegalArgumentException("Non-finite value");
       return header + ",\"status\":\"resolved\",\"value\":" + value + "}";
     } catch (Exception error) {
       // Spatial fields, missing symbols and incompatible units stay unknown.
-      return header + ",\"status\":\"unresolved\",\"value\":null}";
+      return header + ",\"status\":\"unresolved\",\"value\":null,\"reason\":" + quote(reason(error)) + "}";
     }
+  }
+
+  private static String reason(Exception error) {
+    String message = error.getMessage();
+    return error.getClass().getSimpleName() + (message == null ? "" : ": " + message);
+  }
+
+  private static String materialValue(Model model, String component, String material, String property, String unit) {
+    try {
+      String expression = model.component(component).material(material).propertyGroup("def").getString(property);
+      if (expression == null || expression.isEmpty()) throw new IllegalArgumentException("Missing material property: " + property);
+      return evaluate(model, expression, unit);
+    } catch (Exception error) {
+      return "{\"expression\":\"\",\"unit\":" + quote(unit)
+          + ",\"status\":\"unresolved\",\"value\":null,\"reason\":" + quote(reason(error)) + "}";
+    }
+  }
+
+  /** Match COMSOL's unique model path, never infer ownership from a tag. */
+  private static String couplingComponent(Model model, MultiphysicsCoupling coupling) {
+    String path = coupling.resolveModelPath();
+    String owner = null;
+    for (String component : sorted(model.component().tags())) {
+      for (String tag : sorted(model.component(component).multiphysics().tags())) {
+        if (path.equals(model.component(component).multiphysics(tag).resolveModelPath())) {
+          if (owner != null && !owner.equals(component)) throw new IllegalStateException("Ambiguous coupling ownership");
+          owner = component;
+        }
+      }
+    }
+    return owner;
+  }
+
+  private static String couplingInventory(Model model, String component) {
+    StringBuilder json = new StringBuilder("[");
+    String[] tags = sorted(component == null ? model.multiphysics().tags() : model.component(component).multiphysics().tags());
+    boolean separator = false;
+    for (String tag : tags) {
+      if (separator) json.append(',');
+      separator = true;
+      MultiphysicsCoupling coupling = component == null ? model.multiphysics(tag) : model.component(component).multiphysics(tag);
+      StringBuilder entry = new StringBuilder("{\"tag\":").append(quote(tag));
+      try {
+        entry.append(",\"model_path\":").append(quote(coupling.resolveModelPath()))
+            .append(",\"scope\":").append(quote(coupling.scope()))
+            .append(",\"component_tag\":").append(quote(couplingComponent(model, coupling)))
+            .append(",\"type\":").append(quote(coupling.getType()))
+            .append(",\"enabled\":").append(coupling.isActive());
+        String selection;
+        boolean partial = false;
+        try {
+          selection = ",\"selection_dimensions\":" + Arrays.toString(coupling.selection().dimension())
+              + ",\"selected_entity_ids\":" + Arrays.toString(coupling.selection().entities());
+        } catch (Exception error) {
+          partial = true;
+          selection = ",\"selection_reason\":" + quote(reason(error));
+        }
+        StringBuilder properties = new StringBuilder("{");
+        boolean propertySeparator = false;
+        for (String property : sorted(coupling.properties())) {
+          if (propertySeparator) properties.append(',');
+          propertySeparator = true;
+          properties.append(quote(property)).append(':');
+          try {
+            String type = coupling.getValueType(property);
+            String value;
+            if ("String".equals(type)) value = quote(coupling.getString(property));
+            else if ("StringArray".equals(type)) {
+              StringBuilder values = new StringBuilder("[");
+              for (String item : coupling.getStringArray(property)) {
+                if (values.length() > 1) values.append(',');
+                values.append(quote(item));
+              }
+              value = values.append(']').toString();
+            } else if ("Boolean".equals(type)) value = Boolean.toString(coupling.getBoolean(property));
+            else throw new IllegalArgumentException("Unsupported value type: " + type);
+            properties.append("{\"status\":\"read\",\"value_type\":").append(quote(type)).append(",\"value\":").append(value).append('}');
+          } catch (Exception error) {
+            partial = true;
+            properties.append("{\"status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}');
+          }
+        }
+        entry.append(selection).append(",\"properties\":").append(properties.append('}'))
+            .append(",\"read_status\":").append(quote(partial ? "partial" : "read"));
+      } catch (Exception error) {
+        entry = new StringBuilder("{\"tag\":").append(quote(tag))
+            .append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(error)));
+      }
+      json.append(entry.append('}'));
+    }
+    return json.append(']').toString();
   }
 
   private static String[] sorted(String[] tags) {
