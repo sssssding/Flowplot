@@ -6,7 +6,7 @@ from jsonschema import ValidationError
 from flowpilot.diagnostics import validate
 
 ROLES = {"inlet": "入口", "outlet": "出口", "wall": "壁面"}
-MODES = {"Velocity": "法向速度入口", "PressureNoViscousStress": "压力出口", "NoSlip": "无滑移壁面"}
+MODES = {"Velocity": "法向速度入口", "PressureNoViscousStress": "压力出口", "NoSlip": "无滑移壁面", "Slip": "滑移壁面"}
 NOTICE = ("这是报告中已归一化证据的概览，不是实时 COMSOL 模型树，也不证明物理正确。"
           "仅列启用且进入当前模板的边界节点；未列出不代表已从模型删除。"
           "声明选择与实际生效选择可能因节点覆盖不同，不能仅凭声明重叠断言错误。")
@@ -50,9 +50,16 @@ def build_overview(report):
     if report["status"] == "partial":
         lines += ["注意：部分检查未完成，未求值参数或无法表示的派生量不能当作正常数值。", ""]
     lines += [f"模板：{model['profile']}", f"组件：{source['component_tag']}；物理场：{source['physics_tag']}；研究：{source['study_tag']}",
-              f"COMSOL：{source['comsol_version']}", "", "几何（米制、轴对齐矩形）",
-              f"x 向尺寸 L：{geometry['length_m']:.9g} m；y 向尺寸 H：{geometry['height_m']:.9g} m", "",
-              "材料参数", "密度 · " + _evaluated(model["material"]["density"]),
+              f"COMSOL：{source['comsol_version']}", ""]
+    if model["profile"] == "rectangular-channel-v1":
+        lines += ["几何（米制、轴对齐矩形）",
+                  f"x 向尺寸 L：{geometry['length_m']:.9g} m；y 向尺寸 H：{geometry['height_m']:.9g} m"]
+    else:
+        bbox = geometry["bounding_box_m"]
+        lines += ["几何（二维单域平面通道）", f"边界数量：{geometry['boundary_count']}",
+                  f"包围盒 x：[{bbox[0]:.9g}, {bbox[1]:.9g}] m；y：[{bbox[2]:.9g}, {bbox[3]:.9g}] m",
+                  "包围盒不是通道高度；当前模板未执行 Re 风险筛查。"]
+    lines += ["", "材料参数", "密度 · " + _evaluated(model["material"]["density"]),
               "动力黏度 · " + _evaluated(model["material"]["dynamic_viscosity"]), "", "启用的边界节点"]
     boundaries = []
     for item in sorted(model["boundaries"], key=lambda item: item["feature_tag"]):

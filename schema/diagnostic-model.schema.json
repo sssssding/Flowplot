@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "FlowPilot diagnostic model, conservative rectangle profile",
+  "title": "FlowPlot diagnostic model, rectangle and planar boundary profiles",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "profile", "source", "geometry", "material", "boundaries"],
   "properties": {
     "schema_version": {"const": "diagnostic-0.1"},
-    "profile": {"const": "rectangular-channel-v1"},
+    "profile": {"enum": ["rectangular-channel-v1", "planar-boundaries-v1"]},
     "source": {
       "type": "object", "additionalProperties": false,
       "required": ["comsol_version", "component_tag", "physics_tag", "study_tag"],
@@ -15,10 +15,7 @@
         "physics_tag": {"type": "string", "minLength": 1}, "study_tag": {"type": "string", "minLength": 1}
       }
     },
-    "geometry": {
-      "type": "object", "additionalProperties": false, "required": ["length_m", "height_m"],
-      "properties": {"length_m": {"type": "number", "exclusiveMinimum": 0}, "height_m": {"type": "number", "exclusiveMinimum": 0}}
-    },
+    "geometry": {"type": "object"},
     "material": {
       "type": "object", "additionalProperties": false, "required": ["density", "dynamic_viscosity"],
       "properties": {
@@ -28,8 +25,22 @@
     },
     "boundaries": {"type": "array", "items": {"$ref": "#/$defs/boundary"}}
   },
+  "allOf": [
+    {"if": {"properties": {"profile": {"const": "rectangular-channel-v1"}}}, "then": {"properties": {
+      "geometry": {"type": "object", "additionalProperties": false, "required": ["length_m", "height_m"],
+        "properties": {"length_m": {"type": "number", "exclusiveMinimum": 0}, "height_m": {"type": "number", "exclusiveMinimum": 0}}},
+      "boundaries": {"items": {"allOf": [
+        {"properties": {"boundary_ids": {"items": {"maximum": 4}}, "declared_boundary_ids": {"items": {"maximum": 4}}}},
+        {"if": {"properties": {"type": {"const": "wall"}}}, "then": {"properties": {"mode": {"const": "NoSlip"}}}}
+      ]}}
+    }}, "else": {"properties": {
+      "geometry": {"type": "object", "additionalProperties": false, "required": ["bounding_box_m", "boundary_count"],
+        "properties": {"bounding_box_m": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}},
+                       "boundary_count": {"type": "integer", "minimum": 3}}}
+    }}}
+  ],
   "$defs": {
-    "ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1, "maximum": 4}},
+    "ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1}},
     "evaluated": {
       "type": "object", "additionalProperties": false, "required": ["expression", "unit", "status", "value"],
       "properties": {
@@ -60,7 +71,7 @@
             "properties": {"pressure": {"allOf": [{"$ref": "#/$defs/evaluated"}, {"properties": {"unit": {"const": "Pa"}}}]}}}
         }}},
         {"if": {"properties": {"type": {"const": "wall"}}}, "then": {"properties": {
-          "mode": {"const": "NoSlip"}, "parameters": {"type": "object", "maxProperties": 0}
+          "mode": {"enum": ["NoSlip", "Slip"]}, "parameters": {"type": "object", "maxProperties": 0}
         }}}
       ]
     }

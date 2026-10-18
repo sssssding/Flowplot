@@ -64,6 +64,7 @@ public class ModelInventory {
             .append(model.component(component).geom(geometry).getSDim()).append(",\"domain_count\":")
             .append(model.component(component).geom(geometry).getNDomains()).append(",\"boundary_count\":")
             .append(model.component(component).geom(geometry).getNBoundaries())
+            .append(",\"axisymmetric\":").append(model.component(component).geom(geometry).isAxisymmetric())
             .append(",\"length_unit\":").append(quote(model.component(component).geom(geometry).lengthUnit()))
             .append(",\"bounding_box\":").append(Arrays.toString(model.component(component).geom(geometry).getBoundingBox()))
             .append(",\"feature_types\":[");

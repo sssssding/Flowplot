@@ -38,6 +38,8 @@ def model_features(model):
         validate(model)
     except (ValidationError, ValueError, TypeError, KeyError) as error:
         raise ValueError("Unsupported or invalid diagnostic model") from error
+    if model["profile"] != "rectangular-channel-v1":
+        raise ValueError("Portable recommendation only covers the calibrated rectangle profile")
     inlets = [b for b in model["boundaries"] if b["type"] == "inlet" and b["boundary_ids"]]
     outlets = [b for b in model["boundaries"] if b["type"] == "outlet" and b["boundary_ids"]]
     if len(inlets) != 1 or len(outlets) != 1:

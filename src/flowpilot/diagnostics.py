@@ -55,7 +55,7 @@ def _require(condition, explanation):
 
 
 def normalize(inventory):
-    """Accept only the verified single-rectangle, constant-property profile."""
+    """Keep rectangle numerics separate from planar boundary-only diagnostics."""
     _require(inventory.get("schema_version") == "inventory-0.2", "需要 inventory-0.2 API 证据")
     _require(not inventory["multiphysics_tags"], "暂不支持耦合物理场")
     _require(len(inventory["components"]) == 1, "暂仅支持一个组件")
@@ -63,16 +63,20 @@ def normalize(inventory):
     _require(not component["multiphysics_tags"], "暂不支持组件内耦合")
     _require(len(component["geometries"]) == 1, "暂仅支持一个几何")
     geometry = component["geometries"][0]
-    _require(geometry["dimension"] == 2 and geometry["domain_count"] == 1 and geometry["boundary_count"] == 4,
-             "暂仅支持二维单域四边界矩形通道")
-    _require(geometry["feature_types"].count("Rectangle") == 1
-             and set(geometry["feature_types"]) <= {"Rectangle", "Finalize"}, "暂不支持非矩形或组合几何")
-    # New API inventories include this evidence; old versioned fixtures remain readable.
-    if "rectangle_rotation_expression" in geometry:
-        rotation = geometry["rectangle_rotation_expression"]
-        _require(isinstance(rotation, str) and "".join(rotation.split()) in {"0", "0[deg]", "0[rad]"},
-                 "当前矩形配置仅验证显式零旋转，不能用旋转后的包围盒计算通道高度")
-    _require(geometry["length_unit"] == "m", "当前矩形配置仅验证米制几何")
+    count = geometry["boundary_count"]
+    _require(geometry["dimension"] == 2 and geometry["domain_count"] == 1
+             and type(count) is int and count >= 3, "暂仅支持二维单域平面通道")
+    _require(geometry.get("axisymmetric", False) is False, "暂不支持二维轴对称模型")
+    types = geometry["feature_types"]
+    rectangle = types.count("Rectangle") == 1 and set(types) <= {"Rectangle", "Finalize"}
+    polygon = types.count("Polygon") == 1 and set(types) <= {"Polygon", "Finalize"}
+    _require(rectangle or polygon, "暂仅支持单个矩形或多边形通道，不支持其他或组合几何")
+    rotation = geometry.get("rectangle_rotation_expression", "0")
+    aligned = rectangle and count == 4 and isinstance(rotation, str) and "".join(rotation.split()) in {"0", "0[deg]", "0[rad]"}
+    # Extended profiles require explicit planar evidence from the new API reader.
+    if not aligned:
+        _require(geometry.get("axisymmetric") is False, "扩展几何需要明确的非轴对称 API 证据，请重新读取模型")
+    _require(geometry["length_unit"] == "m", "当前配置仅验证米制几何")
     bbox = geometry["bounding_box"]
     _require(len(bbox) == 4 and all(is_finite_number(x) for x in bbox), "几何包围盒不可用")
     length, height = bbox[1] - bbox[0], bbox[3] - bbox[2]
@@ -105,25 +109,29 @@ def normalize(inventory):
             continue
         _require(feature["selection_dimensions"] == [1], "边界节点的选择维度必须为 1")
         mode = feature["parameters"].get("BoundaryCondition")
-        _require(mode == {"inlet": "Velocity", "outlet": "PressureNoViscousStress", "wall": "NoSlip"}[role],
+        _require(mode in {"inlet": {"Velocity"}, "outlet": {"PressureNoViscousStress"}, "wall": {"NoSlip", "Slip"}}[role],
                  "不支持的边界模式: " + str(mode))
         if role == "inlet":
             _require(feature["parameters"].get("ComponentWise") == "NormalInflowVelocity", "暂仅支持法向入口速度，不能用 U0in 代替分量速度")
-        # COMSOL returns all four input entities even for the fallback wall.
+        # COMSOL returns all input entities even for the fallback wall.
         # Treat an unnamed all-boundaries wall as fallback, not an explicit conflict.
         fallback = (role == "wall" and not feature["named_selection"]
-                    and set(feature["declared_entity_ids"] or []) == {1, 2, 3, 4})
+                    and set(feature["declared_entity_ids"] or []) == set(range(1, count + 1)))
         boundaries.append({
             "feature_tag": feature["tag"], "label": feature["label"], "type": role,
             "boundary_ids": sorted(feature["selected_entity_ids"]),
             "declared_boundary_ids": feature["declared_entity_ids"], "selection_scope": "fallback" if fallback else "explicit", "mode": mode,
             "parameters": feature["evaluated_parameters"],
         })
+    rectangular_profile = aligned and all(b["mode"] == "NoSlip" for b in boundaries if b["type"] == "wall")
+    if not rectangular_profile:
+        _require(geometry.get("axisymmetric") is False, "扩展边界需要明确的非轴对称 API 证据，请重新读取模型")
     result = {
-        "schema_version": "diagnostic-0.1", "profile": "rectangular-channel-v1",
+        "schema_version": "diagnostic-0.1", "profile": "rectangular-channel-v1" if rectangular_profile else "planar-boundaries-v1",
         "source": {"comsol_version": inventory["comsol_version"], "component_tag": component["tag"],
                    "physics_tag": physics["tag"], "study_tag": studies[0]["study_tag"]},
-        "geometry": {"length_m": length, "height_m": height},
+        "geometry": ({"length_m": length, "height_m": height} if rectangular_profile else
+                     {"bounding_box_m": bbox, "boundary_count": count}),
         "material": {"density": material["density"], "dynamic_viscosity": material["dynamic_viscosity"]},
         "boundaries": sorted(boundaries, key=lambda item: item["feature_tag"]),
     }
@@ -148,6 +156,15 @@ def validate(model):
     tags = [item["feature_tag"] for item in model["boundaries"]]
     if len(tags) != len(set(tags)):
         raise ValueError("duplicate boundary feature tags")
+    count = 4 if model["profile"] == "rectangular-channel-v1" else model["geometry"]["boundary_count"]
+    for item in model["boundaries"]:
+        for ids in (item["boundary_ids"], item["declared_boundary_ids"] or []):
+            if any(entity > count for entity in ids):
+                raise ValidationError("boundary ID exceeds geometry boundary count")
+    if model["profile"] == "planar-boundaries-v1":
+        bbox = model["geometry"]["bounding_box_m"]
+        if any(not is_finite_number(bbox[i+1] - bbox[i]) or bbox[i+1] <= bbox[i] for i in (0, 2)):
+            raise ValueError("invalid planar bounding box")
 
 
 def check(model, *, reynolds_warning=2000.0):
@@ -162,6 +179,11 @@ def check(model, *, reynolds_warning=2000.0):
                          "feature_tags": sorted(tags), "boundary_ids": sorted(ids), "evidence": evidence or {}})
 
     boundaries = model["boundaries"]
+    if model["profile"] == "planar-boundaries-v1":
+        add("EVALUATION_UNAVAILABLE", "Warning", "已检查平面通道的边界配置；当前几何或壁面设置没有已验证的 Re 筛查配置，"
+            "未将包围盒尺寸当作通道高度，Re 风险筛查未执行。",
+            evidence={"quantity": "reynolds", "reason": "no_verified_reynolds_profile",
+                      "profile": model["profile"], "bounding_box_m": model["geometry"]["bounding_box_m"]})
     for role in ("inlet", "outlet"):
         role_nodes = [item for item in boundaries if item["type"] == role]
         if not any(item["boundary_ids"] for item in role_nodes):
@@ -213,7 +235,7 @@ def check(model, *, reynolds_warning=2000.0):
         if speed <= 0:
             add("INLET_DIRECTION", "Warning", "入口法向速度未指向域内或为零；该符号约定只用于法向速度模式。",
                 (tag,), boundary["boundary_ids"], {"normal_velocity_m_s": speed})
-        if material_valid:
+        if material_valid and model["profile"] == "rectangular-channel-v1":
             height = model["geometry"]["height_m"]
             reynolds, unavailable = _reynolds_number(rho, speed, height, mu)
             if unavailable:
