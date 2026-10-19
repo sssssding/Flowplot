@@ -1,0 +1,66 @@
+{
+  "schema_version": "engineering-verification-0.1",
+  "status": "engineering_checks_passed",
+  "started_at": "2026-10-17T07:02:39.310231+00:00",
+  "finished_at": "2026-10-17T07:05:56.772924+00:00",
+  "git_head": "e77df9c5557d7f8c80e12ff1cdd23eadd2a18e91",
+  "offline_tests": {
+    "run": 555,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "comsol_readonly": {
+    "checked": 6,
+    "matching": 6,
+    "loads_each": 2,
+    "offline_matching": 6,
+    "summary_sha256": "09c0914210c359b490f8fb57f5e8c2d368f7e2fe2ffda50d54aff73aab16b1da"
+  },
+  "inputs_preserved": true,
+  "source_stability_verified": true,
+  "user_baseline_sha256_before": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+  "user_baseline_sha256_after": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+  "solver_run": false,
+  "professional_acceptance": false,
+  "independent_acceptance": false,
+  "visible_ui_acceptance": false,
+  "cross_hardware_performance_verified": false,
+  "software_goal_complete": false,
+  "environment": {
+    "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "jsonschema": "4.25.1"
+  },
+  "stages": [
+    {
+      "name": "unit-tests",
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 102.40312139999969,
+      "log_sha256": "c3923ae1dcda2fad9a44f934e26855c7a459609fc58d2485f0bd15bb42f02839"
+    },
+    {
+      "name": "comsol-readonly",
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 93.62643670000034,
+      "log_sha256": "7b323ed8e1964ae04875d32ae77e9283c1faa0a60affa9e439263de384de8144"
+    },
+    {
+      "name": "offline-recheck",
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 1.2434235999999146,
+      "log_sha256": "3523ac6636f326a4dc7532b0d2c9a079107bd7ddb39d8dd3ec3e64d8008f9c41"
+    }
+  ],
+  "note": "visible_ui_acceptance=false 是自动脚本原始字段；后续人工结果单独保存在 visible-ui-record.md，不改写自动证据。首次沙箱运行 COMSOL 编译超时，失败记录本地保留。",
+  "local_evidence_sha256": {
+    "pc2-001/verification.json": "8609adf02f6e5b555bcefd1afee9e0afecf191581867f2ceed2cce1aa60c0c4f",
+    "pc2-002/verification.json": "a259fe42a398664416fe68a0452bd5fce13a3692c2b312e6bd8a2c81a8f608b5",
+    "pc2-calibration-001/dataset.json": "c527e732a10e741eb4ae2e57218d5d5b1b3692358052bca8bb43632be501a002",
+    "pc2-ai-evaluation-001.json": "b54624f910e8bdb7eaf9e17f6ee34279093575c129d0b7fb0a2ace036b56e9f5",
+    "visible-ui-record.md": "982ca5b4800e408d94d3c6ba6abeb95f16b58a96a295604934fbcf96005313fb"
+  }
+}

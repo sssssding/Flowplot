@@ -34,27 +34,9 @@ Canonical JSON + Schema Validation
 | `recommender` | 对候选求解器配置排序 | 推荐配置与置信信息 |
 | `ui` | 展示检查、证据和建议 | 可交互原型 |
 
-## 数据契约草案
+## 当前数据契约
 
-```json
-{
-  "schema_version": "0.1.0",
-  "model": {
-    "dimension": 2,
-    "physics": "laminar_flow",
-    "study": "stationary"
-  },
-  "boundaries": [
-    {
-      "feature_tag": "inl1",
-      "type": "inlet",
-      "boundary_ids": [1],
-      "enabled": true,
-      "parameters": {"velocity": "0.01[m/s]"}
-    }
-  ]
-}
-```
+以 `schema/diagnostic-model.schema.json`、`schema/flowpilot-model.schema.json` 及实现中的版本字段为准；规则 ID、证据与适用边界见 [RULES.md](RULES.md)。本文旧的 `0.1.0` JSON 仅是早期草图，不是可提交 fixture 或当前 API 示例。
 
 ## 阶段与退出条件
 

@@ -22,6 +22,10 @@ from jsonschema import ValidationError
 METHOD = "feature-relative-knn-v1"
 NOTICE = ("跨机器、按模型特征匹配的实验性候选建议。排序使用相对耗时，不能保证本机秒数或加速；"
           "必须在副本验证，不自动修改模型，不代表物理/独立性能验收通过。")
+FEATURE_LABELS = (("length_m", "长度 L", "m"), ("height_m", "高度 H", "m"),
+                  ("reynolds", "Re", ""), ("log10_aspect_ratio", "长宽比 L/H", ""))
+MESH_NOTICE = ("未采集当前模型的网格自由度/质量，几何相近不证明网格相同，不能据此保证精度或速度。"
+               "请保留原网格，在独立副本比较默认与候选，先核对质量再看耗时。")
 
 
 def comsol_series(text):
@@ -150,6 +154,27 @@ def fit(data):
             "independent_validation": False, "expert_review": "pending"}
 
 
+def training_coverage(cases):
+    """Describe validated observations, not a guarantee about the whole bounding box."""
+    values = {key: [] for key, _, _ in FEATURE_LABELS}
+    for case in cases:
+        f = case["features"]
+        for key in values:
+            values[key].append(f["vector"][3] if key == "log10_aspect_ratio" else f[key])
+    return {"geometry_configurations": len({(c["features"]["length_m"], c["features"]["height_m"]) for c in cases}),
+            "observations": sum(len(c["observations"]) for c in cases),
+            "comsol_series": cases[0]["features"]["comsol_series"],
+            "ranges": {key: [min(items), max(items)] for key, items in values.items()},
+            "mesh_features_available": False, "independent_validation": False}
+
+
+def _feature_text(key, value):
+    # Preserve the existing log-space numerical safety in human-readable output.
+    if key == "log10_aspect_ratio":
+        return f"{10**value:g}" if -300 <= value <= 300 else f"10^{value:g}"
+    return f"{value:g}"
+
+
 def rank(model, diagnostic_model, source_sha256, *, logical_cpus=None):
     if (not isinstance(model, dict) or model.get("schema_version") != "solver-ranker-0.2"
             or model.get("method") != METHOD or type(model.get("k")) is not int or model["k"] != 3
@@ -160,7 +185,8 @@ def rank(model, diagnostic_model, source_sha256, *, logical_cpus=None):
     result = {"schema_version": "solver-recommendation-0.2", "status": "unavailable", "notice": NOTICE,
               "method": METHOD, "source_sha256": source_sha256, "ranking": [], "selected": None,
               "requires_local_validation": True, "independent_validation": False,
-              "absolute_runtime_prediction": None, "machine_hash_required": False}
+              "absolute_runtime_prediction": None, "machine_hash_required": False,
+              "training_coverage": training_coverage(cases), "mesh_notice": MESH_NOTICE}
     # Generalization must not override an already measured reference failure.
     registry = read_json(ROOT / "data/fixtures/ai_development_registry.json")
     if (registry.get("schema_version") != "ai-development-registry-0.1"
@@ -177,14 +203,21 @@ def rank(model, diagnostic_model, source_sha256, *, logical_cpus=None):
     except (ValueError, TypeError, KeyError) as error:
         result["reason"] = "模型特征不在支持范围：" + str(error)
         return result
+    result["target_features"] = target
     if target["comsol_series"] != cases[0]["features"]["comsol_series"]:
-        result["reason"] = "COMSOL 主/次版本与训练数据不同，请补充该版本的校准数据。"
+        result["reason"] = (f"当前 COMSOL {target['comsol_series']} 与训练版本 "
+                            f"{cases[0]['features']['comsol_series']} 不同，请补充该版本的校准数据。")
         return result
     x = target["vector"]
     for index, value in enumerate(x):
         observed = [c["features"]["vector"][index] for c in cases]
         if value < min(observed)-1e-12 or value > max(observed)+1e-12:
-            result["reason"] = "模型尺寸、Re 或长宽比超出训练覆盖范围，请增加此工况的实测数据。"
+            key, label, unit = FEATURE_LABELS[index]
+            low, high = result["training_coverage"]["ranges"][key]
+            actual = target["vector"][3] if key == "log10_aspect_ratio" else target[key]
+            result["reason"] = (f"{label}={_feature_text(key, actual)} {unit} 超出训练覆盖范围 "
+                                f"{_feature_text(key, low)}–{_feature_text(key, high)} {unit}；"
+                                "请增加此工况的实测数据，不外推。")
             return result
     neighbours = sorted(((math.dist(x, c["features"]["vector"]), c) for c in cases), key=lambda pair: pair[0])
     if neighbours[0][0] > .75:
@@ -225,10 +258,15 @@ def rank(model, diagnostic_model, source_sha256, *, logical_cpus=None):
     if anchor:
         distinct = best["predicted_relative_runtime"] < .95 and best["observed_relative_range"][1] < 1
         selected = best if distinct else anchor
+        basis = "training-margin-candidate" if distinct else "conservative-strict-default"
+        reason = ("训练观测满足超过 5% 且范围不重叠的候选筛选条件，仅供本机副本试验，不证明迁移收益。" if distinct
+                  else "候选的训练收益不足 5% 或测量范围重叠，保留严格双线程默认配置；不声称加速。")
     else:
         selected = best
+        basis = "resource-constrained-single-thread"
+        reason = "本机仅允许单线程候选，按资源约束提供严格单线程配置；不把它称为速度优势。"
     result.update(status="recommended", selected=selected["candidate"],
-                  reason="按相近模型的相对耗时给出试验候选；跨模型/机器的收益和精度必须在本机副本验证。",
+                  reason=reason, selection_basis=basis,
                   target_features=target, supported_by=[c["source_sha256"] for _, c in neighbours],
                   feature_distance=neighbours[0][0], available_logical_cpus=cpus,
                   confidence="experimental-transfer", comsol_series=target["comsol_series"])
@@ -237,6 +275,21 @@ def rank(model, diagnostic_model, source_sha256, *, logical_cpus=None):
 
 def render(result):
     lines = ["FlowPlot · AI 参数推荐（跨环境候选）", "", NOTICE, "", result["reason"]]
+    coverage = result.get("training_coverage")
+    if coverage:
+        lines += ["", f"训练依据：{coverage['geometry_configurations']} 种几何配置，"
+                  f"{coverage['observations']} 条观测，COMSOL {coverage['comsol_series']}。",
+                  "几何配置数不是独立模型数；以下单项范围不保证所有组合工况已覆盖："]
+        for key, label, unit in FEATURE_LABELS:
+            low, high = coverage["ranges"][key]
+            lines.append(f"  {label}：{_feature_text(key, low)}–{_feature_text(key, high)} {unit}".rstrip())
+        lines += ["", "网格限制：" + result.get("mesh_notice", MESH_NOTICE)]
+    target = result.get("target_features")
+    if target:
+        lines += ["", f"当前报告：L={target['length_m']:g} m，H={target['height_m']:g} m，"
+                  f"Re={target['reynolds']:g}，L/H={_feature_text('log10_aspect_ratio', target['vector'][3])}。"]
+    if result.get("available_logical_cpus"):
+        lines.append(f"本机可用逻辑 CPU：{result['available_logical_cpus']}；已过滤超过该数量的线程配置。")
     if result["selected"]:
         c = result["selected"]
         lines += ["", f"建议试验：相对容差 {c['stol']:g}，{c['threads']} 线程。",
@@ -245,6 +298,10 @@ def render(result):
         c = row["candidate"]
         lines.append(f"{c['id']}: 容差 {c['stol']:g} / {c['threads']} 线程 · "
                      f"相对耗时 {row['predicted_relative_runtime']:.3f} · 支持模型 {row['supporting_models']}")
+    if result["selected"]:
+        lines += ["", "下一步：在独立副本保持网格、物理和边界不变，默认/候选各至少三次冷求解；"
+                  "先核对守恒、速度/壁面、压降及参考漂移，质量失败不接受速度收益。",
+                  "本机验证步骤见 docs/SECOND_PC_VALIDATION.md；推荐、刷新和展示本身不启动求解。"]
     return "\n".join(lines)+"\n"
 
 
