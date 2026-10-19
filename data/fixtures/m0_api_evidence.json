@@ -1,0 +1,277 @@
+{
+  "schema_version": "m0-api-evidence-1",
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "verified_at": "2026-10-18T16:20:15",
+  "license_baseline_available": true,
+  "interface_creation_succeeded": "HeatTransferInFluids",
+  "solved": false,
+  "source_models_unchanged": true,
+  "reads_per_model": 3,
+  "verified_models": [
+    "baseline",
+    "disabled_coupling",
+    "high_reynolds",
+    "missing_inlet",
+    "missing_outlet",
+    "missing_viscosity",
+    "reversed_inlet",
+    "selection_overlap",
+    "unknown_coupling",
+    "unknown_physics"
+  ],
+  "source_model_sha256": {
+    "baseline_pipe_2d_laminar.mph": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "high_reynolds.mph": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+    "missing_inlet.mph": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+    "missing_outlet.mph": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+    "reversed_inlet.mph": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+    "selection_overlap.mph": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323"
+  },
+  "missing_viscosity": {
+    "expression": "",
+    "unit": "Pa*s",
+    "status": "unresolved",
+    "value": null,
+    "reason": "UnknownEntityException: Unknown_parameter_X#dynamicviscosity"
+  },
+  "coupling_creation_marker": "M0_COUPLING_CREATED NonIsothermalFlow",
+  "coupling": [
+    {
+      "tag": "nitf_m0",
+      "model_path": "/multiphysics/nitf_m0",
+      "scope": "root.comp1.nitf_m0",
+      "component_tag": "comp1",
+      "type": "NonIsothermalFlow",
+      "enabled": true,
+      "selection_dimensions": [
+        2
+      ],
+      "selected_entity_ids": [
+        1
+      ],
+      "properties": {
+        "BoussinesqApproximation": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "Fluid_PhysicalModelProperty_Compressibility": {
+          "status": "read",
+          "value_type": "String",
+          "value": "Incompressible"
+        },
+        "Fluid_TurbulenceModelProperty_DESWallTreatment": {
+          "status": "read",
+          "value_type": "String",
+          "value": "Automatic"
+        },
+        "Fluid_TurbulenceModelProperty_LESModel": {
+          "status": "read",
+          "value_type": "String",
+          "value": "RBVM"
+        },
+        "Fluid_TurbulenceModelProperty_LESWallTreatment": {
+          "status": "read",
+          "value_type": "String",
+          "value": "LowReynoldsNumber"
+        },
+        "Fluid_TurbulenceModelProperty_TurbulenceModelType": {
+          "status": "read",
+          "value_type": "String",
+          "value": "None"
+        },
+        "Fluid_physics": {
+          "status": "read",
+          "value_type": "String",
+          "value": "spf"
+        },
+        "Fluid_showDependencies": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "Heat_physics": {
+          "status": "read",
+          "value_type": "String",
+          "value": "ht_m0"
+        },
+        "Prt": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "Prt_LES": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0.85"
+        },
+        "Qil": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "Qil_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "userdef"
+        },
+        "Qvd": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "Qvd_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "userdef"
+        },
+        "Reinf": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "SpecifyDensity": {
+          "status": "read",
+          "value_type": "String",
+          "value": "FromHeatTransferInterface"
+        },
+        "SpecifyTref": {
+          "status": "read",
+          "value_type": "String",
+          "value": "FromHeatTransferInterface"
+        },
+        "StudyStep": {
+          "status": "read",
+          "value_type": "String",
+          "value": "std1/stat"
+        },
+        "T_cmi": {
+          "status": "read",
+          "value_type": "String",
+          "value": "293.15[K]"
+        },
+        "T_cmi_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "fromCommonDef"
+        },
+        "ThermalTurbType": {
+          "status": "read",
+          "value_type": "String",
+          "value": "KaysCrawford"
+        },
+        "ThermalWallFunction": {
+          "status": "read",
+          "value_type": "String",
+          "value": "Standard"
+        },
+        "Tref": {
+          "status": "read",
+          "value_type": "String",
+          "value": "293.15[K]"
+        },
+        "alphap": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "alphap_mat": {
+          "status": "read",
+          "value_type": "String",
+          "value": "userdef"
+        },
+        "includeIrreversibleLosses": {
+          "status": "read",
+          "value_type": "String",
+          "value": "1"
+        },
+        "includeKineticEnergy": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "includeViscousDissipation": {
+          "status": "read",
+          "value_type": "String",
+          "value": "1"
+        },
+        "pA_cmi": {
+          "status": "read",
+          "value_type": "String",
+          "value": "1[atm]"
+        },
+        "pA_cmi_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "fromCommonDef"
+        },
+        "rho": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "rho_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "userdef"
+        },
+        "rhoref": {
+          "status": "read",
+          "value_type": "String",
+          "value": "0"
+        },
+        "rhoref_mat": {
+          "status": "read",
+          "value_type": "String",
+          "value": "userdef"
+        },
+        "u_cmi": {
+          "status": "read",
+          "value_type": "StringArray",
+          "value": [
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        "u_cmi_src": {
+          "status": "read",
+          "value_type": "String",
+          "value": "fromCommonDef"
+        }
+      },
+      "read_status": "read"
+    }
+  ],
+  "implementation_sha256": {
+    "src/comsol/ModelInventory.java": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+    "src/comsol/M0ApiProbe.java.in": "5533b9ec27cdf26b537a499d557a9e8142fcdbeadbbf554fce6a0ca5c64baf6b",
+    "scripts/verify_m0_api.py": "686bc7eae38828a2527696e473c129e3cc4964c96d9add76ec2c86c86d082670"
+  },
+  "inventory_sha256": {
+    "baseline": "9e622fbd22e4420ba996dd9d925456f7a89fb296529f6fc1f1eabc3a4116e27f",
+    "missing_inlet": "049ed64dc4636336bf0ac9a047e4e8b3bf3183bc9a26e423c2529f917a486ca0",
+    "missing_outlet": "27e0c81ae51525b60878a6f23ec0c2ec33fc46b2bfc33586bbac545f9d29a252",
+    "selection_overlap": "b3673bee7a85e7928c9409b81db716e2de587b4b9115aabcb73a660528cc6919",
+    "reversed_inlet": "1f3ab4378e0f28990b9b7b7a76a7892d425847ff55691d30a6cb42cc4836ac95",
+    "high_reynolds": "f594b63ff41d6a202382d421a6e842f818eddc44ccc3d56e2c8c21f22423efed",
+    "unknown_physics": "450ef7d0ae61a78045548b9f42ea90457e54d188693828fd1399e4db9c88f94c",
+    "missing_viscosity": "f0d2cb13d21b5132853c0d344193c8fee731f429e607dcf769242b60a20281c2",
+    "unknown_coupling": "cc4acd9d78ba5f2c84259ccd6882ad4236ad6e066e6d8e3ad2aa4a84139643b4",
+    "disabled_coupling": "e8a5fda190473700f12672e687e51a20007a4998c6c89911d77c651f36b9a70e"
+  },
+  "repeat_markers": {
+    "baseline": "M0_READ_VERIFIED baseline 3",
+    "missing_inlet": "M0_READ_VERIFIED missing_inlet 3",
+    "missing_outlet": "M0_READ_VERIFIED missing_outlet 3",
+    "selection_overlap": "M0_READ_VERIFIED selection_overlap 3",
+    "reversed_inlet": "M0_READ_VERIFIED reversed_inlet 3",
+    "high_reynolds": "M0_READ_VERIFIED high_reynolds 3",
+    "unknown_physics": "M0_READ_VERIFIED unknown_physics 3",
+    "missing_viscosity": "M0_READ_VERIFIED missing_viscosity 3",
+    "unknown_coupling": "M0_READ_VERIFIED unknown_coupling 3",
+    "disabled_coupling": "M0_READ_VERIFIED disabled_coupling 3"
+  },
+  "generated_driver_sha256": "f4a49bbad4a108a485dfe3cedc8574cd51d15219091516eb1113de54d16de165",
+  "scope": "M0 evidence extraction and unknown-interface/coupling coverage only; no heat-transfer or coupling diagnostic support claim"
+}

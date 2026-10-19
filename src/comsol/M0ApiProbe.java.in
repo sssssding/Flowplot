@@ -1,0 +1,58 @@
+import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
+
+/** Generated paths are supplied by verify_m0_api.py; only output copies are modified. */
+public class M0ApiProbe {
+  private static final String BASE = "@BASE@";
+  private static final String CASES = "@CASES@";
+  private static final String OUTPUT = "@OUTPUT@";
+  public static void main(String[] args) throws Exception {
+    System.out.println("M0_LICENSE_BASELINE " + ModelUtil.hasProductForFile(BASE));
+    verify("baseline", BASE);
+    for (String name : new String[]{"missing_inlet", "missing_outlet", "selection_overlap", "reversed_inlet", "high_reynolds"}) {
+      verify(name, CASES + "/" + name + ".mph");
+    }
+    boolean couplingCreated = false;
+    Model model = ModelUtil.load("Probe", BASE);
+    try {
+      model.component("comp1").physics().create("ht_m0", "HeatTransferInFluids", "geom1");
+      System.out.println("M0_INTERFACE_CREATED " + model.component("comp1").physics("ht_m0").getType());
+      model.save(OUTPUT + "/unknown_physics.mph");
+      try {
+        model.component("comp1").multiphysics().create("nitf_m0", "NonIsothermalFlow", 2);
+        System.out.println("M0_COUPLING_CREATED " + model.component("comp1").multiphysics("nitf_m0").getType());
+        model.save(OUTPUT + "/unknown_coupling.mph");
+        couplingCreated = true;
+        model.component("comp1").multiphysics("nitf_m0").active(false);
+        model.save(OUTPUT + "/disabled_coupling.mph");
+        model.component("comp1").multiphysics().remove("nitf_m0");
+      } catch (Exception error) {
+        System.out.println("M0_COUPLING_UNAVAILABLE " + quote(error.toString()));
+      }
+      model.component("comp1").material().create("solid_m0", "Common");
+      model.component("comp1").material("solid_m0").selection().clear();
+      model.component("comp1").material("solid_m0").propertyGroup("def").set("density", "1000[kg/m^3]");
+      model.save(OUTPUT + "/missing_viscosity.mph");
+    } finally { ModelUtil.remove("Probe"); }
+    verify("unknown_physics", OUTPUT + "/unknown_physics.mph");
+    verify("missing_viscosity", OUTPUT + "/missing_viscosity.mph");
+    if (couplingCreated) {
+      verify("unknown_coupling", OUTPUT + "/unknown_coupling.mph");
+      verify("disabled_coupling", OUTPUT + "/disabled_coupling.mph");
+    }
+    System.out.println("M0_API_VERIFIED");
+  }
+  private static void verify(String name, String path) throws Exception {
+    String first = null;
+    for (int i = 0; i < 3; i++) {
+      Model model = ModelUtil.load("Read", path);
+      try {
+        String snapshot = ModelInventory.inspect(model);
+        if (first != null && !first.equals(snapshot)) throw new IllegalStateException("Inventory drift: " + name);
+        first = snapshot;
+      } finally { ModelUtil.remove("Read"); }
+    }
+    System.out.println("M0_INVENTORY " + name + " " + first);
+    System.out.println("M0_READ_VERIFIED " + name + " 3");
+  }
+}

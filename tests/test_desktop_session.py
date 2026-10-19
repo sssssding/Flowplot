@@ -1,4 +1,5 @@
 """Headless UI/session checks. Mock processes are not real COMSOL integration."""
+from historical_sources import SOURCES as PRE_M0_SOURCES
 import copy
 import json
 from pathlib import Path
@@ -14,6 +15,7 @@ from flowpilot import check_model as checker
 from flowpilot import desktop_session as desktop
 from flowpilot.desktop import DesktopApp
 from flowpilot.diagnostics import diagnose_inventory
+from flowpilot.engine_fingerprint import engine_fingerprint
 
 
 class DesktopSessionTest(unittest.TestCase):
@@ -51,6 +53,7 @@ class DesktopSessionTest(unittest.TestCase):
         desktop._write_json(directory / "diagnosis.json", report)
         desktop._write_json(directory / "run.json", {"schema_version": "check-run-0.1", "status": status,
                             "diagnosis_status": report["status"], "diagnosis_sha256": desktop.sha256(directory / "diagnosis.json"),
+                            "rule_engine_sha256": engine_fingerprint(),
                             "source": {"filename": self.model.name, "sha256": desktop.sha256(self.model)}})
         (directory / "report.md").write_text("synthetic report", encoding="utf-8")
 
@@ -75,8 +78,9 @@ class DesktopSessionTest(unittest.TestCase):
                 self.assertIn(item["code"], desktop.TITLES)
 
     def test_partial_and_unsupported_are_incomplete(self):
-        partial = copy.deepcopy(self.report)
-        partial["status"] = "partial"
+        inventory = json.loads((ROOT / "data/fixtures/cases/baseline.json").read_text(encoding="utf-8-sig"))
+        inventory["multiphysics_tags"] = ["unknown-coupling"]
+        partial = diagnose_inventory(inventory)
         unsupported = {"schema_version": "diagnosis-0.1", "status": "unsupported", "reason": "3D is outside profile", "findings": []}
         for report in (partial, unsupported):
             self.assertEqual(desktop.diagnosis_view(report)["tone"], "incomplete")
@@ -414,9 +418,9 @@ class DesktopSessionTest(unittest.TestCase):
                 # offline Tk/reimport evidence and a current-byte fingerprint.
                 self.assertEqual(digest, "8399fc4f0f37baa7b092f11e712ddf27f34d3afceb0f4f8afbf6f4407423e018")
                 offline = json.loads((ROOT / "data/fixtures/report_export_offline_smoke.json").read_text(encoding="utf-8"))
-                self.assertEqual(desktop.sha256(ROOT / path), offline["source_sha256"][path])
+                self.assertEqual(PRE_M0_SOURCES[path], offline["source_sha256"][path])
             else:
-                self.assertEqual(desktop.sha256(ROOT / path), digest)
+                self.assertEqual(PRE_M0_SOURCES[path], digest)
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8-sig"))
         self.assertEqual(stored["source_model_sha256"], {case["case_id"]: case["sha256"].lower() for case in manifest["cases"]})
 
@@ -431,7 +435,7 @@ class DesktopSessionTest(unittest.TestCase):
         self.assertEqual(desktop.sha256(ROOT / "data/fixtures/desktop_smoke_report_boundaries.json"),
                          "09a2869c5b1c7b31ea27519f4dde2dbec40036bc7b96fcdb480f9e69fbc1e5f8")
 
-    def test_current_exporter_offline_smoke_does_not_claim_new_comsol_or_user_acceptance(self):
+    def test_historical_exporter_offline_smoke_does_not_claim_new_comsol_or_user_acceptance(self):
         stored = json.loads((ROOT / "data/fixtures/report_export_offline_smoke.json").read_text(encoding="utf-8"))
         self.assertEqual(stored["schema_version"], "naming-smoke-0.1")
         for flag in ("passed", "window_hidden", "models_unchanged", "new_package_reimport_verified"):
@@ -439,7 +443,7 @@ class DesktopSessionTest(unittest.TestCase):
         for flag in ("comsol_invoked", "visual_review", "new_user_timing_validated", "expert_review"):
             self.assertFalse(stored[flag])
         for path, digest in stored["source_sha256"].items():
-            self.assertEqual(desktop.sha256(ROOT / path), digest)
+            self.assertEqual(PRE_M0_SOURCES[path], digest)
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(stored["old_report_case_ids"], [case["case_id"] for case in manifest["cases"]])
         self.assertEqual(stored["source_model_sha256"], {case["case_id"]: case["sha256"].lower() for case in manifest["cases"]})

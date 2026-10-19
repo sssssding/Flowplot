@@ -1,0 +1,272 @@
+{
+  "schema_version": "m2-api-evidence-1",
+  "verified_at": "2026-10-18T21:48:12",
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "license_baseline_available": true,
+  "solved": false,
+  "solution_sequences_per_model": 0,
+  "source_models_unchanged": true,
+  "source_model_sha256": {
+    "baseline_pipe_2d_laminar.mph": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "high_reynolds.mph": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+    "missing_inlet.mph": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+    "missing_outlet.mph": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+    "reversed_inlet.mph": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+    "selection_overlap.mph": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323"
+  },
+  "reads_per_model": 3,
+  "verified_models": [
+    "anisotropic_k",
+    "conjugate_missing_wall_k",
+    "conjugate_normal",
+    "disabled_coupling",
+    "disabled_heat_interface",
+    "empty_heat_flux",
+    "inactive_heat_study",
+    "invalid_cp",
+    "invalid_k",
+    "invalid_rho",
+    "legal_convective_flux",
+    "legal_manual_velocity",
+    "legal_prescribed_velocity",
+    "missing_k",
+    "normal",
+    "temperature_dependent_k",
+    "thermal_overlap"
+  ],
+  "implementation_sha256": {
+    "src/comsol/ModelInventory.java": "2178b034ffaf5bf01c8b3e4e2c18589bc08f14877fbda5b77342be9bb2ab7cb3",
+    "src/comsol/M2ApiProbe.java.in": "3f8455b31c029540026d7cd06818122fdd044ca936027912636f9b10e02fea07",
+    "scripts/verify_m2_api.py": "fa361b5ebef782b0a1d27c30c01749700e78c4e887ea55a86a7ab9895e13395f"
+  },
+  "implementation_sha256_after": {
+    "src/comsol/ModelInventory.java": "2178b034ffaf5bf01c8b3e4e2c18589bc08f14877fbda5b77342be9bb2ab7cb3",
+    "src/comsol/M2ApiProbe.java.in": "3f8455b31c029540026d7cd06818122fdd044ca936027912636f9b10e02fea07",
+    "scripts/verify_m2_api.py": "fa361b5ebef782b0a1d27c30c01749700e78c4e887ea55a86a7ab9895e13395f"
+  },
+  "inventory_sha256": {
+    "normal": "92790a53d71c70a4f3b48ece3736d8aa3317ad6f862cdf8b5696d364e2f6d587",
+    "invalid_k": "b73a6456070166508f39c8929a133670e31678952ec86bf49d6ea862bd0ebee5",
+    "invalid_cp": "e3dc4076599883bebf24fd6b22f0115ef107402a903857e93fcb83c010e1be5c",
+    "invalid_rho": "8f34b1c5d9f778d4ede5d56086a2c0a647fdaabc5a646a16a762cbfd7d9b7ac1",
+    "missing_k": "8826bc59dbf41d2ae4189c2a84d14b42ec216bc227412dec54bcc119e6e55a25",
+    "empty_heat_flux": "275b6b689406476bd279a2637fd9989f1e234a2c0876cdce866d5384d5d170c8",
+    "thermal_overlap": "00b1826b9fead535ba42a241d4a21006d310195763dfce01e82fa1899f377874",
+    "disabled_coupling": "a4d17ad251651d06d2005331c36d29454760b7253d390678d18aca93b274d023",
+    "disabled_heat_interface": "c10c7e7b2bcd362a04a667e96521a0930a58b3b7ca05a183d05e4dc4ac2802d1",
+    "inactive_heat_study": "d760aba7d64f55eb30f44dde2defc3bc99f65ce514c2321d814e7c8ea2b443f0",
+    "legal_manual_velocity": "c1e10a5f2a59f36c0efe5789946056f813634325fa919ec6c551a551ba6d61be",
+    "legal_prescribed_velocity": "86cce1740e667ba586c86aa47a4b2b4df02c9591e841dd74b8ea0d4301acfaa1",
+    "legal_convective_flux": "4dd4ffa46e8fc48c106fe0817f9e94177d5ecd0254ebaa10b5ff88fa38a1ffd9",
+    "temperature_dependent_k": "38fa14fbd9a68218d892c21dc10846db1dccca40cc11322aacfef4dba2c532be",
+    "anisotropic_k": "c4e8e471c3713769d66403b612161c7b2b22ff20228175bd1194b7df510c6c11",
+    "conjugate_normal": "df13ab78caf8115cb71c0d5a59361ce8c09fd35388b778cf58f4ebef1df43263",
+    "conjugate_missing_wall_k": "9bdc7b6f7c062108a53cff07c2e81abf5011e47e254044a0bb9fb9e3132a15b4"
+  },
+  "output_model_sha256": {
+    "normal": "a75ccd43a727003c02781e1ce20bdf54e6ae9691eb63a6e7567910d3cb1cbb38",
+    "invalid_k": "ca343baea807ada4688788f3dc0f45db3b3c1cf2c9b67cd64d71571c5d9528c1",
+    "invalid_cp": "773908cbda2feec3ba1ec6a6ed7778149d2688dbb6987ff2f1b12f857ae52ab1",
+    "invalid_rho": "53cc1f9f664ab70ffbce77c03b9c28dc3fb7681362f3a1eb5bb962be7831e5dc",
+    "missing_k": "56fa1b7daa8a0434b6c44866c9976b8231ae1dbca68451bb8afe68b6622da50e",
+    "empty_heat_flux": "85a70e39552bef3767a53592018fc0db04f117479afa1a603ebb7ce1af4335d0",
+    "thermal_overlap": "75948e0b9e8890b02c2f13929da7d32d4f0e49c883dc030944bbab919d3d2bea",
+    "disabled_coupling": "e635013ea1bd6106924ca176cd7202aa0abd24cba577cbc72237825eef16a9db",
+    "disabled_heat_interface": "1dccdb80bf80a7bcbe1394e0158865d5171b410f0d135a004de502f6bb194c99",
+    "inactive_heat_study": "722471e9efdf2d7228aa438559d0b3e09f01952c3c579eface325b1345557a5e",
+    "legal_manual_velocity": "9c9bc573cc51d9f604ec579e173a56d209658a6b31d0904de43bfb7e7d2e5a2e",
+    "legal_prescribed_velocity": "8c85c1d24a908a224e108b024a2708e9e0a308cef1ebbe4c887f40906bf50c96",
+    "legal_convective_flux": "9a78cc4c9f25f6325227ce2583521784ddf1470a1d86ec8877fd218b43848ecb",
+    "temperature_dependent_k": "07281bf593983e46e0610802f2eb07eccf520d76c73688422d34fa185bcba4e3",
+    "anisotropic_k": "7b9fa94666df525b809d7484a5e8fea58aec323f5aae10204fb144864436803f",
+    "conjugate_normal": "e55f8b97960901a68958b4f4329c5483ffb0732397db6f0ac500d50d3535ecd6",
+    "conjugate_missing_wall_k": "27d356d4ddcd4650378519c4cf7d636f6bada90c8e84d654acb662d732274df6"
+  },
+  "repeat_markers": {
+    "normal": "M2_READ_VERIFIED normal 3",
+    "invalid_k": "M2_READ_VERIFIED invalid_k 3",
+    "invalid_cp": "M2_READ_VERIFIED invalid_cp 3",
+    "invalid_rho": "M2_READ_VERIFIED invalid_rho 3",
+    "missing_k": "M2_READ_VERIFIED missing_k 3",
+    "empty_heat_flux": "M2_READ_VERIFIED empty_heat_flux 3",
+    "thermal_overlap": "M2_READ_VERIFIED thermal_overlap 3",
+    "disabled_coupling": "M2_READ_VERIFIED disabled_coupling 3",
+    "disabled_heat_interface": "M2_READ_VERIFIED disabled_heat_interface 3",
+    "inactive_heat_study": "M2_READ_VERIFIED inactive_heat_study 3",
+    "legal_manual_velocity": "M2_READ_VERIFIED legal_manual_velocity 3",
+    "legal_prescribed_velocity": "M2_READ_VERIFIED legal_prescribed_velocity 3",
+    "legal_convective_flux": "M2_READ_VERIFIED legal_convective_flux 3",
+    "temperature_dependent_k": "M2_READ_VERIFIED temperature_dependent_k 3",
+    "anisotropic_k": "M2_READ_VERIFIED anisotropic_k 3",
+    "conjugate_normal": "M2_READ_VERIFIED conjugate_normal 3",
+    "conjugate_missing_wall_k": "M2_READ_VERIFIED conjugate_missing_wall_k 3"
+  },
+  "unsolved_markers": {
+    "normal": "M2_UNSOLVED_VERIFIED normal 3",
+    "invalid_k": "M2_UNSOLVED_VERIFIED invalid_k 3",
+    "invalid_cp": "M2_UNSOLVED_VERIFIED invalid_cp 3",
+    "invalid_rho": "M2_UNSOLVED_VERIFIED invalid_rho 3",
+    "missing_k": "M2_UNSOLVED_VERIFIED missing_k 3",
+    "empty_heat_flux": "M2_UNSOLVED_VERIFIED empty_heat_flux 3",
+    "thermal_overlap": "M2_UNSOLVED_VERIFIED thermal_overlap 3",
+    "disabled_coupling": "M2_UNSOLVED_VERIFIED disabled_coupling 3",
+    "disabled_heat_interface": "M2_UNSOLVED_VERIFIED disabled_heat_interface 3",
+    "inactive_heat_study": "M2_UNSOLVED_VERIFIED inactive_heat_study 3",
+    "legal_manual_velocity": "M2_UNSOLVED_VERIFIED legal_manual_velocity 3",
+    "legal_prescribed_velocity": "M2_UNSOLVED_VERIFIED legal_prescribed_velocity 3",
+    "legal_convective_flux": "M2_UNSOLVED_VERIFIED legal_convective_flux 3",
+    "temperature_dependent_k": "M2_UNSOLVED_VERIFIED temperature_dependent_k 3",
+    "anisotropic_k": "M2_UNSOLVED_VERIFIED anisotropic_k 3",
+    "conjugate_normal": "M2_UNSOLVED_VERIFIED conjugate_normal 3",
+    "conjugate_missing_wall_k": "M2_UNSOLVED_VERIFIED conjugate_missing_wall_k 3"
+  },
+  "generated_driver_sha256": "799caebe7f60b2631583703c588cc58dc54668637b1b97a99e76006a6fe11414",
+  "geometry_api_evidence": {
+    "read_status": "read",
+    "coordinate_names": [
+      "Rg",
+      "PHIg",
+      "Zg"
+    ],
+    "spatial_coordinate_names": [
+      "r",
+      "phi",
+      "z"
+    ],
+    "coordinate_systems": [
+      {
+        "tag": "sys1",
+        "coordinate_names": [
+          "t1",
+          "to",
+          "n"
+        ]
+      }
+    ],
+    "vertex_coordinates": [
+      [
+        0.0,
+        0.0,
+        0.025,
+        0.025
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "boundaries": [
+      {
+        "boundary_id": 1,
+        "vertex_ids": [
+          1,
+          2
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.5
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 2,
+        "vertex_ids": [
+          1,
+          3
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.025,
+            0.0
+          ],
+          [
+            0.0125,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 3,
+        "vertex_ids": [
+          2,
+          4
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0125,
+            1.0
+          ],
+          [
+            0.025,
+            1.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 4,
+        "vertex_ids": [
+          3,
+          4
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.025,
+            1.0
+          ],
+          [
+            0.025,
+            0.5
+          ],
+          [
+            0.025,
+            0.0
+          ]
+        ]
+      }
+    ]
+  },
+  "observed_boundary_types": {
+    "axi1": "AxialSymmetry",
+    "temp1": "TemperatureBoundary",
+    "flux1": "HeatFluxBoundary"
+  },
+  "scope": "Controlled unsolved 2D axisymmetric heated fluid pipe and fluid/solid wall API evidence; development samples, not independent accuracy evaluation",
+  "limitations": [
+    "No mesh or solver was run; repeated static reads do not establish physical correctness or convergence.",
+    "Temperature-dependent material expression is retained unresolved without evaluating a solution field.",
+    "Default managed thermal nodes are recorded with actual effective selections, including empty inactive applicability regions.",
+    "NonIsothermalFlow domain selection is COMSOL-managed and cannot be edited; rejected explicit selection attempts remain in 214203 and 214244 logs. No fabricated empty/wrong coupling selection sample is counted.",
+    "Initial sandboxed COMSOL launches stalled; successful verification used locally authorized COMSOL execution. Exploratory logs remain under outputs/m2_api/explore."
+  ]
+}

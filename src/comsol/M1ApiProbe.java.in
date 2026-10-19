@@ -1,0 +1,115 @@
+import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
+import java.util.Arrays;
+
+/** Controlled, unsolved axisymmetric pipe; all saved models are new local outputs. */
+public class M1ApiProbe {
+  private static final String OUTPUT = "@OUTPUT@";
+  private static final String BASE = "@BASE@";
+  public static void main(String[] args) throws Exception {
+    System.out.println("M1_LICENSE_BASELINE " + ModelUtil.hasProductForFile(BASE));
+    Model m = build();
+    System.out.println("M1_GEOM_VERTEX " + Arrays.deepToString(m.component("comp1").geom("geom1").getVertexCoord()));
+    for (int b=1; b<=4; b++) {
+      System.out.println("M1_EDGE " + b + " " + Arrays.toString(m.component("comp1").geom("geom1").getAdj(1,0,b)) + " domains=" + Arrays.toString(m.component("comp1").geom("geom1").getAdj(1,2,b)));
+    }
+    for (String t:m.component("comp1").physics("spf").feature().tags()) {
+      PhysicsFeature f=m.component("comp1").physics("spf").feature(t);
+      System.out.println("M1_FEATURE " + t + " " + f.getType() + " selected=" + Arrays.toString(f.selection().entities()));
+      for(String p:f.properties()) {
+        System.out.println("M1_PROPERTY " + t + " " + p + " " + f.getValueType(p));
+        try { System.out.println("M1_ALLOWED " + t + " " + p + " " + Arrays.toString(f.getAllowedPropertyValues(p))); } catch(Exception e) {}
+      }
+    }
+    m.save(OUTPUT + "/normal.mph");
+    ModelUtil.remove("Build");
+    for (String name : new String[]{"missing_inlet","missing_outlet","empty_inlet","selection_overlap","axis_wrong_selection","legal_explicit_selection","legal_slip_wall","unsupported_inlet_mode","closed_flow","high_reynolds","reversed_inlet","invalid_material"}) {
+      m=ModelUtil.load("Variant",OUTPUT+"/normal.mph");
+      try {
+        if(name.equals("missing_inlet"))m.component("comp1").physics("spf").feature().remove("inl1");
+        if(name.equals("missing_outlet"))m.component("comp1").physics("spf").feature().remove("out1");
+        if(name.equals("empty_inlet"))m.component("comp1").physics("spf").feature("inl1").selection().clear();
+        if(name.equals("selection_overlap")) {
+          m.component("comp1").physics("spf").create("out_conflict","Outlet",1);
+          m.component("comp1").physics("spf").feature("out_conflict").selection().named("inlet");
+          m.component("comp1").physics("spf").feature("out_conflict").set("p0","0[Pa]");
+        }
+        if(name.equals("axis_wrong_selection")) {
+          // The default axis selection is COMSOL-managed and cannot be edited.
+          // A wrong wall declaration is a distinct, editable boundary-role conflict.
+          m.component("comp1").physics("spf").create("wall_axis","Wall",1);
+          m.component("comp1").physics("spf").feature("wall_axis").selection().named("axis");
+        }
+        if(name.equals("legal_explicit_selection")) {
+          m.component("comp1").physics("spf").feature("inl1").selection().set(m.component("comp1").selection("inlet").entities(1));
+        }
+        if(name.equals("legal_slip_wall"))m.component("comp1").physics("spf").feature("wallbc1").set("BoundaryCondition","Slip");
+        if(name.equals("unsupported_inlet_mode"))m.component("comp1").physics("spf").feature("inl1").set("BoundaryCondition","MassFlow");
+        if(name.equals("closed_flow")) {
+          m.component("comp1").physics("spf").feature().remove("inl1");
+          m.component("comp1").physics("spf").feature().remove("out1");
+        }
+        if(name.equals("high_reynolds"))m.param().set("Uin","0.1[m/s]");
+        if(name.equals("reversed_inlet"))m.param().set("Uin","-0.01[m/s]");
+        if(name.equals("invalid_material"))m.component("comp1").material("mat1").propertyGroup("def").set("dynamicviscosity","-1e-3[Pa*s]");
+        m.label(name+".mph");m.save(OUTPUT+"/"+name+".mph");
+      } finally {ModelUtil.remove("Variant");}
+    }
+    for (String name : new String[]{"normal","missing_inlet","missing_outlet","empty_inlet","selection_overlap","axis_wrong_selection","legal_explicit_selection","legal_slip_wall","unsupported_inlet_mode","closed_flow","high_reynolds","reversed_inlet","invalid_material"})verify(name);
+    System.out.println("M1_API_VERIFIED");
+  }
+  private static Model build() {
+    Model m=ModelUtil.create("Build");
+    m.label("FlowPilot controlled unsolved axisymmetric pipe");
+    m.param().set("R","0.025[m]"); m.param().set("L","1[m]"); m.param().set("Uin","0.01[m/s]");
+    m.component().create("comp1",true);
+    m.component("comp1").geom().create("geom1",2);
+    m.component("comp1").geom("geom1").axisymmetric(true);
+    m.component("comp1").geom("geom1").lengthUnit("m");
+    m.component("comp1").geom("geom1").create("r1","Rectangle");
+    m.component("comp1").geom("geom1").feature("r1").set("size",new String[]{"R","L"});
+    m.component("comp1").geom("geom1").run();
+    box(m,"axis",-1e-9,1e-9,-1e-9,1.000000001);
+    box(m,"wall",0.024999999,0.025000001,-1e-9,1.000000001);
+    box(m,"inlet",-1e-9,0.025000001,-1e-9,1e-9);
+    box(m,"outlet",-1e-9,0.025000001,0.999999999,1.000000001);
+    m.component("comp1").material().create("mat1","Common");
+    m.component("comp1").material("mat1").selection().all();
+    m.component("comp1").material("mat1").propertyGroup("def").set("density","1000[kg/m^3]");
+    m.component("comp1").material("mat1").propertyGroup("def").set("dynamicviscosity","1e-3[Pa*s]");
+    m.component("comp1").physics().create("spf","LaminarFlow","geom1");
+    m.component("comp1").physics("spf").create("inl1","Inlet",1);
+    m.component("comp1").physics("spf").feature("inl1").selection().named("inlet");
+    m.component("comp1").physics("spf").feature("inl1").set("BoundaryCondition","Velocity");
+    m.component("comp1").physics("spf").feature("inl1").set("U0in","Uin");
+    m.component("comp1").physics("spf").create("out1","Outlet",1);
+    m.component("comp1").physics("spf").feature("out1").selection().named("outlet");
+    m.component("comp1").physics("spf").feature("out1").set("p0","0[Pa]");
+    m.study().create("std1");m.study("std1").create("stat","Stationary");
+    m.study("std1").feature("stat").activate("spf",true);
+    return m;
+  }
+  private static void box(Model m,String tag,double xmin,double xmax,double ymin,double ymax) {
+    m.component("comp1").selection().create(tag,"Box");
+    m.component("comp1").selection(tag).set("entitydim",1);
+    m.component("comp1").selection(tag).set("condition","allvertices");
+    m.component("comp1").selection(tag).set("xmin",xmin);m.component("comp1").selection(tag).set("xmax",xmax);
+    m.component("comp1").selection(tag).set("ymin",ymin);m.component("comp1").selection(tag).set("ymax",ymax);
+    if(m.component("comp1").selection(tag).entities(1).length!=1)throw new IllegalStateException("Selection "+tag);
+  }
+  private static void verify(String name) throws Exception {
+    String first=null;
+    for(int i=0;i<3;i++) {
+      Model m=ModelUtil.load("Read",OUTPUT+"/"+name+".mph");
+      try {
+        if(m.sol().tags().length!=0)throw new IllegalStateException("Unexpected solution sequence");
+        String snapshot=inspect(m);
+        if(first!=null&&!first.equals(snapshot))throw new IllegalStateException("Inventory drift: "+name);
+        first=snapshot;
+      } finally {ModelUtil.remove("Read");}
+    }
+    System.out.println("M1_INVENTORY "+name+" "+first);
+    System.out.println("M1_READ_VERIFIED "+name+" 3");
+    System.out.println("M1_UNSOLVED_VERIFIED "+name+" 3");
+  }
+}

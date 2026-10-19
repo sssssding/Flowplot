@@ -126,8 +126,6 @@ class DiagnosticTest(unittest.TestCase):
             lambda d: d["components"][0]["physics"][0].update(type="TurbulentFlow"),
             lambda d: d["components"][0]["physics"][0].update(study_active=False),
             lambda d: d["studies"][0].update(type="Transient"),
-            lambda d: d.update(multiphysics_tags=["coupling1"]),
-            lambda d: d["components"][0].update(multiphysics_tags=["coupling1"]),
         ]
         for mutate in mutations:
             data = copy.deepcopy(self.inventory)

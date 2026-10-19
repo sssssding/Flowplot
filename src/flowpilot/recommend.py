@@ -177,6 +177,32 @@ def recommend_report(directory, model_path=None, *, expected_fingerprints=None):
         raise CheckError("报告内容或来源在展示期间变化，请重新读取报告后再推荐。")
     source = loaded["metadata"]["source"]["sha256"].lower()
     provenance = {"run_sha256": loaded["run_sha256"], "diagnosis_sha256": loaded["diagnosis_sha256"]}
+    report = loaded["report"]
+    if report.get("schema_version") == "diagnosis-0.4":
+        return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
+                "reason": "推荐仅支持已校准的二维范围；diagnosis-0.4 三维报告尚无推荐校准证据。",
+                "ranking": [], "selected": None}
+    if report.get("schema_version") == "diagnosis-0.3":
+        return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
+                "reason": "推荐仅支持原二维矩形单物理场层流范围；diagnosis-0.3 传热及流热耦合尚无推荐校准证据。",
+                "ranking": [], "selected": None}
+    normalized = report.get("model")
+    if (report.get("profile") == "axisymmetric-pipe-v1" or isinstance(normalized, dict)
+            and normalized.get("profile") == "axisymmetric-pipe-v1"):
+        return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
+                "reason": "推荐仅支持原二维矩形层流范围；轴对称圆管尚无推荐校准证据。",
+                "ranking": [], "selected": None}
+    if report["schema_version"] == "diagnosis-0.2":
+        coverage = report["coverage"]
+        legacy_scope = (report["status"] == "checked" and len(coverage) == 1
+                        and coverage[0]["kind"] == "physics" and coverage[0]["module"] == "flow"
+                        and coverage[0]["status"] == "checked" and len(report["modules"]) == 1
+                        and report.get("profile") == "rectangular-channel-v1"
+                        and isinstance(report.get("model"), dict))
+        if not legacy_scope:
+            return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,
+                    "reason": "推荐仅支持原二维矩形单物理场层流范围；部分检查、多物理场或未知语义不可推荐。",
+                    "ranking": [], "selected": None}
     if loaded["report"]["status"] != "checked" or loaded["report"]["findings"]:
         _assert_report_snapshot(directory, loaded)
         return {**provenance, "status": "unavailable", "source_sha256": source, "notice": portable_notice,

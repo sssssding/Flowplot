@@ -1,4 +1,5 @@
 """Evaluation arithmetic and batch failure tests; synthetic reports are not simulations."""
+from historical_sources import SOURCES as PRE_M0_SOURCES
 import copy
 import json
 import subprocess
@@ -349,8 +350,8 @@ class CheckSuiteTest(unittest.TestCase):
         for key, value in computed.items():
             self.assertEqual(value, stored[key])
         self.assertEqual(stored["manifest_sha256"], suite.sha256(suite.DEVELOPMENT_MANIFEST))
-        self.assertEqual(stored["rule_engine_sha256"], suite.sha256(suite.RULE_SOURCE))
-        self.assertEqual(stored["inventory_source_sha256"], suite.sha256(suite.INVENTORY_SOURCE))
+        self.assertEqual(stored["rule_engine_sha256"], PRE_M0_SOURCES["src/flowpilot/diagnostics.py"])
+        self.assertEqual(stored["inventory_source_sha256"], PRE_M0_SOURCES["src/comsol/ModelInventory.java"])
         self.assertEqual(stored["exact_match_cases"], 6)
         self.assertIsNone(stored["meets_recall_above_90_percent"])
 

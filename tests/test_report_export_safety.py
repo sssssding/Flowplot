@@ -11,6 +11,7 @@ import test_report_package as fixtures
 from flowpilot import report_package as package, package_integrity as integrity
 from flowpilot.desktop_session import load_completed_check
 from flowpilot.check_model import CheckError
+from flowpilot.engine_fingerprint import engine_fingerprint
 
 
 class ReportExportSafetyTest(unittest.TestCase):
@@ -25,6 +26,7 @@ class ReportExportSafetyTest(unittest.TestCase):
         value = {"schema_version": "check-run-0.1", "status": "completed",
                  "source": {"filename": "", "sha256": "1" * 64},
                  "diagnosis_status": self.report["status"],
+                 "rule_engine_sha256": engine_fingerprint(),
                  "diagnosis_sha256": hashlib.sha256((self.source / "diagnosis.json").read_bytes()).hexdigest()}
         def encode():
             return json.dumps(value, separators=(",", ":"), ensure_ascii=False).encode("utf-8")

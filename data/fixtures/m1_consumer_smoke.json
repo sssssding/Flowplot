@@ -1,0 +1,4550 @@
+{
+  "schema_version": "m1-consumer-smoke-1",
+  "verified_at": "2026-10-18T08:45:43.421694+00:00",
+  "status": "passed",
+  "solved": false,
+  "visible_gui_acceptance": false,
+  "user_acceptance": false,
+  "hidden_tk_only": true,
+  "scope": "Offline replay of recorded real M1 API inventories and historical reports; no fresh COMSOL execution.",
+  "implementation_sha256": {
+    "data/ai/portable_ranker.json": "13d78a0f86258a4828ebb71bf22f50993089d9391c68cbca9460e2ef86f362fe",
+    "data/fixtures/ai_development_registry.json": "464c76a95832c6b81692c8bc7df397673fbe99f33e20cc37883b5c5f35228a89",
+    "data/fixtures/cases/manifest.json": "8bf70a25857d54ccfca426834ce2936d5c009e2231e25808dc88ddfcf38e4ad8",
+    "data/fixtures/regression_family.json": "98c83ab5975996922db761606a6478346a47a04c558e888dbcc450b30bf64226",
+    "schema/diagnosis.schema.json": "3ad1d5c9a286b2890752f9afe2301ac27128fb134237a91b400e4d36434ec202",
+    "schema/diagnostic-model.schema.json": "22185429065b71d00194857b1c49a6858ad385fb5a427a4f6c9a1ecc665dc0e4",
+    "scripts/verify_m0_consumers.py": "1a2c2ec1511779574d49a0f797688fef6c4e055328048ee6773dd8566b73afed",
+    "scripts/verify_m1_consumers.py": "1f08e90eecd78c046d63ecf3f6ea85de931bec7266cd5d2848cf65d82dd7ee8b",
+    "src/comsol/ModelInventory.java": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+    "src/flowpilot/acceptance_dataset.py": "aef9339a28c0822a667216539b77abc4c12d12d282a40c706ad40b40f00984c8",
+    "src/flowpilot/acceptance_result.py": "2a2652734ddb9bd3793d54b02e06fddee44bdcb92b401d593822eb21e45f93b9",
+    "src/flowpilot/check_model.py": "9effc73dafdb542192480c2163adb40c62cec974192aacb96c45fd267c85f833",
+    "src/flowpilot/check_suite.py": "29246ded3502e24cd43af6683f7e7880a00984a4bd0f34a1bc942d59cdcc33c5",
+    "src/flowpilot/compare_reports.py": "31f85486854f22e19d4ba642edc433e835a9e63391ce9d44323632921880e6f4",
+    "src/flowpilot/coverage_view.py": "1b5640ddf4f9113896be4b41eeee1396791662fa9bba481ffb9ff1bf00ea552b",
+    "src/flowpilot/desktop.py": "ded5c9cb5697d73853e9944ef4814aa3ec881c5b5f64db85717a6729c5b44538",
+    "src/flowpilot/desktop_session.py": "79ef615e5317444ab9924785f5f9e9e37f608d0ed8c43d4e1c5562f16fca3419",
+    "src/flowpilot/diagnostic_modules/__init__.py": "c3bee02edcd3ef9e64931afd85e1df4b10f62604dc76ab4223397fdd420e4635",
+    "src/flowpilot/diagnostic_modules/flow.py": "70ea2ac66a8958330ca27cba522aacccef9520a584ff4b22a91a7f337dde6277",
+    "src/flowpilot/diagnostics.py": "b872eb2755ee243700a3fca2e130e68c527c2be770ba89dd48baf79d9c7973ba",
+    "src/flowpilot/engine_fingerprint.py": "ed091ce15f43e0047bfc55c598d3d625c58718554c91a193e327931e7d59ceb5",
+    "src/flowpilot/history_window.py": "2f255e2f10ea9979fa275283631cc3693c49382c63d4a20d9eeac66fdcb555d9",
+    "src/flowpilot/model_overview.py": "1bd7163cdf4cc6814b906b17641ca83be05493cd4b953527607959b215734257",
+    "src/flowpilot/package_integrity.py": "9788a1ad10b579b4aa099067a63d69f47e5996f0304bb396fbbe110494a0a663",
+    "src/flowpilot/portable_recommend.py": "9ebbca86f2cb368d3bc96882b3a3c9d2cd3f557f343ead8e307fd9c6f9003c2c",
+    "src/flowpilot/recommend.py": "ad15848dfb218bc036da0b35d3818adfc26031678954065c7530c7e53f8e9af6",
+    "src/flowpilot/recommend_ui.py": "fc3a3a0613d0648bafc1154a34898efde8a0eeb5b71bda6ae9c4473782e0f4d6",
+    "src/flowpilot/report_history.py": "ab9057f6ba46d0d414cf7ed9f9ab6e5ed358c629495b82094840f8b4787c8cef",
+    "src/flowpilot/report_io.py": "63b008f8ce555bd518dcbb660ebd937649a4d59f28492fedf4762993c891b3cd",
+    "src/flowpilot/report_package.py": "9f6f95769cb2857705ab722ee2664a15f0ca75324d13cba785fb85282545a75e"
+  },
+  "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+  "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+  "cases": [
+    {
+      "case_id": "axis_wrong_selection",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "partial",
+      "finding_codes": [
+        "AXIS_SELECTION_INCONSISTENT",
+        "EMPTY_BOUNDARY_SELECTION"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        },
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "skipped",
+              "reason": "至少一个节点或模式缺少证据；仅执行可独立成立的节点规则。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "缺少已验证开口圆管、轴线配置、无滑移壁面或材料常数；不以包围盒代替尺度。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "skipped",
+          "reason": "部分轴对称规则缺少证据或不适用，详见规则覆盖。"
+        }
+      ],
+      "tone": "incomplete",
+      "run_sha256": "3a47caa8dbb1a23e287824622b89151013d9cae4dbad62082b85680b56cb463c",
+      "diagnosis_sha256": "a5c50679473be2f9769b2cf5b8ae36e01a0f9357389da691c22c85bee7b51c52",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "3ffa01a73ec423114dd82242e2b1e02a5363094210b88e7ab64089413f7851e4",
+      "inventory_sha256": "71e72e118591441d97b3e55d63e16ef160b99eee80b78abc09795e090cf2d9e9",
+      "api_inventory_sha256": "f8eebad1330215733deb04c682f0c642713cb6f73826eeb66b093cc42d98b656",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "not_comparable",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "closed_flow",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "partial",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "skipped",
+              "reason": "仅对已验证且至少有一个端口节点的开口圆管检查必需入口/出口；封闭或未验证流动不适用。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "skipped",
+              "reason": "仅对已验证且至少有一个端口节点的开口圆管检查必需入口/出口；封闭或未验证流动不适用。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "skipped",
+              "reason": "仅对已验证开口圆管执行直径尺度的 Re 风险筛查。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "skipped",
+          "reason": "部分轴对称规则缺少证据或不适用，详见规则覆盖。"
+        }
+      ],
+      "tone": "incomplete",
+      "run_sha256": "e9e20388a33a4f637a3e141f0ceb225af3bbd50edf78d459e2a6549924b8db8d",
+      "diagnosis_sha256": "758a17fda3967bda2379848f80dbe1babcbc819d148fee1f3d30ad551073f934",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "5357d13d7b455841d7bb8b359501b9576e9fa3d872186a8f9a0254f66f628e92",
+      "inventory_sha256": "31440265405780666284f3724655d369f66f811f81cf74f4105c1b321ef23420",
+      "api_inventory_sha256": "6764db87f31e34a42ca0b63b190e1c4aee72e8772594ccbb99778c3efe2682df",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "not_comparable",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "empty_inlet",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "EMPTY_BOUNDARY_SELECTION",
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        },
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "c02a5c53c2b2bb3254f9974af5b63cdcbc5449a95d7123ad0a8a08a5fe803cd6",
+      "diagnosis_sha256": "2071dd94e276d041eb26b815e573c062b57be7d7d496e4b1ab3a51a19f8c81dc",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "bd071738df9058d1e361a7dc7165bf803623b174531fda03df2ea9c4bff3e7bc",
+      "inventory_sha256": "efebe7173da3e7412c0694fe6f302ec9166ca5ea3573ca2b9a301cd6d52afd6f",
+      "api_inventory_sha256": "b93cef62c8579f73447bf180809d37a4283a5e852a5f81ed00c87b085b721ea8",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "high_reynolds",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "warning",
+      "run_sha256": "0db62468f3ca15c96cc4a7167656cc3ef7e9ac6448eac9b6f60e8c5467a68f03",
+      "diagnosis_sha256": "e98362f61e1911dfb03088097848709fe54a447b5ee99300465ce2d107cff2f8",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "70f33702142f382c92ba8e106aa81176bb4afbccd87946b177b8879e927ea061",
+      "inventory_sha256": "3572abfedf85e061d0277259fb28b91af5d740fda43808e10233254e62cf49d7",
+      "api_inventory_sha256": "9aca44fa7ef2d9b3e9e3f56a5c85574ac82f375995d18147959ab41826200891",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "invalid_material",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "INVALID_MATERIAL_PARAMETER"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "d01399037f791ecd530805654131b05e0474157b5d33dc59cfeb8e62daca8f35",
+      "diagnosis_sha256": "2bfd764340a33589be442d78c6df80080cd0576eb6207d19cb235fba8a504b9d",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "40e237252f5f19e0463c5ef70dbc99525f582db807c501a2f695f8341d935654",
+      "inventory_sha256": "ae3a3ee369c5aa1bc02f0f6dce62c3f11974e5c8822605b13c0013e62f7fc662",
+      "api_inventory_sha256": "004ee9e5627e37e682cbfcf4432ee69bb253d78a04b5d7c393e57fa257a2ea34",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "legal_explicit_selection",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "neutral",
+      "run_sha256": "9073e7a59f91c1872deadde844d22470191f010b92f47c1bff7008cc1f858132",
+      "diagnosis_sha256": "25627e623397278f9f1d6c2b09541d7bbd9a099bf4b6c65caf3868937b517ef8",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "ba95da2b0fa868077b231cf51000a7592b31db37cfd1db5ae8e909e7cb0d4c2c",
+      "inventory_sha256": "b72ce406c676bb4094e89e7b1f55b017aa715204f092c977f8914010265800ab",
+      "api_inventory_sha256": "c88349dde25792d4f93abd0d14f7bd6dfd20c20f22bf206b0728a2d03e134593",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "legal_slip_wall",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "partial",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "skipped",
+              "reason": "至少一个节点或模式缺少证据；仅执行可独立成立的节点规则。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "缺少已验证开口圆管、轴线配置、无滑移壁面或材料常数；不以包围盒代替尺度。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "skipped",
+          "reason": "部分轴对称规则缺少证据或不适用，详见规则覆盖。"
+        }
+      ],
+      "tone": "incomplete",
+      "run_sha256": "2fd4f9b721d81794447384c859845c484c34f14607627f6c20029f2d6671cdcb",
+      "diagnosis_sha256": "4f2d09db932f615db4493de9d32e9a04fb31c90ca8af9c522c66c5ed45a990c9",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "34eab258b2b6460a32083d9c227cc4b877fe44fdc5ea575e4f31f735e133139f",
+      "inventory_sha256": "aec67fe207128ef084f971a3779d0832dbf965f5f9a67eec1108bfdc024ee509",
+      "api_inventory_sha256": "b3743a4218729915520f7fa4f0b147fb3410cb05cbb5b475680877ac3d2dd3e7",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "not_comparable",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "missing_inlet",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "ba2c82b75805a520904ed7328fca5ddbe938170b46f92bf981b005cd43b7141e",
+      "diagnosis_sha256": "4619776aba98c06239f6f8361ff8cec2743c18bcc99022c976f3dd26799c06a7",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "f35e9207ed2b5808f1df2370d0917b4c10219bd1163f5488cc19b1a7fc53cc3a",
+      "inventory_sha256": "d1e45abb638aa4ce37f04a24db7c9bbd49f701078bdeb1434c5865d8d878063a",
+      "api_inventory_sha256": "a9f50fc29a6192889a16b7b024a3993671c24e1a592fcf84981d931a02cce488",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "missing_outlet",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "partial",
+      "finding_codes": [
+        "MISSING_OUTLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "skipped",
+              "reason": "至少一个节点或模式缺少证据；仅执行可独立成立的节点规则。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "缺少已验证开口圆管、轴线配置、无滑移壁面或材料常数；不以包围盒代替尺度。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "skipped",
+          "reason": "部分轴对称规则缺少证据或不适用，详见规则覆盖。"
+        }
+      ],
+      "tone": "incomplete",
+      "run_sha256": "210351fe76e0dd47e4bbb95969db48c4b7f8fd2cadc22c214c6f83366b5f4a6f",
+      "diagnosis_sha256": "43dead1cf65a71d388a733e64573df596205387a55b6d9a8809b4fa8ac2168d8",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "850bc8daf291fb1d0164d2b916a3e39791b6c23cea372245e3672c8d9c26ca8b",
+      "inventory_sha256": "ba88601d2f7cc2053feb26c2e88bf9e1c7ad326a8c9ec3542d91823e70b1a75d",
+      "api_inventory_sha256": "cc8f645fc4f979e7f4a3ff6fe50c25daffd487b0f681bb01ae656aeaa0022219",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "not_comparable",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "normal",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "neutral",
+      "run_sha256": "b8942730e532ebfef032ae0435f38972ed429945923f3c0e45e8a1f045df2b0c",
+      "diagnosis_sha256": "25627e623397278f9f1d6c2b09541d7bbd9a099bf4b6c65caf3868937b517ef8",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "e579df04a7b14bf147fb379e6ae0cd835593b8776917c8b21a3c714ada055e4d",
+      "inventory_sha256": "909fc140d72210eddbb06cc2739e84bfe2cfd5b64ad3d8ce8c8a35c52c5fbbde",
+      "api_inventory_sha256": "6cbe2411adfaa22a0097d0706fb79d34ef6ca7b9d264a08c2a0d20876aae93b0",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "reversed_inlet",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "INLET_DIRECTION"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "warning",
+      "run_sha256": "af0bdcc2c70eba2938f6717d5e2ec0d44c3e7f66a06b50d113e0c9b38743773d",
+      "diagnosis_sha256": "0bedd4b56a9d69b55b69f3d2382c0bc4104b86b14fc1ee8a0adaa3398de81f01",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "98ef8a3c0d9e1625f6ad81bc11904a4b07250d289db300037b61eee132f1f5d8",
+      "inventory_sha256": "a52facf798ae101d6edadf004a5581447058b4c2fbcb477c55c87213d74305b4",
+      "api_inventory_sha256": "e00a76652bd2f69ba4387eaac0144d0ef2b611edfacb6451a64999602086a2ab",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "selection_overlap",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "BC_SELECTION_OVERLAP",
+        "EMPTY_BOUNDARY_SELECTION",
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        },
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        },
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                },
+                {
+                  "feature_tag": "out_conflict",
+                  "status": "checked",
+                  "reason": "该节点已验证的参数可用。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/7"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行已核验轴对称圆管规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "56141a9df55ae65581127845f805af74b86ca0c6a2a059a508dc4e66f1d533c6",
+      "diagnosis_sha256": "44cc3ac549b9f56a3d89cfa9b9bd9718fde07bf641759738547c4b080700c25a",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "a7618e6784e34a2d74b47ecf7d45b820a6f74c7bce69bda0e415f04ffc2f0f86",
+      "inventory_sha256": "cab07ed01d0514e1807c4bbf132a688d667f5b2e08b2d6510f2b4569f4ff43e9",
+      "api_inventory_sha256": "186228cae57cc14a7615f7526544e4d769c0689c1b11f4711a14ee12da6e39f1",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "unsupported_inlet_mode",
+      "origin": "offline_replay_of_recorded_real_api_inventory",
+      "contract": "diagnosis-0.2",
+      "status": "partial",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "skipped",
+              "reason": "仅对已验证且至少有一个端口节点的开口圆管检查必需入口/出口；封闭或未验证流动不适用。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "skipped",
+              "reason": "仅对已验证且至少有一个端口节点的开口圆管检查必需入口/出口；封闭或未验证流动不适用。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "skipped",
+              "reason": "节点模式或声明选择不完整，冲突规则未执行。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "skipped",
+              "reason": "至少一个节点或模式缺少证据；仅执行可独立成立的节点规则。",
+              "dependencies": [
+                "verified_axisymmetric_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "该节点模式未验证或所需参数未求值。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "skipped",
+              "reason": "仅对已验证开口圆管执行直径尺度的 Re 风险筛查。",
+              "dependencies": [
+                "verified_pipe_diameter",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "缺少已验证开口圆管、轴线配置、无滑移壁面或材料常数；不以包围盒代替尺度。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "skipped",
+              "reason": "至少一个节点或模式缺少证据；仅执行可独立成立的节点规则。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "skipped",
+                  "reason": "该节点模式未验证或所需参数未求值。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "skipped",
+                  "reason": "该节点模式未验证或所需参数未求值。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "AXIS_SELECTION_INCONSISTENT",
+              "status": "skipped",
+              "reason": "轴线采样证据或边界模式不完整，不能判断轴线角色。",
+              "dependencies": [
+                "axisymmetric_coordinates",
+                "geometric_axis_boundaries",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "EMPTY_BOUNDARY_SELECTION",
+              "status": "checked",
+              "reason": "所需轴对称 API 证据已核验。",
+              "dependencies": [
+                "enabled_boundary_nodes",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "skipped",
+          "reason": "部分轴对称规则缺少证据或不适用，详见规则覆盖。"
+        }
+      ],
+      "tone": "incomplete",
+      "run_sha256": "8c56391785f61c5450e8f99009dfb975799e2d00bc8b59f254182e2edfdbd690",
+      "diagnosis_sha256": "c19b0310be4d87323de3e78d476f4604fe4792d427f0d18200909fd1d4f64880",
+      "rule_engine_sha256": "75ce1ffca1ef9096f3caf66a7e5c053369eaea1ea0fc1e17e5b381223adc5b76",
+      "inventory_source_sha256": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+      "source_sha256": "5129468ad073f4b1daccf5b70fb4c5357a0490271aa142cec356a961f3989c33",
+      "inventory_sha256": "c7011f5cd71bb3418e9738cf249749384ab4beba8320b1e6ca4d40cba8ed6842",
+      "api_inventory_sha256": "965682137eba6092e29b0769e4085eb6d644f21eaa3220560c8ebc230602144f",
+      "api_summary_sha256": "e9d1e7c61d4c730c49588884c78fef95174de097cc229fb9e8045f8170aed425",
+      "comparison_status": "not_comparable",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true,
+      "overview_available": true,
+      "axis_coordinates_verified": true,
+      "node_entity_location_verified": true
+    },
+    {
+      "case_id": "legacy_baseline",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": null,
+      "tone": "neutral",
+      "run_sha256": "b0c1fc755f4b3ed109d0f9a9a7442aa0685756afca288e3eeaf4fb470071235c",
+      "diagnosis_sha256": "ba747689a9e303c3e773616710ffd60af7393fb384c86d7c4fb2f27790b526e2",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+      "inventory_sha256": "91f4d870ea5b369cb61f70a61058e9ea386a4e8220f0e424dcc8f8c0f7511bf8",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "recommended",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "legacy_high_reynolds",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "finding_sources": [
+        null
+      ],
+      "coverage": null,
+      "tone": "warning",
+      "run_sha256": "336f6e9f24202b2f2aa1ed4c19f7f5afe7a54c0a630376afd39c62f4be2971cf",
+      "diagnosis_sha256": "4f37b80c9b3e1cf88e26ff2f31e56a7b31cb573e8946acacfcbea301280e7e30",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+      "inventory_sha256": "09f202a090c4fe24e1f11e4ff5ea0e182c3d3b3a79deb277e0c753aa3f7cf3f3",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "legacy_missing_inlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        null
+      ],
+      "coverage": null,
+      "tone": "critical",
+      "run_sha256": "9809054383bd816318bc0ff198c77e4d8fd0600939a45e52e4026a3ca9d81e79",
+      "diagnosis_sha256": "6f962ea36adf2d2433e038a844dd67aa909343e2659e6b877cf05d9aa5de3bd3",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+      "inventory_sha256": "88fe57e66a3a23132cb63ddf1a9b0983d3dd493cdf83176c89264ec1da089afd",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "legacy_missing_outlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [
+        "MISSING_OUTLET"
+      ],
+      "finding_sources": [
+        null
+      ],
+      "coverage": null,
+      "tone": "critical",
+      "run_sha256": "4c374b31f01c612f025fcb5c2ad6ddeba60d8cd5cef3237e75f7f9224b9d70f8",
+      "diagnosis_sha256": "208c9fa06875a938b0d9022a0cb0aacb62aed95c26fd1f20663e93dd0b0ca547",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+      "inventory_sha256": "9e815883b2dd5dd441cef17f031c696b9abbf23b4b87a274dbb3e33cb3140baf",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "legacy_reversed_inlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [
+        "INLET_DIRECTION"
+      ],
+      "finding_sources": [
+        null
+      ],
+      "coverage": null,
+      "tone": "warning",
+      "run_sha256": "e4926f16af7ddc4483dc6757c96b5d2acc0a1f5cfee48f067dd9669ac9b09f85",
+      "diagnosis_sha256": "13f6ded867d0502af2488aaaab0145509327b2e95b6cb530d0d581d29952d288",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+      "inventory_sha256": "23e6009afa777560144cbe8297ea024f89839da27e5b65a44aaef734109701d7",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "legacy_selection_overlap",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.1",
+      "status": "checked",
+      "finding_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        null,
+        null
+      ],
+      "coverage": null,
+      "tone": "critical",
+      "run_sha256": "acc3e82ca2d420a8dc887bb06369536bfa65196969072d81f10ea52caa8a04dd",
+      "diagnosis_sha256": "07552ed7fe9f5af817f239f41ffa943c9e143351cfedce0ab57142af0d1aab7b",
+      "rule_engine_sha256": "a8d9b59d8e6b02c1159124c590c08ca32bc26aad3f93fd7f74c2e0eeab4026ea",
+      "inventory_source_sha256": "0c6d78fb8f475c43a7f337a0463f7e096c6ef41d5cfb51d8ea3fa197b4098d05",
+      "source_sha256": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+      "inventory_sha256": "eb56a5f0e0592a59a1fb93181be91a18790f66a29f3d9ce826a0a3fc7c1297bc",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_baseline",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [],
+      "finding_sources": [],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "neutral",
+      "run_sha256": "3f59294c7533423f3a6b58f632fa0bdd3df37f9c248fdcf5582aebe4d88b3991",
+      "diagnosis_sha256": "a07b46c7ec64687b58eae3e375ed1475d91a4a7c4016fb72506a8934a77a7583",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+      "inventory_sha256": "0f1426e75e8d5b5c34bb8e238d74253543e32bb2ddd4733c22475a411e73f13d",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "recommended",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_high_reynolds",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "REYNOLDS_RISK"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "warning",
+      "run_sha256": "0ea6bc2896ec451415514052e5d51cd2493c578467a3e63d8c3f404b586ddbd9",
+      "diagnosis_sha256": "10bffafcd1e1f009e11e66a492977a83f18370b852bdc6eeded628c0b276b16b",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+      "inventory_sha256": "6df59542b3e3dcc4ab7899da68a167deb2947aead12e194d5b7117a79180b6d3",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_missing_inlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "f1a5846807656f9dfdb3f6b7038effb9425aa67fb916314f191a9c7300819601",
+      "diagnosis_sha256": "c31278f807d8eebdbb2387700441aa5e8af356c367913fe82e054b884d030380",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+      "inventory_sha256": "59e194494d6c097cfbca3150ebd44d32244cc31898bb0fbba8a29727bdec71c0",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_missing_outlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "MISSING_OUTLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "3d356189a504a6dbfe719f9048c8bfc0495563893f774d4709d80b98f1fd9884",
+      "diagnosis_sha256": "566773cd06d6ade53b78577ddbb63b118b47044158d3be77498118498002c25d",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+      "inventory_sha256": "0e208bf99d0fd107ade324eb6823b00050e5fa3a04f385aeffa89c4a3686d90d",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_reversed_inlet",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "INLET_DIRECTION"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "inl1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/4"
+                  ]
+                },
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "warning",
+      "run_sha256": "a2c0eedeedb7e42ac931cc9e7829b0c94cf83777e6ff617f7b47c032f70c0cca",
+      "diagnosis_sha256": "a25bf7fe4ff6adab1a389c5e1becea6fee7951e5535d2ef3631edd122ab71402",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+      "inventory_sha256": "293b554b535247e8f4ac0c2c5723775376b0436cee53ffc6b0add4a3f4461f03",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    },
+    {
+      "case_id": "m0_selection_overlap",
+      "origin": "historical_real_cli_report",
+      "contract": "diagnosis-0.2",
+      "status": "checked",
+      "finding_codes": [
+        "BC_SELECTION_OVERLAP",
+        "MISSING_INLET"
+      ],
+      "finding_sources": [
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        },
+        {
+          "component_tag": "comp1",
+          "physics_tag": "spf",
+          "geometry_tag": "geom1"
+        }
+      ],
+      "coverage": [
+        {
+          "kind": "physics",
+          "module": "flow",
+          "source": {
+            "component_tag": "comp1",
+            "physics_tag": "spf",
+            "geometry_tag": "geom1"
+          },
+          "applicable": true,
+          "evidence_refs": [
+            "/components/0/physics/0",
+            "/components/0/geometries",
+            "/components/0/materials",
+            "/studies"
+          ],
+          "rules": [
+            {
+              "rule_id": "MISSING_INLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "MISSING_OUTLET",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "effective_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "BC_SELECTION_OVERLAP",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "declared_boundary_selections"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INVALID_MATERIAL_PARAMETER",
+              "status": "checked",
+              "reason": "所需 API 证据与已验证配置可用；规则已执行。",
+              "dependencies": [
+                "verified_newtonian_material_binding",
+                "evaluated_material_constants"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            },
+            {
+              "rule_id": "INLET_DIRECTION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_planar_flow_profile",
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "REYNOLDS_RISK",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "verified_rectangle_scale",
+                "uncoupled_flow_semantics",
+                "evaluated_material_constants",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": []
+            },
+            {
+              "rule_id": "BOUNDARY_PARAMETER_EVALUATION",
+              "status": "checked",
+              "reason": "所有有效节点的规则与前提均已检查。",
+              "dependencies": [
+                "uncoupled_flow_semantics",
+                "evaluated_boundary_parameters"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ],
+              "cases": [
+                {
+                  "feature_tag": "out1",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/5"
+                  ]
+                },
+                {
+                  "feature_tag": "out_conflict",
+                  "status": "checked",
+                  "reason": "该节点所需求值证据可用；规则已执行。",
+                  "evidence_refs": [
+                    "/components/0/physics/0/features/6"
+                  ]
+                }
+              ]
+            },
+            {
+              "rule_id": "EVALUATION_UNAVAILABLE",
+              "status": "checked",
+              "reason": "已检查实际使用的标量求值可用性；不可用值作为证据缺口报告。",
+              "dependencies": [
+                "recorded_scalar_evaluation_status"
+              ],
+              "evidence_refs": [
+                "/components/0/physics/0",
+                "/components/0/geometries",
+                "/components/0/materials",
+                "/studies"
+              ]
+            }
+          ],
+          "status": "checked",
+          "reason": "已执行当前已验证二维平面流动规则。"
+        }
+      ],
+      "tone": "critical",
+      "run_sha256": "12741fc1847ca1099d29ed24027b91d2d6d3764cde66782ba5b025ba6dccd4d3",
+      "diagnosis_sha256": "425fcd4d155f79672d6a21350671e7b2dfaf085ada4bcb22dbdbaad5749622f3",
+      "rule_engine_sha256": "d1f76142ab9da0a439b6071b4b1115a9fbf5ca008a875a373cf93768ff62352d",
+      "inventory_source_sha256": "5c5ea44e7c0d894515e3348f5d1323f2a23da66c304b8a5e3d6a86573452fcfa",
+      "source_sha256": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323",
+      "inventory_sha256": "dcc2340f39f6617e4230618dd70fa95554e4b3cfe568187e9735b54f1483b725",
+      "api_inventory_sha256": null,
+      "api_summary_sha256": null,
+      "comparison_status": "compared",
+      "recommendation_status": "unavailable",
+      "hidden_widgets_verified": true,
+      "history_verified": true,
+      "package_roundtrip_verified": true
+    }
+  ]
+}

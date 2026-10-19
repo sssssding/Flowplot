@@ -12,16 +12,20 @@ import sys
 import time
 import uuid
 
+from jsonschema import ValidationError
+
 from flowpilot.check_model import ACTIONS, CheckError, LFS_HEADER, ROOT, _write_json, sha256
 from flowpilot.package_integrity import read_verified_package
 from flowpilot.diagnostics import is_finite_number
+from flowpilot.coverage_view import coverage_text
 from flowpilot.report_io import MAX_DIAGNOSIS_BYTES, MAX_METADATA_BYTES, ReportReadError, decode_json, read_regular_file
 
 CLI = ROOT / "src/flowpilot/check_model.py"
 TITLES = {"MISSING_INLET": "缺少有效入口", "MISSING_OUTLET": "缺少有效出口",
           "BC_SELECTION_OVERLAP": "边界选择存在重叠", "INLET_DIRECTION": "入口方向需要核对",
           "REYNOLDS_RISK": "Re 工况风险", "INVALID_MATERIAL_PARAMETER": "材料参数无效",
-          "EVALUATION_UNAVAILABLE": "求值或数值检查未完成"}
+          "EVALUATION_UNAVAILABLE": "求值或数值检查未完成",
+          "AXIS_SELECTION_INCONSISTENT": "轴线选择不一致", "EMPTY_BOUNDARY_SELECTION": "启用节点没有有效边界"}
 LEVELS = {"Critical": "优先处理", "Warning": "风险 / 待核对", "Suggestion": "建议"}
 DISCLAIMER = "仅检查当前支持范围内的边界配置；未运行求解器，不证明物理正确或专业验收通过。"
 PROGRESS_STAGES = ("snapshot", "compile", "inventory", "diagnose", "completed", "failed", "cancelled")
@@ -57,14 +61,21 @@ def read_progress(path):
 
 def diagnosis_view(report):
     """Fail closed on malformed reports; provide text, not an unconditional pass badge."""
-    if not isinstance(report, dict) or report.get("schema_version") != "diagnosis-0.1":
+    modern = isinstance(report, dict) and report.get("schema_version") in ("diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4")
+    if modern:
+        from flowpilot.diagnostics import validate_diagnosis_report
+        try:
+            validate_diagnosis_report(report)
+        except (ValueError, TypeError, KeyError, ValidationError) as error:
+            raise CheckError("诊断报告结构或覆盖状态无效。") from error
+    if not isinstance(report, dict) or report.get("schema_version") not in ("diagnosis-0.1", "diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4"):
         raise CheckError("不是当前版本的诊断报告。")
     status, findings = report.get("status"), report.get("findings")
     if status not in ("checked", "partial", "unsupported") or not isinstance(findings, list):
         raise CheckError("报告缺少检查状态或问题清单。")
     items = []
     for finding in findings:
-        if (not isinstance(finding, dict) or not isinstance(finding.get("code"), str) or finding["code"] not in TITLES
+        if (not isinstance(finding, dict) or not isinstance(finding.get("code"), str) or (not modern and finding["code"] not in TITLES)
                 or not isinstance(finding.get("severity"), str) or finding["severity"] not in LEVELS
                 or not isinstance(finding.get("explanation"), str)
                 or not isinstance(finding.get("feature_tags"), list)
@@ -74,9 +85,16 @@ def diagnosis_view(report):
                 or not isinstance(finding.get("evidence"), dict)):
             raise CheckError("问题条目的结构无效，不能显示为已完成检查。")
         code = finding["code"]
-        detail = (finding["explanation"] + "\n\n建议：" + ACTIONS[code] + "\n\n证据：\n"
+        detail = (finding["explanation"] + "\n\n建议：" + (finding.get("suggestion") or ACTIONS.get(code, "请结合 COMSOL 设置人工核对。")) + "\n\n证据：\n"
                   + json.dumps(finding["evidence"], ensure_ascii=False, indent=2, allow_nan=False))
-        items.append({"code": code, "title": TITLES[code], "level": LEVELS[finding["severity"]],
+        if modern:
+            detail = ("模块：" + finding["module"] + "\n来源："
+                      + json.dumps(finding["source"], ensure_ascii=False, sort_keys=True) + "\n\n" + detail)
+            source = finding["source"]
+            location = " / ".join(source[key] for key in ("component_tag", "geometry_tag", "physics_tag", "coupling_tag") if source.get(key))
+            detail = ("COMSOL 定位：" + location + "\n相关节点：" + (", ".join(finding["feature_tags"]) or "—")
+                      + "\n边界实体编号：" + (", ".join(map(str, finding["boundary_ids"])) or "—") + "\n\n" + detail)
+        items.append({"code": code, "title": TITLES.get(code, code), "level": LEVELS[finding["severity"]],
                       "nodes": ", ".join(finding["feature_tags"]) or "—",
                       "boundaries": ", ".join(map(str, finding["boundary_ids"])) or "—", "detail": detail})
     if status == "checked" and any(item["code"] == "EVALUATION_UNAVAILABLE" for item in items):
@@ -93,7 +111,10 @@ def diagnosis_view(report):
         headline, tone, detail = "发现需要优先处理的问题", "critical", "请逐项查看证据与建议，再到 COMSOL 中核对。"
     else:
         headline, tone, detail = "发现风险或待核对项", "warning", "风险提示不等同于模型必然错误。"
-    return {"headline": headline, "tone": tone, "detail": detail, "items": items, "disclaimer": DISCLAIMER}
+    coverage = coverage_text(report)
+    if coverage:
+        detail += "\n\n" + coverage
+    return {"coverage": report.get("coverage") if modern else None, "headline": headline, "tone": tone, "detail": detail, "items": items, "disclaimer": DISCLAIMER}
 
 
 def load_completed_check(directory):
@@ -123,6 +144,9 @@ def load_completed_check(directory):
             or not isinstance(metadata["source"].get("filename"), str)
             or not re.fullmatch(r"[a-fA-F0-9]{64}", str(metadata["source"].get("sha256", "")))):
         raise CheckError("检查未完成或报告来源不符，请重新检查；不能展示为成功结论。")
+    if report.get("schema_version") in ("diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4") and not re.fullmatch(
+            r"[a-fA-F0-9]{64}", str(metadata.get("rule_engine_sha256", ""))):
+        raise CheckError("新版本诊断缺少完整规则引擎指纹。")
     view = diagnosis_view(report)
     return {"report": report, "metadata": metadata, "view": view, "directory": directory,
             "run_sha256": hashlib.sha256(run_bytes).hexdigest(), "diagnosis_sha256": diagnosis_digest}

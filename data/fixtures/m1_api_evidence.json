@@ -1,0 +1,252 @@
+{
+  "schema_version": "m1-api-evidence-1",
+  "verified_at": "2026-10-18T16:43:51",
+  "comsol_version": "COMSOL Multiphysics 6.3 (开发版本: 290)",
+  "license_baseline_available": true,
+  "solved": false,
+  "solution_sequences_per_model": 0,
+  "source_models_unchanged": true,
+  "source_model_sha256": {
+    "baseline_pipe_2d_laminar.mph": "023d94cf9c7f2dd5b5bf1bd581b1f19ab8a38cf9304c3af25f239a2398707e1b",
+    "high_reynolds.mph": "b29dfa69e29b15d790afbaafc2121eef2482c0fa9f7ac45fc2c80b7cdc3da03d",
+    "missing_inlet.mph": "77da0e23beb61436555f5dfcb6e03e212daa01ab07eaf373464a4424ceeea821",
+    "missing_outlet.mph": "c0c04e771321cd064ddfd2e5842156457f263b1641a338ca8bda529fdbb9e287",
+    "reversed_inlet.mph": "e2ca36b060bf22310eaeb3a9aef92b1257375358b254e31237bdc5e40a68ad65",
+    "selection_overlap.mph": "699bd821a80639ff95be271047bca2a8b12c20fec919fe0c89d1db3e0760e323"
+  },
+  "reads_per_model": 3,
+  "verified_models": [
+    "axis_wrong_selection",
+    "closed_flow",
+    "empty_inlet",
+    "high_reynolds",
+    "invalid_material",
+    "legal_explicit_selection",
+    "legal_slip_wall",
+    "missing_inlet",
+    "missing_outlet",
+    "normal",
+    "reversed_inlet",
+    "selection_overlap",
+    "unsupported_inlet_mode"
+  ],
+  "implementation_sha256": {
+    "src/comsol/ModelInventory.java": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+    "src/comsol/M1ApiProbe.java.in": "5b1f8c12669872b36632c4750fb10e4256adc13175930d9843c5fa24fcb327a2",
+    "scripts/verify_m1_api.py": "8d0024c04fa2fa8eac144869b2811cead7b116046b841fae4181ef5c943e3d92"
+  },
+  "implementation_sha256_after": {
+    "src/comsol/ModelInventory.java": "1c60aa05a1db97b23f97149f0a80b55abc6a358e5ba16e34dba9cbd4feebfcc7",
+    "src/comsol/M1ApiProbe.java.in": "5b1f8c12669872b36632c4750fb10e4256adc13175930d9843c5fa24fcb327a2",
+    "scripts/verify_m1_api.py": "8d0024c04fa2fa8eac144869b2811cead7b116046b841fae4181ef5c943e3d92"
+  },
+  "inventory_sha256": {
+    "normal": "4f26c66c80635edea565a1cda23c6767e12f652b9f7c6bad042b0a8008bd7ff3",
+    "missing_inlet": "900794be76f96d933b206fb8e60286fd88b4992524120810df7fc7e5f4cea4cb",
+    "missing_outlet": "6986ad250e57dc456984c71505f27b5fc198f5f7efdb28fe1c33d876b0ce4d0c",
+    "empty_inlet": "ddc1063b4e18363c4bcd9c38d5f00c64c9591d20273d40c3b063cb01f7c96034",
+    "selection_overlap": "a1de731e49c98e485f05d1329373670d18f42cd69801cd2f4a98a8c6b1f45bd7",
+    "axis_wrong_selection": "f71b785a698b96029794c1f366b5d05e721542a352d664016d8d52ff863c2945",
+    "legal_explicit_selection": "a28730f70ecd91cf216572231565a08a01a12caf8d30c28392ec3e8ae8b90ec8",
+    "legal_slip_wall": "fea5cb4524020357721995fa029d8db850c74cf1cd1a1fb09e90375317218fe4",
+    "unsupported_inlet_mode": "443a03d180245e5c16eba044dd2c06fbb6d2fb277a0ef964720df6939bb982e8",
+    "closed_flow": "9f17e4a2fa9b67e0078ddbe39eb6f74bd229ad7231f804d4c1d3a5b8bba5ec18",
+    "high_reynolds": "0109380a1faf0c6c78c22ee384f32372c1dd413ced57da9becba3c7d441de831",
+    "reversed_inlet": "1600ea83cec94b5cec10a26d61cc514744da601eb64778d9a69c74ff857eed50",
+    "invalid_material": "8bc9aa9c6c1245f2e19160f1dd702cc78022e239a581e5fb8909b7930f96c6f8"
+  },
+  "output_model_sha256": {
+    "normal": "e579df04a7b14bf147fb379e6ae0cd835593b8776917c8b21a3c714ada055e4d",
+    "missing_inlet": "f35e9207ed2b5808f1df2370d0917b4c10219bd1163f5488cc19b1a7fc53cc3a",
+    "missing_outlet": "850bc8daf291fb1d0164d2b916a3e39791b6c23cea372245e3672c8d9c26ca8b",
+    "empty_inlet": "bd071738df9058d1e361a7dc7165bf803623b174531fda03df2ea9c4bff3e7bc",
+    "selection_overlap": "a7618e6784e34a2d74b47ecf7d45b820a6f74c7bce69bda0e415f04ffc2f0f86",
+    "axis_wrong_selection": "3ffa01a73ec423114dd82242e2b1e02a5363094210b88e7ab64089413f7851e4",
+    "legal_explicit_selection": "ba95da2b0fa868077b231cf51000a7592b31db37cfd1db5ae8e909e7cb0d4c2c",
+    "legal_slip_wall": "34eab258b2b6460a32083d9c227cc4b877fe44fdc5ea575e4f31f735e133139f",
+    "unsupported_inlet_mode": "5129468ad073f4b1daccf5b70fb4c5357a0490271aa142cec356a961f3989c33",
+    "closed_flow": "5357d13d7b455841d7bb8b359501b9576e9fa3d872186a8f9a0254f66f628e92",
+    "high_reynolds": "70f33702142f382c92ba8e106aa81176bb4afbccd87946b177b8879e927ea061",
+    "reversed_inlet": "98ef8a3c0d9e1625f6ad81bc11904a4b07250d289db300037b61eee132f1f5d8",
+    "invalid_material": "40e237252f5f19e0463c5ef70dbc99525f582db807c501a2f695f8341d935654"
+  },
+  "repeat_markers": {
+    "normal": "M1_READ_VERIFIED normal 3",
+    "missing_inlet": "M1_READ_VERIFIED missing_inlet 3",
+    "missing_outlet": "M1_READ_VERIFIED missing_outlet 3",
+    "empty_inlet": "M1_READ_VERIFIED empty_inlet 3",
+    "selection_overlap": "M1_READ_VERIFIED selection_overlap 3",
+    "axis_wrong_selection": "M1_READ_VERIFIED axis_wrong_selection 3",
+    "legal_explicit_selection": "M1_READ_VERIFIED legal_explicit_selection 3",
+    "legal_slip_wall": "M1_READ_VERIFIED legal_slip_wall 3",
+    "unsupported_inlet_mode": "M1_READ_VERIFIED unsupported_inlet_mode 3",
+    "closed_flow": "M1_READ_VERIFIED closed_flow 3",
+    "high_reynolds": "M1_READ_VERIFIED high_reynolds 3",
+    "reversed_inlet": "M1_READ_VERIFIED reversed_inlet 3",
+    "invalid_material": "M1_READ_VERIFIED invalid_material 3"
+  },
+  "unsolved_markers": {
+    "normal": "M1_UNSOLVED_VERIFIED normal 3",
+    "missing_inlet": "M1_UNSOLVED_VERIFIED missing_inlet 3",
+    "missing_outlet": "M1_UNSOLVED_VERIFIED missing_outlet 3",
+    "empty_inlet": "M1_UNSOLVED_VERIFIED empty_inlet 3",
+    "selection_overlap": "M1_UNSOLVED_VERIFIED selection_overlap 3",
+    "axis_wrong_selection": "M1_UNSOLVED_VERIFIED axis_wrong_selection 3",
+    "legal_explicit_selection": "M1_UNSOLVED_VERIFIED legal_explicit_selection 3",
+    "legal_slip_wall": "M1_UNSOLVED_VERIFIED legal_slip_wall 3",
+    "unsupported_inlet_mode": "M1_UNSOLVED_VERIFIED unsupported_inlet_mode 3",
+    "closed_flow": "M1_UNSOLVED_VERIFIED closed_flow 3",
+    "high_reynolds": "M1_UNSOLVED_VERIFIED high_reynolds 3",
+    "reversed_inlet": "M1_UNSOLVED_VERIFIED reversed_inlet 3",
+    "invalid_material": "M1_UNSOLVED_VERIFIED invalid_material 3"
+  },
+  "generated_driver_sha256": "ff3f4faf6aeef299af6dae53323c467969cae9b1c042aa1a389ef81719d1da32",
+  "geometry_api_evidence": {
+    "read_status": "read",
+    "coordinate_names": [
+      "Rg",
+      "PHIg",
+      "Zg"
+    ],
+    "spatial_coordinate_names": [
+      "r",
+      "phi",
+      "z"
+    ],
+    "coordinate_systems": [
+      {
+        "tag": "sys1",
+        "coordinate_names": [
+          "t1",
+          "to",
+          "n"
+        ]
+      }
+    ],
+    "vertex_coordinates": [
+      [
+        0.0,
+        0.0,
+        0.025,
+        0.025
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "boundaries": [
+      {
+        "boundary_id": 1,
+        "vertex_ids": [
+          1,
+          2
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.5
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 2,
+        "vertex_ids": [
+          1,
+          3
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.025,
+            0.0
+          ],
+          [
+            0.0125,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 3,
+        "vertex_ids": [
+          2,
+          4
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0125,
+            1.0
+          ],
+          [
+            0.025,
+            1.0
+          ]
+        ]
+      },
+      {
+        "boundary_id": 4,
+        "vertex_ids": [
+          3,
+          4
+        ],
+        "domain_ids": [
+          1
+        ],
+        "sample_coordinates": [
+          [
+            0.025,
+            1.0
+          ],
+          [
+            0.025,
+            0.5
+          ],
+          [
+            0.025,
+            0.0
+          ]
+        ]
+      }
+    ]
+  },
+  "observed_boundary_types": {
+    "axi1": "AxialSymmetry",
+    "inl1": "Inlet",
+    "out1": "Outlet",
+    "wallbc1": "WallBC"
+  },
+  "scope": "Controlled unsolved 2D axisymmetric single-domain straight circular pipe API evidence; development samples, not independent accuracy evaluation",
+  "limitations": [
+    "COMSOL-managed default AxialSymmetry selection cannot be edited and the node cannot be disabled; rejected attempts retained in local probe logs.",
+    "axis_wrong_selection adds an explicit wall declaration on the axis; COMSOL filters its effective selection to empty, leaving the managed axis effective.",
+    "closed_flow removes both ports as a deliberate closed configuration alternative; all fault cases change only one setting or add one node.",
+    "No mesh or solver was run; repeated static reads do not establish physical correctness or convergence."
+  ]
+}

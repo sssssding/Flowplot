@@ -15,11 +15,12 @@ if __package__ in (None, ""):
 from flowpilot.check_model import ROOT, CheckError, LFS_HEADER, _write_json, sha256
 from flowpilot.check_suite import acceptance_reasons, run_suite, validate_manifest
 from flowpilot.diagnostics import is_finite_number
+from flowpilot.engine_fingerprint import ENGINE_SOURCES
 from flowpilot.report_io import MAX_DIAGNOSIS_BYTES, MAX_METADATA_BYTES, decode_json, read_regular_file
 
 SOURCES = (
-    "src/flowpilot/diagnostics.py", "src/comsol/ModelInventory.java",
-    "schema/diagnostic-model.schema.json", "src/flowpilot/check_model.py",
+    *ENGINE_SOURCES, "src/flowpilot/coverage_view.py", "src/comsol/ModelInventory.java",
+    "src/flowpilot/check_model.py",
     "src/flowpilot/check_suite.py", "src/flowpilot/desktop_session.py",
     "src/flowpilot/report_io.py", "src/flowpilot/package_integrity.py",
     "src/flowpilot/acceptance_dataset.py",

@@ -1,4 +1,6 @@
 import com.comsol.model.Model;
+import com.comsol.model.GeomSequence;
+import com.comsol.model.physics.MultiphysicsCoupling;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import java.util.Arrays;
@@ -33,7 +35,7 @@ public class ModelInventory {
       if (i > 0) json.append(',');
       json.append(quote(couplings[i]));
     }
-    json.append("],\"studies\":[");
+    json.append("],\"multiphysics\":").append(couplingInventory(model, null)).append(",\"studies\":[");
     boolean separator = false;
     for (String study : sorted(model.study().tags())) {
       for (String tag : sorted(model.study(study).feature().tags())) {
@@ -55,7 +57,7 @@ public class ModelInventory {
         if (i > 0) json.append(',');
         json.append(quote(couplings[i]));
       }
-      json.append("],\"geometries\":[");
+      json.append("],\"multiphysics\":").append(couplingInventory(model, component)).append(",\"geometries\":[");
       boolean innerSeparator = false;
       for (String geometry : sorted(model.component(component).geom().tags())) {
         if (innerSeparator) json.append(',');
@@ -64,6 +66,7 @@ public class ModelInventory {
             .append(model.component(component).geom(geometry).getSDim()).append(",\"domain_count\":")
             .append(model.component(component).geom(geometry).getNDomains()).append(",\"boundary_count\":")
             .append(model.component(component).geom(geometry).getNBoundaries())
+            .append(",\"axisymmetric\":").append(model.component(component).geom(geometry).isAxisymmetric())
             .append(",\"length_unit\":").append(quote(model.component(component).geom(geometry).lengthUnit()))
             .append(",\"bounding_box\":").append(Arrays.toString(model.component(component).geom(geometry).getBoundingBox()))
             .append(",\"feature_types\":[");
@@ -78,7 +81,14 @@ public class ModelInventory {
             rotation = model.component(component).geom(geometry).feature(geometryTag).getString("rot");
           }
         }
-        json.append("],\"rectangle_rotation_expression\":").append(quote(rotation)).append('}');
+        json.append("],\"rectangle_rotation_expression\":").append(quote(rotation));
+        if (model.component(component).geom(geometry).isAxisymmetric()) {
+          json.append(",\"axisymmetric_evidence\":").append(axisymmetricEvidence(model, component, geometry));
+        }
+        if (model.component(component).geom(geometry).getSDim() == 3) {
+          json.append(",\"three_dimensional_evidence\":").append(threeDimensionalEvidence(model, component, geometry));
+        }
+        json.append('}');
       }
       json.append("],\"materials\":[");
       innerSeparator = false;
@@ -90,10 +100,14 @@ public class ModelInventory {
             .append(",\"enabled\":").append(model.component(component).material(material).isActive())
             .append(",\"domain_ids\":").append(Arrays.toString(model.component(component).material(material).selection().entities()))
             .append(",\"density\":");
-        String density = model.component(component).material(material).propertyGroup("def").getString("density");
-        String viscosity = model.component(component).material(material).propertyGroup("def").getString("dynamicviscosity");
-        json.append(evaluate(model, density, "kg/m^3")).append(",\"dynamic_viscosity\":")
-            .append(evaluate(model, viscosity, "Pa*s")).append('}');
+        json.append(materialValue(model, component, material, "density", "kg/m^3"))
+            .append(",\"dynamic_viscosity\":")
+            .append(materialValue(model, component, material, "dynamicviscosity", "Pa*s"));
+        if (hasHeat(model, component)) {
+          json.append(",\"thermal_conductivity\":").append(materialValue(model, component, material, "thermalconductivity", "W/(m*K)"))
+              .append(",\"heat_capacity\":").append(materialValue(model, component, material, "heatcapacity", "J/(kg*K)"));
+        }
+        json.append('}');
       }
       json.append("],\"physics\":[");
       innerSeparator = false;
@@ -103,12 +117,20 @@ public class ModelInventory {
         json.append("{\"tag\":").append(quote(physics)).append(",\"type\":")
             .append(quote(model.component(component).physics(physics).getType()))
             .append(",\"enabled\":").append(model.component(component).physics(physics).isActive())
-            .append(",\"study_active\":").append(studyActive(model, physics)).append(",\"features\":[");
+            .append(",\"study_active\":").append(studyActive(model, physics));
+        if (hasHeat(model, component) || hasThreeDimensionalGeometry(model, component)) json.append(",\"domain_ids\":").append(Arrays.toString(model.component(component).physics(physics).selection().entities()));
+        if (isHeat(model.component(component).physics(physics).getType())) {
+          json.append(",\"heat_evidence\":").append(heatEvidence(model, component, physics));
+        }
+        json.append(",\"features\":[");
         boolean featureSeparator = false;
         for (String tag : sorted(model.component(component).physics(physics).feature().tags())) {
           PhysicsFeature feature = model.component(component).physics(physics).feature(tag);
           if (featureSeparator) json.append(',');
           featureSeparator = true;
+          StringBuilder featureJson = json;
+          json = new StringBuilder();
+          try {
           int[] dimensions = feature.selection().dimension();
           String named = feature.selection().named();
           int[] declared = null;
@@ -127,7 +149,7 @@ public class ModelInventory {
               .append(",\"child_feature_count\":").append(feature.feature().tags().length)
               .append(",\"parameters\":{");
           boolean propertySeparator = false;
-          String[] properties = ("FluidProperties".equals(feature.getType()) || "Inlet".equals(feature.getType()))
+          String[] properties = (isHeat(model.component(component).physics(physics).getType()) || "FluidProperties".equals(feature.getType()) || "Inlet".equals(feature.getType()))
               ? sorted(feature.properties())
               : new String[] {"BoundaryCondition", "U0in", "u0", "p0", "SlipCondition", "WallCondition"};
           for (String property : properties) {
@@ -135,10 +157,11 @@ public class ModelInventory {
             if (propertySeparator) json.append(',');
             propertySeparator = true;
             json.append(quote(property)).append(':');
+            try {
             String type = feature.getValueType(property);
             if ("StringArray".equals(type)) {
-              json.append('[');
               String[] values = feature.getStringArray(property);
+              json.append('[');
               for (int i = 0; i < values.length; i++) {
                 if (i > 0) json.append(',');
                 json.append(quote(values[i]));
@@ -150,6 +173,7 @@ public class ModelInventory {
               // Preserve unsupported property types explicitly rather than inventing values.
               json.append("{\"unread_value_type\":").append(quote(type)).append('}');
             }
+            } catch (Exception error) { json.append("{\"read_status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}'); }
           }
           json.append("},\"evaluated_parameters\":{");
           if ("Inlet".equals(feature.getType()) && "Velocity".equals(feature.getString("BoundaryCondition"))) {
@@ -157,13 +181,187 @@ public class ModelInventory {
           } else if ("Outlet".equals(feature.getType()) && "PressureNoViscousStress".equals(feature.getString("BoundaryCondition"))) {
             json.append("\"pressure\":").append(evaluate(model, feature.getString("p0"), "Pa"));
           }
-          json.append("}}");
+          json.append("}");
+          if (isHeat(model.component(component).physics(physics).getType())) json.append(",\"children\":").append(heatChildren(feature));
+          json.append("}");
+          featureJson.append(json);
+          } catch (Exception error) {
+            featureJson.append("{\"tag\":").append(quote(tag));
+            try {
+              String type = feature.getType();
+              featureJson.append(",\"type\":").append(quote(type));
+            } catch (Exception metadataError) { /* Missing metadata remains unread. */ }
+            try {
+              boolean enabled = feature.isActive();
+              featureJson.append(",\"enabled\":").append(enabled);
+            } catch (Exception metadataError) { /* Do not guess enabled state. */ }
+            featureJson.append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}');
+          } finally { json = featureJson; }
         }
         json.append("]}");
       }
       json.append("]}");
     }
     return json.append("]}").toString();
+  }
+
+  /** Recursive raw thermal children; needed to distinguish COMSOL-managed defaults from unknown models. */
+  private static String heatChildren(PhysicsFeature parent) {
+    StringBuilder json = new StringBuilder("[");
+    boolean sep=false;
+    for(String tag:sorted(parent.feature().tags())) {
+      if(sep)json.append(',');sep=true;
+      PhysicsFeature child=parent.feature(tag);
+      StringBuilder entry=new StringBuilder("{\"tag\":").append(quote(tag));
+      try {
+        entry.append(",\"type\":").append(quote(child.getType())).append(",\"enabled\":").append(child.isActive())
+            .append(",\"selection_dimensions\":").append(Arrays.toString(child.selection().dimension()))
+            .append(",\"selected_entity_ids\":").append(Arrays.toString(child.selection().entities()))
+            .append(",\"declared_entity_ids\":").append(Arrays.toString(child.selection().inputEntities()))
+            .append(",\"named_selection\":").append(quote(child.selection().named()))
+            .append(",\"parameters\":{");
+        boolean propsep=false;
+        for(String property:sorted(child.properties())) {
+          if(propsep)entry.append(',');propsep=true;
+          entry.append(quote(property)).append(':');
+          try {
+            String type=child.getValueType(property);
+            if("String".equals(type))entry.append(quote(child.getString(property)));
+            else if("StringArray".equals(type)) {
+              entry.append('[');boolean vsep=false;
+              for(String value:child.getStringArray(property)){if(vsep)entry.append(',');vsep=true;entry.append(quote(value));}
+              entry.append(']');
+            } else if("Boolean".equals(type))entry.append(child.getBoolean(property));
+            else entry.append("{\"unread_value_type\":").append(quote(type)).append('}');
+          }catch(Exception e){entry.append("{\"read_status\":\"unread\",\"reason\":").append(quote(reason(e))).append('}');}
+        }
+        entry.append("},\"children\":").append(heatChildren(child)).append(",\"read_status\":\"read\"");
+      } catch(Exception e) {
+        entry=new StringBuilder("{\"tag\":").append(quote(tag)).append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(e)));
+      }
+      json.append(entry.append('}'));
+    }
+    return json.append(']').toString();
+  }
+
+  private static boolean isHeat(String type) {
+    return "HeatTransferInFluids".equals(type) || "HeatTransfer".equals(type);
+  }
+  private static boolean hasHeat(Model model, String component) {
+    for (String physics : model.component(component).physics().tags())
+      if (isHeat(model.component(component).physics(physics).getType())) return true;
+    return false;
+  }
+  private static String heatEvidence(Model model, String component, String physics) {
+    try {
+      StringBuilder json = new StringBuilder("{\"read_status\":\"read\",\"domain_ids\":")
+          .append(Arrays.toString(model.component(component).physics(physics).selection().entities()))
+          .append(",\"study_participation\":[");
+      boolean sep=false;
+      for(String study:sorted(model.study().tags())) for(String step:sorted(model.study(study).feature().tags())) {
+        if(sep)json.append(',');sep=true;
+        json.append("{\"study_tag\":").append(quote(study)).append(",\"feature_tag\":").append(quote(step))
+            .append(",\"type\":").append(quote(model.study(study).feature(step).getType()))
+            .append(",\"enabled\":").append(model.study(study).feature(step).isActive());
+        try {json.append(",\"active\":").append(model.study(study).feature(step).activate(physics));}
+        catch(Exception e){json.append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(e)));}
+        json.append('}');
+      }
+      return json.append("]}").toString();
+    } catch(Exception e) {return "{\"read_status\":\"unread\",\"reason\":"+quote(reason(e))+"}";}
+  }
+
+
+  private static boolean hasThreeDimensionalGeometry(Model model, String component) {
+    for (String tag : model.component(component).geom().tags())
+      if (model.component(component).geom(tag).getSDim() == 3) return true;
+    return false;
+  }
+
+  /** Raw final 3D topology, API measures, and parameterized surface evidence.
+   * Values are in the geometry length unit. Sampling matrices use point-major rows.
+   * No flow role or characteristic length is inferred by the extractor. */
+  private static String threeDimensionalEvidence(Model model, String component, String geometry) {
+    try {
+      GeomSequence geom = model.component(component).geom(geometry);
+      StringBuilder json = new StringBuilder("{\"read_status\":\"read\",\"coordinate_names\":[");
+      String[] names = model.component(component).geometryCoord();
+      for(int i=0;i<names.length;i++){if(i>0)json.append(',');json.append(quote(names[i]));}
+      json.append("],\"vertex_coordinates\":").append(Arrays.deepToString(geom.getVertexCoord()))
+          .append(",\"domains\":[");
+      for(int id=1;id<=geom.getNDomains();id++) {
+        if(id>1)json.append(',');
+        geom.measureFinal().selection().geom(3); geom.measureFinal().selection().set(new int[]{id});
+        json.append("{\"domain_id\":").append(id).append(",\"boundary_ids\":").append(Arrays.toString(geom.getAdj(3,2,id)))
+            .append(",\"volume\":").append(geom.measureFinal().getVolume())
+            .append(",\"bounding_box\":").append(Arrays.toString(geom.measureFinal().getBoundingBox())).append('}');
+      }
+      json.append("],\"boundaries\":[");
+      for(int id=1;id<=geom.getNBoundaries();id++) {
+        if(id>1)json.append(',');
+        geom.measureFinal().selection().geom(2); geom.measureFinal().selection().set(new int[]{id});
+        double[] range=geom.faceParamRange(id);
+        double[][] points=new double[25][2];int k=0;
+        for(int u=0;u<5;u++)for(int v=0;v<5;v++) {
+          points[k][0]=range[0]+(range[1]-range[0])*(u+0.5)/5;
+          points[k++][1]=range[2]+(range[3]-range[2])*(v+0.5)/5;
+        }
+        json.append("{\"boundary_id\":").append(id)
+            .append(",\"domain_ids\":").append(Arrays.toString(geom.getAdj(2,3,id)))
+            .append(",\"edge_ids\":").append(Arrays.toString(geom.getAdj(2,1,id)))
+            .append(",\"area\":").append(geom.measureFinal().getArea())
+            .append(",\"param_range\":").append(Arrays.toString(range))
+            .append(",\"sample_coordinates\":").append(Arrays.deepToString(geom.faceX(id,points)))
+            .append(",\"sample_normals\":").append(Arrays.deepToString(geom.faceNormal(id,points)))
+            .append(",\"mean_curvatures\":").append(Arrays.toString(geom.faceMeanCurvature(id,points)))
+            .append(",\"gauss_curvatures\":").append(Arrays.toString(geom.faceGaussCurvature(id,points))).append('}');
+      }
+      json.append("],\"edges\":[");
+      for(int id=1;id<=geom.getNEdges();id++) {
+        if(id>1)json.append(',');double[] r=geom.edgeParamRange(id);double[] t=new double[17];
+        for(int i=0;i<t.length;i++)t[i]=r[0]+(r[1]-r[0])*i/(t.length-1);
+        json.append("{\"edge_id\":").append(id)
+            .append(",\"vertex_ids\":").append(Arrays.toString(geom.getAdj(1,0,id)))
+            .append(",\"param_range\":").append(Arrays.toString(r))
+            .append(",\"sample_coordinates\":").append(Arrays.deepToString(geom.edgeX(id,t))).append('}');
+      }
+      return json.append("]}").toString();
+    } catch(Exception e) {return "{\"read_status\":\"unread\",\"reason\":"+quote(reason(e))+"}";}
+  }
+
+  /** Raw topology/coordinate evidence; no pipe role or characteristic length is inferred. */
+  private static String axisymmetricEvidence(Model model, String component, String geometry) {
+    try {
+      GeomSequence geom = model.component(component).geom(geometry);
+      StringBuilder json = new StringBuilder("{\"read_status\":\"read\",\"coordinate_names\":[");
+      String[] geometryNames = model.component(component).geometryCoord();
+      for (int i=0;i<geometryNames.length;i++) {if(i>0)json.append(',');json.append(quote(geometryNames[i]));}
+      json.append("],\"spatial_coordinate_names\":[");
+      String[] spatialNames = model.component(component).spatialCoord();
+      for (int i=0;i<spatialNames.length;i++) {if(i>0)json.append(',');json.append(quote(spatialNames[i]));}
+      json.append("],\"coordinate_systems\":[");
+      for (String tag : sorted(model.component(component).coordSystem().tags())) {
+        if (json.charAt(json.length()-1) != '[') json.append(',');
+        json.append("{\"tag\":").append(quote(tag)).append(",\"coordinate_names\":[");
+        String[] names = model.component(component).coordSystem(tag).coord();
+        for (int i=0; i<names.length; i++) {if(i>0)json.append(',');json.append(quote(names[i]));}
+        json.append("]}");
+      }
+      json.append("],\"vertex_coordinates\":").append(Arrays.deepToString(geom.getVertexCoord()))
+          .append(",\"boundaries\":[");
+      for (int id=1; id<=geom.getNBoundaries(); id++) {
+        if(id>1)json.append(',');
+        double[] range = geom.edgeParamRange(id);
+        double[] samples = new double[] {range[0], (range[0]+range[1])/2, range[1]};
+        json.append("{\"boundary_id\":").append(id)
+            .append(",\"vertex_ids\":").append(Arrays.toString(geom.getAdj(1,0,id)))
+            .append(",\"domain_ids\":").append(Arrays.toString(geom.getAdj(1,2,id)))
+            .append(",\"sample_coordinates\":").append(Arrays.deepToString(geom.edgeX(id,samples))).append('}');
+      }
+      return json.append("]}").toString();
+    } catch (Exception error) {
+      return "{\"read_status\":\"unread\",\"reason\":" + quote(reason(error)) + "}";
+    }
   }
 
   /** Separate batch entry point selected by build_cases.ps1's generated driver. */
@@ -227,15 +425,110 @@ public class ModelInventory {
   }
 
   private static String evaluate(Model model, String expression, String unit) {
-    String header = "{\"expression\":" + quote(expression) + ",\"unit\":" + quote(unit);
+    String header = "{\"expression\":" + quote(expression == null ? "" : expression) + ",\"unit\":" + quote(unit);
     try {
       double value = model.param().evaluate(expression, unit);
       if (!Double.isFinite(value)) throw new IllegalArgumentException("Non-finite value");
       return header + ",\"status\":\"resolved\",\"value\":" + value + "}";
     } catch (Exception error) {
       // Spatial fields, missing symbols and incompatible units stay unknown.
-      return header + ",\"status\":\"unresolved\",\"value\":null}";
+      return header + ",\"status\":\"unresolved\",\"value\":null,\"reason\":" + quote(reason(error)) + "}";
     }
+  }
+
+  private static String reason(Exception error) {
+    String message = error.getMessage();
+    return error.getClass().getSimpleName() + (message == null ? "" : ": " + message);
+  }
+
+  private static String materialValue(Model model, String component, String material, String property, String unit) {
+    try {
+      if ("thermalconductivity".equals(property)) {
+        String[] values = model.component(component).material(material).propertyGroup("def").getStringArray(property);
+        if (values.length != 1) throw new IllegalArgumentException("Non-scalar thermal conductivity: " + Arrays.toString(values));
+      }
+      String expression = model.component(component).material(material).propertyGroup("def").getString(property);
+      if (expression == null || expression.isEmpty()) throw new IllegalArgumentException("Missing material property: " + property);
+      return evaluate(model, expression, unit);
+    } catch (Exception error) {
+      return "{\"expression\":\"\",\"unit\":" + quote(unit)
+          + ",\"status\":\"unresolved\",\"value\":null,\"reason\":" + quote(reason(error)) + "}";
+    }
+  }
+
+  /** Match COMSOL's unique model path, never infer ownership from a tag. */
+  private static String couplingComponent(Model model, MultiphysicsCoupling coupling) {
+    String path = coupling.resolveModelPath();
+    String owner = null;
+    for (String component : sorted(model.component().tags())) {
+      for (String tag : sorted(model.component(component).multiphysics().tags())) {
+        if (path.equals(model.component(component).multiphysics(tag).resolveModelPath())) {
+          if (owner != null && !owner.equals(component)) throw new IllegalStateException("Ambiguous coupling ownership");
+          owner = component;
+        }
+      }
+    }
+    return owner;
+  }
+
+  private static String couplingInventory(Model model, String component) {
+    StringBuilder json = new StringBuilder("[");
+    String[] tags = sorted(component == null ? model.multiphysics().tags() : model.component(component).multiphysics().tags());
+    boolean separator = false;
+    for (String tag : tags) {
+      if (separator) json.append(',');
+      separator = true;
+      MultiphysicsCoupling coupling = component == null ? model.multiphysics(tag) : model.component(component).multiphysics(tag);
+      StringBuilder entry = new StringBuilder("{\"tag\":").append(quote(tag));
+      try {
+        entry.append(",\"model_path\":").append(quote(coupling.resolveModelPath()))
+            .append(",\"scope\":").append(quote(coupling.scope()))
+            .append(",\"component_tag\":").append(quote(couplingComponent(model, coupling)))
+            .append(",\"type\":").append(quote(coupling.getType()))
+            .append(",\"enabled\":").append(coupling.isActive());
+        String selection;
+        boolean partial = false;
+        try {
+          selection = ",\"selection_dimensions\":" + Arrays.toString(coupling.selection().dimension())
+              + ",\"selected_entity_ids\":" + Arrays.toString(coupling.selection().entities());
+        } catch (Exception error) {
+          partial = true;
+          selection = ",\"selection_reason\":" + quote(reason(error));
+        }
+        StringBuilder properties = new StringBuilder("{");
+        boolean propertySeparator = false;
+        for (String property : sorted(coupling.properties())) {
+          if (propertySeparator) properties.append(',');
+          propertySeparator = true;
+          properties.append(quote(property)).append(':');
+          try {
+            String type = coupling.getValueType(property);
+            String value;
+            if ("String".equals(type)) value = quote(coupling.getString(property));
+            else if ("StringArray".equals(type)) {
+              StringBuilder values = new StringBuilder("[");
+              for (String item : coupling.getStringArray(property)) {
+                if (values.length() > 1) values.append(',');
+                values.append(quote(item));
+              }
+              value = values.append(']').toString();
+            } else if ("Boolean".equals(type)) value = Boolean.toString(coupling.getBoolean(property));
+            else throw new IllegalArgumentException("Unsupported value type: " + type);
+            properties.append("{\"status\":\"read\",\"value_type\":").append(quote(type)).append(",\"value\":").append(value).append('}');
+          } catch (Exception error) {
+            partial = true;
+            properties.append("{\"status\":\"unread\",\"reason\":").append(quote(reason(error))).append('}');
+          }
+        }
+        entry.append(selection).append(",\"properties\":").append(properties.append('}'))
+            .append(",\"read_status\":").append(quote(partial ? "partial" : "read"));
+      } catch (Exception error) {
+        entry = new StringBuilder("{\"tag\":").append(quote(tag))
+            .append(",\"read_status\":\"unread\",\"reason\":").append(quote(reason(error)));
+      }
+      json.append(entry.append('}'));
+    }
+    return json.append(']').toString();
   }
 
   private static String[] sorted(String[] tags) {
