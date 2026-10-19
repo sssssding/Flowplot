@@ -3,7 +3,7 @@ import json
 
 
 def coverage_text(report):
-    if report.get("schema_version") != "diagnosis-0.2":
+    if report.get("schema_version") not in ("diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4"):
         return ""
     lines = ["检查覆盖（按物理场 / 耦合）"]
     for item in report["coverage"]:

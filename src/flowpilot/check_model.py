@@ -36,6 +36,8 @@ ACTIONS = {
     "REYNOLDS_RISK": "核对速度、材料参数和特征长度，并由专业人员确认当前层流工况适用性。",
     "INVALID_MATERIAL_PARAMETER": "核对材料的密度、动力黏度及其单位，当前模板要求二者为正。",
     "EVALUATION_UNAVAILABLE": "在 COMSOL 中核对表达式、单位、变量依赖及数值量级；未求值或超出表示范围的项需要人工复核。",
+    "AXIS_SELECTION_INCONSISTENT": "在对应组件和几何中核对 r = 0 的边界及轴对称节点的实际生效选择，确认轴线未遗漏且没有选入非轴线边界。",
+    "EMPTY_BOUNDARY_SELECTION": "在对应物理场中检查该启用节点的声明选择、实际生效选择和覆盖顺序；按建模意图恢复有效选择或禁用无用途节点。",
 }
 
 
@@ -191,13 +193,20 @@ def render_report(report, metadata):
                   "相关节点：" + _markdown_text(", ".join(finding["feature_tags"]) or "—"),
                   "边界编号：" + _markdown_text(", ".join(map(str, finding["boundary_ids"])) or "—"), "",
                   "证据：", "", "```json", json.dumps(finding["evidence"], ensure_ascii=False, indent=2),
-                  "```", "", "建议：" + ACTIONS.get(finding["code"], "请结合 COMSOL 设置人工核对。"), ""]
-    scope = ("检查范围以模块及逐条规则覆盖记录为准；流动检查限已核验的二维平面配置。"
-             if report.get("schema_version") == "diagnosis-0.2" else
+                  "```", "", "建议：" + (finding.get("suggestion") or ACTIONS.get(finding["code"], "请结合 COMSOL 设置人工核对。")), ""]
+    scope = ("检查范围以模块及逐条规则覆盖记录为准；三维检查限已核验的受控直圆管及流体/管壁传热配置。"
+             if report.get("schema_version") == "diagnosis-0.4" else
+             "检查范围以模块及逐条规则覆盖记录为准；流动检查限已核验的二维平面或二维轴对称配置。"
+             if report.get("schema_version") in ("diagnosis-0.2", "diagnosis-0.3") else
              "检查范围：当前仅验证二维、单域、米制、轴对齐矩形通道的稳态牛顿层流配置；"
              "入口限法向速度、出口限压力、壁面限 No Slip。")
+    reynolds_scope = ("三维圆管以已核验流体管径 D 计算；是否执行 Re 筛查以规则覆盖及面、材料、端口证据为准。"
+                      if report.get("schema_version") == "diagnosis-0.4" else
+                      "轴对称模型是否执行 Re 筛查及特征长度以规则覆盖与证据为准。"
+                      if report.get("profile") == "axisymmetric-pipe-v1" else
+                      "矩形模板以通道高度 H 计算；其他模板是否执行以规则覆盖为准。")
     lines += [scope, "",
-              f"Re 筛查阈值：{metadata['settings']['reynolds_warning']:g}，以通道高度 H 计算。",
+              f"Re 筛查阈值：{metadata['settings']['reynolds_warning']:g}；{reynolds_scope}",
               "本报告是配置检查，不证明求解收敛或物理正确性；未执行求解。", ""]
     policy = report.get("numeric_policy")
     if isinstance(policy, dict) and policy.get("reynolds_threshold_guard_ulps") == 4:

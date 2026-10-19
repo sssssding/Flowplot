@@ -1,0 +1,138 @@
+import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
+import java.util.Arrays;
+/** Controlled unsolved heating and conjugate pipe models; no source model is modified. */
+public class M2ApiProbe {
+  private static final String OUTPUT="@OUTPUT@", BASE="@BASE@";
+  private static final String[] NAMES={"normal","invalid_k","invalid_cp","invalid_rho","missing_k","empty_heat_flux","thermal_overlap","disabled_coupling","disabled_heat_interface","inactive_heat_study","legal_manual_velocity","legal_prescribed_velocity","legal_convective_flux","temperature_dependent_k","anisotropic_k","conjugate_normal","conjugate_missing_wall_k"};
+  public static void main(String[] args) throws Exception {
+    System.out.println("M2_LICENSE_BASELINE "+ModelUtil.hasProductForFile(BASE));
+    Model m; try {m=build(false);} catch(Exception e){e.printStackTrace();throw e;}m.save(OUTPUT+"/normal.mph");ModelUtil.remove("Build");
+    m=build(true);m.save(OUTPUT+"/conjugate_normal.mph");ModelUtil.remove("Build");
+    for(String name:NAMES) {
+      if(name.equals("normal")||name.equals("conjugate_normal"))continue;
+      m=ModelUtil.load("Variant",OUTPUT+"/"+(name.startsWith("conjugate_")?"conjugate_normal":"normal")+".mph");
+      try {
+        if(name.equals("invalid_k"))m.component("comp1").material("mat1").propertyGroup("def").set("thermalconductivity","-0.6[W/(m*K)]");
+        if(name.equals("invalid_cp"))m.component("comp1").material("mat1").propertyGroup("def").set("heatcapacity","0[J/(kg*K)]");
+        if(name.equals("invalid_rho"))m.component("comp1").material("mat1").propertyGroup("def").set("density","-1000[kg/m^3]");
+        if(name.equals("missing_k"))m.component("comp1").material("mat1").propertyGroup("def").set("thermalconductivity", "");
+        if(name.equals("anisotropic_k"))m.component("comp1").material("mat1").propertyGroup("def").set("thermalconductivity",new String[]{"0.6","0","0","0","0.8","0","0","0","1.0"});
+        if(name.equals("temperature_dependent_k"))m.component("comp1").material("mat1").propertyGroup("def").set("thermalconductivity","0.6[W/(m*K)]*(T/293.15[K])");
+        if(name.equals("empty_heat_flux"))m.component("comp1").physics("ht").feature("flux1").selection().clear();
+        if(name.equals("thermal_overlap"))m.component("comp1").physics("ht").feature("flux1").selection().named("inlet");
+        if(name.equals("disabled_heat_interface"))m.component("comp1").physics("ht").active(false);
+        if(name.equals("disabled_coupling"))m.component("comp1").multiphysics("nitf1").active(false);
+        if(name.equals("empty_coupling"))m.component("comp1").multiphysics("nitf1").selection().clear();
+        if(name.equals("inactive_heat_study"))m.study("std1").feature("stat").activate("ht",false);
+        if(name.startsWith("legal_") && !name.equals("legal_convective_flux"))m.component("comp1").multiphysics().remove("nitf1");
+        if(name.equals("legal_prescribed_velocity")) {
+          m.component("comp1").physics("ht").feature("fluid1").set("u_src","userdef");
+          m.component("comp1").physics("ht").feature("fluid1").set("u",new String[]{"0","0","0.01[m/s]"});
+        }
+        if(name.equals("legal_convective_flux"))m.component("comp1").physics("ht").feature("flux1").set("HeatFluxType","ConvectiveHeatFlux");
+        if(name.equals("conjugate_wrong_coupling_domain"))m.component("comp1").multiphysics("nitf1").selection().named("solid");
+        if(name.equals("conjugate_missing_wall_k"))m.component("comp1").material("mat2").propertyGroup("def").set("thermalconductivity", "");
+        m.label(name+".mph");m.save(OUTPUT+"/"+name+".mph");
+      } finally {ModelUtil.remove("Variant");}
+    }
+    for(String name:NAMES)verify(name);
+    System.out.println("M2_API_VERIFIED");
+  }
+  private static void domainBox(Model m,String tag,double xmin,double xmax) {
+    m.component("comp1").selection().create(tag,"Box");
+    m.component("comp1").selection(tag).set("entitydim",2);
+    m.component("comp1").selection(tag).set("condition","allvertices");
+    m.component("comp1").selection(tag).set("xmin",xmin);m.component("comp1").selection(tag).set("xmax",xmax);
+    m.component("comp1").selection(tag).set("ymin",-1e-9);m.component("comp1").selection(tag).set("ymax",1.000000001);
+    if(m.component("comp1").selection(tag).entities(2).length!=1)throw new IllegalStateException("Domain selection "+tag);
+  }
+  private static Model build(boolean wall) {
+    Model m=ModelUtil.create("Build");
+    m.label("FlowPilot controlled unsolved axisymmetric pipe");
+    m.param().set("R","0.025[m]"); m.param().set("L","1[m]"); m.param().set("Uin","0.01[m/s]");
+    m.component().create("comp1",true);
+    m.component("comp1").geom().create("geom1",2);
+    m.component("comp1").geom("geom1").axisymmetric(true);
+    m.component("comp1").geom("geom1").lengthUnit("m");
+    m.component("comp1").geom("geom1").create("r1","Rectangle");
+    m.component("comp1").geom("geom1").feature("r1").set("size",new String[]{"R","L"});
+    if(wall) {
+      m.component("comp1").geom("geom1").create("r2","Rectangle");
+      m.component("comp1").geom("geom1").feature("r2").set("pos",new String[]{"R","0"});
+      m.component("comp1").geom("geom1").feature("r2").set("size",new String[]{"0.005[m]","L"});
+    }
+    m.component("comp1").geom("geom1").run();
+    domainBox(m,"fluid",-1e-9,0.025000001);
+    if(wall)domainBox(m,"solid",0.024999999,0.030000001);
+    box(m,"axis",-1e-9,1e-9,-1e-9,1.000000001);
+    box(m,"wall",0.024999999,0.025000001,-1e-9,1.000000001);
+    box(m,"inlet",-1e-9,0.025000001,-1e-9,1e-9);
+    box(m,"outlet",-1e-9,0.025000001,0.999999999,1.000000001);
+    m.component("comp1").material().create("mat1","Common");
+    m.component("comp1").material("mat1").selection().named("fluid");
+    m.component("comp1").material("mat1").propertyGroup("def").set("density","1000[kg/m^3]");
+    m.component("comp1").material("mat1").propertyGroup("def").set("dynamicviscosity","1e-3[Pa*s]");
+    m.component("comp1").material("mat1").propertyGroup("def").set("thermalconductivity","0.6[W/(m*K)]");
+    m.component("comp1").material("mat1").propertyGroup("def").set("heatcapacity","4180[J/(kg*K)]");
+    if(wall) {
+      m.component("comp1").material().create("mat2","Common");
+      m.component("comp1").material("mat2").selection().named("solid");
+      m.component("comp1").material("mat2").propertyGroup("def").set("density","7800[kg/m^3]");
+      m.component("comp1").material("mat2").propertyGroup("def").set("thermalconductivity","16[W/(m*K)]");
+      m.component("comp1").material("mat2").propertyGroup("def").set("heatcapacity","500[J/(kg*K)]");
+    }
+    m.component("comp1").physics().create("spf","LaminarFlow","geom1");
+    m.component("comp1").physics("spf").selection().named("fluid");
+    m.component("comp1").physics("spf").create("inl1","Inlet",1);
+    m.component("comp1").physics("spf").feature("inl1").selection().named("inlet");
+    m.component("comp1").physics("spf").feature("inl1").set("BoundaryCondition","Velocity");
+    m.component("comp1").physics("spf").feature("inl1").set("U0in","Uin");
+    m.component("comp1").physics("spf").create("out1","Outlet",1);
+    m.component("comp1").physics("spf").feature("out1").selection().named("outlet");
+    m.component("comp1").physics("spf").feature("out1").set("p0","0[Pa]");
+    m.study().create("std1");m.study("std1").create("stat","Stationary");
+    m.study("std1").feature("stat").activate("spf",true);
+    m.component("comp1").physics().create("ht",wall?"HeatTransfer":"HeatTransferInFluids","geom1");
+    if(wall) {
+      // Default solid domain selection is managed; the explicit fluid node overrides it.
+      m.component("comp1").physics("ht").create("fluid1","FluidHeatTransferModel",2);
+      m.component("comp1").physics("ht").feature("fluid1").selection().named("fluid");
+    }
+    m.component("comp1").physics("ht").feature("fluid1").set("u_src","root.comp1.u");
+    m.component("comp1").physics("ht").create("temp1","TemperatureBoundary",1);
+    m.component("comp1").physics("ht").feature("temp1").selection().named("inlet");
+    m.component("comp1").physics("ht").feature("temp1").set("T0","293.15[K]");
+    m.component("comp1").physics("ht").create("flux1","HeatFluxBoundary",1);
+    if(wall)box(m,"outer",0.029999999,0.030000001,-1e-9,1.000000001);
+    m.component("comp1").physics("ht").feature("flux1").selection().named(wall?"outer":"wall");
+    m.component("comp1").physics("ht").feature("flux1").set("q0_input","1000[W/m^2]");
+    m.component("comp1").multiphysics().create("nitf1","NonIsothermalFlow",2);
+    // NonIsothermalFlow selection is COMSOL-managed from interface overlap.
+    m.study("std1").feature("stat").activate("ht",true);
+    return m;
+  }
+  private static void box(Model m,String tag,double xmin,double xmax,double ymin,double ymax) {
+    m.component("comp1").selection().create(tag,"Box");
+    m.component("comp1").selection(tag).set("entitydim",1);
+    m.component("comp1").selection(tag).set("condition","allvertices");
+    m.component("comp1").selection(tag).set("xmin",xmin);m.component("comp1").selection(tag).set("xmax",xmax);
+    m.component("comp1").selection(tag).set("ymin",ymin);m.component("comp1").selection(tag).set("ymax",ymax);
+    if(m.component("comp1").selection(tag).entities(1).length!=1)throw new IllegalStateException("Selection "+tag);
+  }
+  private static void verify(String name) throws Exception {
+    String first=null;
+    for(int i=0;i<3;i++) {
+      Model m=ModelUtil.load("Read",OUTPUT+"/"+name+".mph");
+      try {
+        if(m.sol().tags().length!=0)throw new IllegalStateException("Unexpected solution sequence");
+        String snapshot=inspect(m);
+        if(first!=null&&!first.equals(snapshot))throw new IllegalStateException("Inventory drift: "+name);
+        first=snapshot;
+      } finally {ModelUtil.remove("Read");}
+    }
+    System.out.println("M2_INVENTORY "+name+" "+first);
+    System.out.println("M2_READ_VERIFIED "+name+" 3");
+    System.out.println("M2_UNSOLVED_VERIFIED "+name+" 3");
+  }
+}

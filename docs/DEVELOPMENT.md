@@ -1,5 +1,11 @@
 # 开发与验证
 
+M3 三维支持矩阵与验证见 [M3.md](M3.md)。新增入口为 `scripts/verify_m3_api.py`、`verify_m3_consumers.py`、`verify_m3_demo.py` 和 `verify_m3_regression.py`，各脚本参数见 `--help`。真实 API 验证、已有清单离线回放、三轮正式文件检查与隐藏 Tk 消费分别记录；三维使用 `diagnosis-0.4`，保留旧报告兼容及历史证据身份。
+
+M2 的真实热/共轭样例、三模块检查及复现见 [M2.md](M2.md)。入口为 `scripts/verify_m2_api.py`、`verify_m2_consumers.py`、`verify_m2_regression.py`。新报告使用 `diagnosis-0.3`，旧报告兼容；历史 M0/M1 摘要不能改指纹升级。
+
+M1 轴对称开发与复现见 [M1.md](M1.md)。新增真实样例生成、消费者复核与平面回归分别在 `scripts/verify_m1_api.py`、`scripts/verify_m1_consumers.py`、`scripts/verify_m1_regression.py`；各脚本仅写新输出目录。M0 历史摘要按冻结源码保留，不能将其中的旧指纹改成 M1 的指纹。
+
 M0 新入口及证据见 [M0.md](M0.md)：默认诊断输出 `diagnosis-0.2`，旧流动投影保留 `diagnostic-0.1`。完整引擎指纹覆盖注册表、模块和契约；改动这些文件后需生成新的真实运行记录，不能改写旧报告指纹。下述历史验证范围保留作复现参考。
 
 ## 环境

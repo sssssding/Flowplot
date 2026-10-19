@@ -1,78 +1,885 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "FlowPlot diagnostic model, rectangle and planar boundary profiles",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "profile", "source", "geometry", "material", "boundaries"],
-  "properties": {
-    "schema_version": {"const": "diagnostic-0.1"},
-    "profile": {"enum": ["rectangular-channel-v1", "planar-boundaries-v1"]},
-    "source": {
-      "type": "object", "additionalProperties": false,
-      "required": ["comsol_version", "component_tag", "physics_tag", "study_tag"],
+  "title": "FlowPlot versioned diagnostic models",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile",
+        "source",
+        "geometry",
+        "material",
+        "boundaries"
+      ],
       "properties": {
-        "comsol_version": {"type": "string"}, "component_tag": {"type": "string", "minLength": 1},
-        "physics_tag": {"type": "string", "minLength": 1}, "study_tag": {"type": "string", "minLength": 1}
-      }
-    },
-    "geometry": {"type": "object"},
-    "material": {
-      "type": "object", "additionalProperties": false, "required": ["density", "dynamic_viscosity"],
-      "properties": {
-        "density": {"allOf": [{"$ref": "#/$defs/evaluated"}, {"properties": {"unit": {"const": "kg/m^3"}}}]},
-        "dynamic_viscosity": {"allOf": [{"$ref": "#/$defs/evaluated"}, {"properties": {"unit": {"const": "Pa*s"}}}]}
-      }
-    },
-    "boundaries": {"type": "array", "items": {"$ref": "#/$defs/boundary"}}
-  },
-  "allOf": [
-    {"if": {"properties": {"profile": {"const": "rectangular-channel-v1"}}}, "then": {"properties": {
-      "geometry": {"type": "object", "additionalProperties": false, "required": ["length_m", "height_m"],
-        "properties": {"length_m": {"type": "number", "exclusiveMinimum": 0}, "height_m": {"type": "number", "exclusiveMinimum": 0}}},
-      "boundaries": {"items": {"allOf": [
-        {"properties": {"boundary_ids": {"items": {"maximum": 4}}, "declared_boundary_ids": {"items": {"maximum": 4}}}},
-        {"if": {"properties": {"type": {"const": "wall"}}}, "then": {"properties": {"mode": {"const": "NoSlip"}}}}
-      ]}}
-    }}, "else": {"properties": {
-      "geometry": {"type": "object", "additionalProperties": false, "required": ["bounding_box_m", "boundary_count"],
-        "properties": {"bounding_box_m": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}},
-                       "boundary_count": {"type": "integer", "minimum": 3}}}
-    }}}
-  ],
-  "$defs": {
-    "ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1}},
-    "evaluated": {
-      "type": "object", "additionalProperties": false, "required": ["expression", "unit", "status", "value"],
-      "properties": {
-        "expression": {"type": "string"}, "unit": {"type": "string"},
-        "status": {"enum": ["resolved", "unresolved"]}, "value": {"type": ["number", "null"]}
-      },
-      "allOf": [{"if": {"properties": {"status": {"const": "resolved"}}},
-                 "then": {"properties": {"value": {"type": "number"}}},
-                 "else": {"properties": {"value": {"type": "null"}}}}]
-    },
-    "boundary": {
-      "type": "object", "additionalProperties": false,
-      "required": ["feature_tag", "label", "type", "boundary_ids", "declared_boundary_ids", "selection_scope", "mode", "parameters"],
-      "properties": {
-        "feature_tag": {"type": "string", "minLength": 1}, "label": {"type": "string"},
-        "type": {"enum": ["inlet", "outlet", "wall"]}, "boundary_ids": {"$ref": "#/$defs/ids"},
-        "declared_boundary_ids": {"anyOf": [{"$ref": "#/$defs/ids"}, {"type": "null"}]},
-        "selection_scope": {"enum": ["explicit", "fallback"]},
-        "mode": {"type": "string"}, "parameters": {"type": "object"}
+        "schema_version": {
+          "const": "diagnostic-0.1"
+        },
+        "profile": {
+          "enum": [
+            "rectangular-channel-v1",
+            "planar-boundaries-v1"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "comsol_version",
+            "component_tag",
+            "physics_tag",
+            "study_tag"
+          ],
+          "properties": {
+            "comsol_version": {
+              "type": "string"
+            },
+            "component_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physics_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "study_tag": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "geometry": {
+          "type": "object"
+        },
+        "material": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "density",
+            "dynamic_viscosity"
+          ],
+          "properties": {
+            "density": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "kg/m^3"
+                    }
+                  }
+                }
+              ]
+            },
+            "dynamic_viscosity": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "Pa*s"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/boundary"
+          }
+        }
       },
       "allOf": [
-        {"if": {"properties": {"type": {"const": "inlet"}}}, "then": {"properties": {
-          "mode": {"const": "Velocity"}, "parameters": {"type": "object", "additionalProperties": false, "required": ["normal_velocity"],
-            "properties": {"normal_velocity": {"allOf": [{"$ref": "#/$defs/evaluated"}, {"properties": {"unit": {"const": "m/s"}}}]}}}
-        }}},
-        {"if": {"properties": {"type": {"const": "outlet"}}}, "then": {"properties": {
-          "mode": {"const": "PressureNoViscousStress"}, "parameters": {"type": "object", "additionalProperties": false, "required": ["pressure"],
-            "properties": {"pressure": {"allOf": [{"$ref": "#/$defs/evaluated"}, {"properties": {"unit": {"const": "Pa"}}}]}}}
-        }}},
-        {"if": {"properties": {"type": {"const": "wall"}}}, "then": {"properties": {
-          "mode": {"enum": ["NoSlip", "Slip"]}, "parameters": {"type": "object", "maxProperties": 0}
-        }}}
+        {
+          "if": {
+            "properties": {
+              "profile": {
+                "const": "rectangular-channel-v1"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "geometry": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "length_m",
+                  "height_m"
+                ],
+                "properties": {
+                  "length_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "height_m": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              },
+              "boundaries": {
+                "items": {
+                  "allOf": [
+                    {
+                      "properties": {
+                        "boundary_ids": {
+                          "items": {
+                            "maximum": 4
+                          }
+                        },
+                        "declared_boundary_ids": {
+                          "items": {
+                            "maximum": 4
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "wall"
+                          }
+                        }
+                      },
+                      "then": {
+                        "properties": {
+                          "mode": {
+                            "const": "NoSlip"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "geometry": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "bounding_box_m",
+                  "boundary_count"
+                ],
+                "properties": {
+                  "bounding_box_m": {
+                    "type": "array",
+                    "minItems": 4,
+                    "maxItems": 4,
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "boundary_count": {
+                    "type": "integer",
+                    "minimum": 3
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile",
+        "source",
+        "geometry",
+        "material",
+        "material_binding_verified",
+        "boundary_inventory_complete",
+        "boundaries",
+        "reynolds_profile_verified"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "diagnostic-0.2"
+        },
+        "profile": {
+          "const": "axisymmetric-pipe-v1"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "comsol_version",
+            "component_tag",
+            "physics_tag",
+            "study_tag"
+          ],
+          "properties": {
+            "comsol_version": {
+              "type": "string"
+            },
+            "component_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physics_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "study_tag": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "material": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "density",
+            "dynamic_viscosity"
+          ],
+          "properties": {
+            "density": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "kg/m^3"
+                    }
+                  }
+                }
+              ]
+            },
+            "dynamic_viscosity": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "Pa*s"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "material_binding_verified": {
+          "type": "boolean"
+        },
+        "boundary_inventory_complete": {
+          "type": "boolean"
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bounding_box_m",
+            "boundary_count",
+            "axis_boundary_ids",
+            "pipe_diameter_m",
+            "flow_configuration"
+          ],
+          "properties": {
+            "bounding_box_m": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "number"
+              }
+            },
+            "boundary_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "axis_boundary_ids": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ids"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pipe_diameter_m": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "flow_configuration": {
+              "enum": [
+                "open_pipe",
+                "closed_or_unverified"
+              ]
+            }
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature_tag",
+              "label",
+              "type",
+              "feature_type",
+              "boundary_ids",
+              "declared_boundary_ids",
+              "selection_scope",
+              "selection_known",
+              "mode",
+              "verified_mode",
+              "parameters"
+            ],
+            "properties": {
+              "feature_tag": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "inlet",
+                  "outlet",
+                  "wall",
+                  "axis",
+                  "unknown"
+                ]
+              },
+              "feature_type": {
+                "type": "string"
+              },
+              "boundary_ids": {
+                "$ref": "#/$defs/ids"
+              },
+              "declared_boundary_ids": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/ids"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "selection_scope": {
+                "enum": [
+                  "explicit",
+                  "fallback"
+                ]
+              },
+              "selection_known": {
+                "type": "boolean"
+              },
+              "mode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "verified_mode": {
+                "type": "boolean"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/evaluated"
+                }
+              }
+            }
+          }
+        },
+        "reynolds_profile_verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile",
+        "source",
+        "geometry",
+        "material",
+        "material_binding_verified",
+        "boundary_inventory_complete",
+        "boundaries"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "diagnostic-0.3"
+        },
+        "profile": {
+          "const": "pipe-3d-v1"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "comsol_version",
+            "component_tag",
+            "physics_tag",
+            "study_tag"
+          ],
+          "properties": {
+            "comsol_version": {
+              "type": "string"
+            },
+            "component_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physics_tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "study_tag": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "material": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "density",
+            "dynamic_viscosity"
+          ],
+          "properties": {
+            "density": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "kg/m^3"
+                    }
+                  }
+                }
+              ]
+            },
+            "dynamic_viscosity": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/evaluated"
+                },
+                {
+                  "properties": {
+                    "unit": {
+                      "const": "Pa*s"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "material_binding_verified": {
+          "type": "boolean"
+        },
+        "boundary_inventory_complete": {
+          "type": "boolean"
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bounding_box_m",
+            "boundary_count",
+            "fluid_domain_ids",
+            "pipe_diameter_m",
+            "end_face_ids",
+            "wall_face_ids"
+          ],
+          "properties": {
+            "bounding_box_m": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "items": {
+                "type": "number"
+              }
+            },
+            "boundary_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pipe_diameter_m": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fluid_domain_ids": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/ids"
+                },
+                {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
+              ]
+            },
+            "end_face_ids": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ids"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wall_face_ids": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ids"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature_tag",
+              "label",
+              "type",
+              "feature_type",
+              "boundary_ids",
+              "declared_boundary_ids",
+              "selection_scope",
+              "selection_known",
+              "mode",
+              "verified_mode",
+              "parameters"
+            ],
+            "properties": {
+              "feature_tag": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "inlet",
+                  "outlet",
+                  "wall",
+                  "unknown"
+                ]
+              },
+              "feature_type": {
+                "type": "string"
+              },
+              "boundary_ids": {
+                "$ref": "#/$defs/ids"
+              },
+              "declared_boundary_ids": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/ids"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "selection_scope": {
+                "enum": [
+                  "explicit",
+                  "fallback"
+                ]
+              },
+              "selection_known": {
+                "type": "boolean"
+              },
+              "mode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "verified_mode": {
+                "type": "boolean"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/evaluated"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "evaluated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expression",
+        "unit",
+        "status",
+        "value"
+      ],
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "resolved",
+            "unresolved"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "resolved"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_tag",
+        "label",
+        "type",
+        "boundary_ids",
+        "declared_boundary_ids",
+        "selection_scope",
+        "mode",
+        "parameters"
+      ],
+      "properties": {
+        "feature_tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "inlet",
+            "outlet",
+            "wall"
+          ]
+        },
+        "boundary_ids": {
+          "$ref": "#/$defs/ids"
+        },
+        "declared_boundary_ids": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ids"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_scope": {
+          "enum": [
+            "explicit",
+            "fallback"
+          ]
+        },
+        "mode": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "inlet"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "Velocity"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "normal_velocity"
+                ],
+                "properties": {
+                  "normal_velocity": {
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/evaluated"
+                      },
+                      {
+                        "properties": {
+                          "unit": {
+                            "const": "m/s"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "outlet"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "PressureNoViscousStress"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pressure"
+                ],
+                "properties": {
+                  "pressure": {
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/evaluated"
+                      },
+                      {
+                        "properties": {
+                          "unit": {
+                            "const": "Pa"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "wall"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "NoSlip",
+                  "Slip"
+                ]
+              },
+              "parameters": {
+                "type": "object",
+                "maxProperties": 0
+              }
+            }
+          }
+        }
       ]
     }
   }

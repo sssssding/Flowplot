@@ -1,8 +1,14 @@
 # 确定性规则第一版
 
-当前实现：`src/flowpilot/diagnostics.py`；规则结果包含稳定 code、严重等级、解释、feature tag、边界 ID 和数值证据。
+当前调度：`src/flowpilot/diagnostics.py`，流动实现：`src/flowpilot/diagnostic_modules/flow.py`；规则结果包含稳定 code、严重等级、解释、feature tag、边界 ID 和数值证据。
+
+M1 增加受控二维轴对称圆管，支持范围、`AXIS_SELECTION_INCONSISTENT` / `EMPTY_BOUNDARY_SELECTION`、默认轴线选择语义及实测见 [M1.md](M1.md)。新模型使用 `diagnostic-0.2`，外层报告继续为 `diagnosis-0.2`。轴对称 Re 使用经边界坐标及拓扑核验的圆管直径 D，公式为 rho × abs(Uin) × D / mu；滑移或轴线配置不满足前提时跳过。下文的高度 H、旧模板限制及 `diagnosis-0.1` 描述保留为原平面规则说明，不适用于新轴对称模型。
+
+M2 另以 `heat` 与 `thermal_coupling` 模块接入 `diagnosis-0.3`，支持受控流体传热及流热引用/选择检查。规则清单、常量材料和递归子节点证据、合法替代配置与受限共轭范围见 [M2.md](M2.md)。以下原平面规则的单域/单物理场限制不代表新版总调度范围；各模块的实际覆盖独立记录。
 
 ## 输入与限制
+
+M3 三维规则与支持矩阵见 [M3.md](M3.md)。新报告为 `diagnosis-0.4 / static-3d-v1`，流动子模型为 `diagnostic-0.3 / pipe-3d-v1`。`FLOW_FACE_SELECTION_INCONSISTENT` 根据实际流体域的已核验端面/侧面检查流动角色；不跨流动和传热接口判定边界冲突。三维 Re 仍使用流体圆管直径 D，要求几何、法向速度、材料和完整无滑移壁面证据；缺证据按规则跳过。原平面规则说明保留如下。
 
 当前只验证自建、米制、轴对齐矩形通道模型族：一个二维组件、单域、一个启用的 LaminarFlow、单一定常步骤、一个覆盖全域的材料、牛顿流体属性来自材料。入口限法向速度模式，出口限压力/无黏性应力，壁面限 No Slip。
 

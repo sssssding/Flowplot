@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "FlowPlot M0 modular diagnosis envelope",
+  "title": "FlowPlot modular diagnosis envelope",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -13,7 +13,11 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "diagnosis-0.2"
+      "enum": [
+        "diagnosis-0.2",
+        "diagnosis-0.3",
+        "diagnosis-0.4"
+      ]
     },
     "run_status": {
       "const": "completed"
@@ -84,7 +88,20 @@
             "minLength": 1
           },
           "source": {
-            "$ref": "#/$defs/physicsSource"
+            "$ref": "#/$defs/moduleSource"
+          },
+          "suggestion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^/"
+            }
           }
         }
       }
@@ -273,7 +290,7 @@
             "minLength": 1
           },
           "source": {
-            "$ref": "#/$defs/physicsSource"
+            "$ref": "#/$defs/moduleSource"
           },
           "status": {
             "enum": [
@@ -368,6 +385,16 @@
           "minLength": 1
         }
       }
+    },
+    "moduleSource": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/physicsSource"
+        },
+        {
+          "$ref": "#/$defs/couplingSource"
+        }
+      ]
     }
   }
 }

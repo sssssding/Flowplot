@@ -4,26 +4,27 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from m0_historical_sources import SOURCES as M0_SOURCES
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from flowpilot.check_model import sha256
-from flowpilot.engine_fingerprint import engine_fingerprint
+from flowpilot.engine_fingerprint import fingerprint_from_sources
 
 FIXTURE = ROOT / "data/fixtures/m0_consumer_smoke.json"
 
 
 class RecordedConsumerSmokeTest(unittest.TestCase):
-    def test_current_sources_and_honest_evidence_scope(self):
+    def test_frozen_m0_sources_and_honest_evidence_scope(self):
         spec = importlib.util.spec_from_file_location("m0_consumer_verifier", ROOT / "scripts/verify_m0_consumers.py")
         verifier = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(verifier)
         summary = json.loads(FIXTURE.read_text(encoding="utf-8"))
         self.assertEqual(summary["schema_version"], "m0-consumer-smoke-1")
         self.assertEqual(summary["status"], "passed")
-        self.assertEqual(summary["rule_engine_sha256"], engine_fingerprint())
+        self.assertEqual(summary["rule_engine_sha256"], fingerprint_from_sources(M0_SOURCES))
         self.assertEqual(summary["implementation_sha256"],
-                         {name: sha256(ROOT / name) for name in verifier.CONSUMER_SOURCES})
+                         {name: M0_SOURCES[name] for name in verifier.CONSUMER_SOURCES if name not in {"src/flowpilot/diagnostic_modules/flow_3d.py", "src/flowpilot/diagnostic_modules/flow_scope.py", "src/flowpilot/diagnostic_modules/heat.py", "src/flowpilot/diagnostic_modules/thermal_coupling.py"}})
         for field in ("solved", "visible_gui_acceptance", "user_acceptance"):
             self.assertIs(summary[field], False)
         self.assertIs(summary["hidden_tk_only"], True)

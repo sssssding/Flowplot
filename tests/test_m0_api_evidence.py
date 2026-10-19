@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
+from m0_historical_sources import SOURCES as M0_SOURCES
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,7 +34,7 @@ class M0ApiEvidenceTest(unittest.TestCase):
         self.assertEqual(set(e["implementation_sha256"]), {"src/comsol/ModelInventory.java", "src/comsol/M0ApiProbe.java.in", "scripts/verify_m0_api.py"})
         for name, expected in e["implementation_sha256"].items():
             self.assertNotIn("\\", name)
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), expected, name)
+            self.assertEqual(M0_SOURCES[name], expected, name)
         manifest = json.loads((ROOT / "data/fixtures/cases/manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(e["source_model_sha256"], {Path(case["model_path"]).name: case["sha256"].lower() for case in manifest["cases"]})
 

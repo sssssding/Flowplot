@@ -11,7 +11,7 @@ from jsonschema import Draft202012Validator, ValidationError
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from flowpilot.diagnostic_modules import MODULES
+from flowpilot.diagnostic_modules import MODULES, COUPLING_MODULES
 from flowpilot.diagnostic_modules.flow import (
     UnsupportedModel, check, normalize, validate, is_finite_number,
     REYNOLDS_THRESHOLD_GUARD_ULPS, _reynolds_number,
@@ -100,6 +100,61 @@ def _scoped_couplings(inventory):
     return entries, global_blockers, local_blockers
 
 
+def _module_result(module, source, result):
+    item = {"module": module.MODULE_ID, "source": source,
+            "status": "checked" if result["status"] == "checked" else "partial" if any(
+                r["status"] == "checked" for r in result["rules"]) else "unsupported"}
+    if "model" in result:
+        item["model"] = result["model"]
+    return item
+
+
+def _run_couplings(inventory, coverage):
+    """Resolve registered component couplings after conservative alias scoping."""
+    findings, modules, unverified = [], [], set()
+    for entry in coverage:
+        if not entry["applicable"]:
+            continue
+        local_refs = [ref for ref in entry["evidence_refs"]
+                      if ref.startswith("/components/") and "/multiphysics/" in ref]
+        if len(local_refs) != 1:
+            continue
+        ref = local_refs[0]
+        _, _, ci, _, mi = ref.split("/")
+        ci, mi = int(ci), int(mi)
+        detail = inventory["components"][ci]["multiphysics"][mi]
+        module = COUPLING_MODULES.get(detail.get("type"))
+        if module is None or detail.get("enabled") is not True:
+            continue
+        # A contradictory root alias cannot establish supported semantics.
+        aliases = [inventory["multiphysics"][int(p.rsplit("/", 1)[1])]
+                   for p in entry["evidence_refs"] if p.startswith("/multiphysics/")]
+        if any(any(alias.get(key) != detail.get(key) for key in
+                   ("type", "enabled", "properties", "selected_entity_ids", "selection_dimensions"))
+               for alias in aliases):
+            entry["reason"] = "根列表与组件耦合证据矛盾；依赖规则跳过。"
+            continue
+        result = module.run_coupling(inventory, ci, mi, [])
+        if result.get("semantics_verified") is not True:
+            unverified.add(id(entry))
+        entry.update(module=module.MODULE_ID)
+        for key in ("status", "reason", "rules"):
+            entry[key] = result[key]
+        entry["evidence_refs"] = list(dict.fromkeys(entry["evidence_refs"] + result["evidence_refs"]))
+        modules.append(_module_result(module, entry["source"], result))
+        findings.extend({**finding, "module": module.MODULE_ID, "source": entry["source"]}
+                        for finding in result["findings"])
+    blocked = [entry for entry in coverage if entry["applicable"] and
+               (entry["status"] != "checked" or id(entry) in unverified
+                or any(f["source"] == entry["source"] for f in findings))]
+    def blocking_refs(entry):
+        return [ref for ref in entry["evidence_refs"] if "/multiphysics" in ref]
+    global_blockers = [ref for e in blocked if not e["source"]["component_tag"] for ref in blocking_refs(e)]
+    local_blockers = {c["tag"]: [ref for e in blocked if e["source"]["component_tag"] == c["tag"]
+                                 for ref in blocking_refs(e)] for c in inventory["components"]}
+    return findings, modules, global_blockers, local_blockers
+
+
 def diagnose_inventory(inventory, **options):
     """Run registered modules per instance, reporting unsupported evidence scopes."""
     if inventory.get("schema_version") != "inventory-0.2":
@@ -110,7 +165,7 @@ def diagnose_inventory(inventory, **options):
     if not is_finite_number(threshold) or threshold <= 0:
         raise ValueError("Reynolds warning threshold must be finite and positive")
     coverage, global_blockers, scoped_blockers = _scoped_couplings(inventory)
-    findings, modules = [], []
+    findings, modules, global_blockers, scoped_blockers = _run_couplings(inventory, coverage)
     components = inventory["components"]
     component_tags = [c["tag"] for c in components]
     if len(set(component_tags)) != len(component_tags):
@@ -154,18 +209,26 @@ def diagnose_inventory(inventory, **options):
                          "source": {"component_tag": "", "physics_tag": "@unrecorded"},
                          "status": "unknown", "applicable": True,
                          "reason": "没有可枚举的物理场实例，检查覆盖未知。", "evidence_refs": ["/components"], "rules": []})
-    report = {"schema_version": "diagnosis-0.2", "run_status": "completed",
+    thermal = any(module.MODULE_ID != "flow" for c in components for p in c["physics"]
+                  if (module := MODULES.get(p["type"])) is not None) or bool(
+                      any(m["module"] in {m.MODULE_ID for m in COUPLING_MODULES.values()} for m in modules))
+    spatial = any(g.get("dimension") == 3 for c in components for g in c.get("geometries", []))
+    report = {"schema_version": "diagnosis-0.4" if spatial else "diagnosis-0.3" if thermal else "diagnosis-0.2", "run_status": "completed",
               "status": _coverage_status(coverage),
               "coverage": coverage, "modules": modules,
               "findings": sorted(findings, key=lambda f: (f["source"]["component_tag"],
-                                 f["source"]["physics_tag"], f["code"], f["feature_tags"]))}
+                                 f["source"].get("physics_tag", f["source"].get("coupling_tag", "")), f["code"], f["feature_tags"]))}
+    if spatial:
+        report["profile"] = "static-3d-v1"
+    elif thermal:
+        report["profile"] = "thermal-static-v1"
     if report["status"] == "unsupported":
         report["reason"] = "；".join(dict.fromkeys(c["reason"] for c in coverage if c["applicable"])) or "没有可检查的启用物理场实例。"
     # Preserve the original single-flow consumer contract only for one instance.
     physics_entries = [c for c in coverage if c["kind"] == "physics"]
     original_single_scope = (len(components) == 1 and len(components[0]["physics"]) == 1
                              and len(components[0]["materials"]) == 1)
-    if original_single_scope and len(physics_entries) == 1 and len(modules) == 1 and modules[0]["module"] == "flow" and "model" in modules[0]:
+    if not spatial and original_single_scope and len(physics_entries) == 1 and len(modules) == 1 and modules[0]["module"] == "flow" and "model" in modules[0]:
         report["model"] = modules[0]["model"]
         report["profile"] = report["model"]["profile"]
         report["numeric_policy"] = {"reynolds_threshold_guard_ulps": REYNOLDS_THRESHOLD_GUARD_ULPS}
@@ -185,6 +248,12 @@ def validate_diagnosis_report(report):
     """Validate the new envelope and semantic status/source consistency."""
     schema = json.loads(DIAGNOSIS_SCHEMA.read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(report)
+    modern_thermal = report["schema_version"] in {"diagnosis-0.3", "diagnosis-0.4"}
+    if report["schema_version"] == "diagnosis-0.4" and report.get("profile") != "static-3d-v1":
+        raise ValueError("3D reports require static-3d-v1")
+    if not modern_thermal and any(item["module"] not in {"flow", "unsupported"}
+                                  for item in report["coverage"]):
+        raise ValueError("thermal modules require diagnosis-0.3 or diagnosis-0.4")
     if report["status"] != _coverage_status(report["coverage"]):
         raise ValueError("diagnosis status contradicts coverage")
     seen = set()
@@ -199,11 +268,25 @@ def validate_diagnosis_report(report):
         if entry["kind"] == "coupling" and "coupling_tag" not in source:
             raise ValueError("coupling coverage requires coupling source")
         rules = entry["rules"]
-        registered = next((m for m in MODULES.values() if m.MODULE_ID == entry["module"]), None)
+        registry = MODULES if entry["kind"] == "physics" else COUPLING_MODULES
+        registered = next((m for m in registry.values() if m.MODULE_ID == entry["module"]), None)
         if rules and registered is None:
             raise ValueError("rule coverage requires a registered module")
-        if rules and {r["rule_id"] for r in rules} != {r[0] for r in registered.RULES}:
-            raise ValueError("module rule coverage is incomplete")
+        if rules:
+            module_model = next((m.get("model") for m in report["modules"]
+                                 if m["module"] == entry["module"] and m["source"] == source), None)
+            expected_rules = (registered.rules_for_profile(module_model.get("profile"))
+                              if module_model is not None and hasattr(registered, "rules_for_profile") else registered.RULES)
+            expected_sets = [{r[0] for r in expected_rules}]
+            # Unsupported projections have no normalized model. Preserve old M0
+            # reports while permitting a complete, unmixed axisymmetric rule set.
+            if module_model is None and hasattr(registered, "AXIS_RULES"):
+                expected_sets.append({r[0] for r in registered.AXIS_RULES})
+            if module_model is None and report["schema_version"] == "diagnosis-0.4" and entry["module"] == "flow":
+                from flowpilot.diagnostic_modules.flow_3d import RULES as THREE_D_RULES
+                expected_sets.append({r[0] for r in THREE_D_RULES})
+            if {r["rule_id"] for r in rules} not in expected_sets:
+                raise ValueError("module rule coverage is incomplete")
         for rule in rules:
             cases = rule.get("cases", [])
             if len({case["feature_tag"] for case in cases}) != len(cases):
@@ -221,33 +304,37 @@ def validate_diagnosis_report(report):
     module_sources = set()
     for module in report["modules"]:
         source = module["source"]
-        key = ("physics", source["component_tag"], source["physics_tag"], None)
+        kind = "coupling" if "coupling_tag" in source else "physics"
+        key = (kind, source["component_tag"], source.get("physics_tag"), source.get("coupling_tag"))
         if key not in seen or key in module_sources:
             raise ValueError("module source absent or duplicated in coverage")
         module_sources.add(key)
-        entry = next((c for c in report["coverage"] if c["kind"] == "physics" and c["source"] == source), None)
+        entry = next((c for c in report["coverage"] if c["kind"] == kind and c["source"] == source), None)
         if entry is None:
             raise ValueError("module source differs from coverage source")
         expected = "checked" if entry["status"] == "checked" else "partial" if any(r["status"] == "checked" for r in entry["rules"]) else "unsupported"
         if module["status"] != expected or module["module"] != entry["module"]:
             raise ValueError("module status contradicts coverage")
         if "model" in module:
+            if (module["model"].get("profile") == "pipe-3d-v1" or module["model"].get("schema_version") == "diagnostic-0.3") and report["schema_version"] != "diagnosis-0.4":
+                raise ValueError("3D module models require diagnosis-0.4")
             registered = next((m for m in MODULES.values() if m.MODULE_ID == module["module"]), None)
-            if registered is None:
-                raise ValueError("module model requires registered module")
+            if registered is None or not callable(getattr(registered, "validate", None)):
+                raise ValueError("module model requires a registered model contract")
             registered.validate(module["model"])
             if any(module["model"]["source"][k] != source[k] for k in ("component_tag", "physics_tag")):
                 raise ValueError("module model source mismatch")
-    expected_module_sources = {("physics", c["source"]["component_tag"], c["source"]["physics_tag"], None)
-                               for c in report["coverage"] if c["kind"] == "physics" and c["rules"]}
+    expected_module_sources = {(c["kind"], c["source"]["component_tag"], c["source"].get("physics_tag"), c["source"].get("coupling_tag"))
+                               for c in report["coverage"] if c["rules"]}
     if module_sources != expected_module_sources:
         raise ValueError("module results must match all module rule scopes")
     for finding in report["findings"]:
         source = finding["source"]
-        key = ("physics", source["component_tag"], source["physics_tag"], None)
+        kind = "coupling" if "coupling_tag" in source else "physics"
+        key = (kind, source["component_tag"], source.get("physics_tag"), source.get("coupling_tag"))
         if key not in module_sources:
             raise ValueError("finding source lacks a module result")
-        entry = next((c for c in report["coverage"] if c["kind"] == "physics" and c["source"] == source), None)
+        entry = next((c for c in report["coverage"] if c["kind"] == kind and c["source"] == source), None)
         if entry is None:
             raise ValueError("finding source differs from coverage source")
         rule = next((r for r in entry["rules"] if r["rule_id"] == finding["code"]), None)

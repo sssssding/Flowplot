@@ -67,7 +67,7 @@ class ModularDiagnosisTests(unittest.TestCase):
 
     def test_unknown_interface_does_not_erase_independent_flow_findings(self):
         data = load('missing_inlet')
-        data['components'][0]['physics'].append({'tag': 'ht', 'type': 'HeatTransfer', 'enabled': True})
+        data['components'][0]['physics'].append({'tag': 'ht', 'type': 'SolidMechanics', 'enabled': True})
         report = diagnose_inventory(data)
         self.assertEqual(report['status'], 'partial')
         self.assertEqual([f['code'] for f in report['findings']], ['MISSING_INLET'])
@@ -78,7 +78,7 @@ class ModularDiagnosisTests(unittest.TestCase):
 
     def test_only_unknown_interface_has_completed_unsupported_coverage(self):
         data = load()
-        data['components'][0]['physics'] = [{'tag': 'ht', 'type': 'HeatTransfer', 'enabled': True}]
+        data['components'][0]['physics'] = [{'tag': 'ht', 'type': 'SolidMechanics', 'enabled': True}]
         report = diagnose_inventory(data)
         self.assertEqual(report['run_status'], 'completed')
         self.assertEqual(report['status'], 'unsupported')
@@ -211,13 +211,20 @@ class ModularDiagnosisTests(unittest.TestCase):
         self.assertNotIn('model', report)
         self.assertEqual([m['model']['source']['physics_tag'] for m in report['modules']], ['spf', 'spf2'])
 
-    def test_no_axisymmetric_or_3d_support_claim(self):
-        for extra in ({'axisymmetric': True}, {'dimension': 3}):
-            data = load()
-            data['components'][0]['geometries'][0].update(extra)
-            report = diagnose_inventory(data)
-            self.assertEqual(report['status'], 'unsupported')
-            self.assertTrue(all(r['status'] == 'skipped' for r in flow_scope(report)['rules']))
+    def test_axisymmetric_requires_new_evidence_and_3d_remains_unsupported(self):
+        data = load()
+        data['components'][0]['geometries'][0]['axisymmetric'] = True
+        report = diagnose_inventory(data)
+        self.assertEqual(report['status'], 'partial')
+        rules = {r['rule_id']: r for r in flow_scope(report)['rules']}
+        self.assertEqual(rules['AXIS_SELECTION_INCONSISTENT']['status'], 'skipped')
+        self.assertEqual(rules['REYNOLDS_RISK']['status'], 'skipped')
+        self.assertEqual(rules['INVALID_MATERIAL_PARAMETER']['status'], 'checked')
+        data = load()
+        data['components'][0]['geometries'][0]['dimension'] = 3
+        report = diagnose_inventory(data)
+        self.assertEqual(report['status'], 'unsupported')
+        self.assertTrue(all(r['status'] == 'skipped' for r in flow_scope(report)['rules']))
 
     def test_missing_flow_evidence_has_traceable_skips(self):
         data = load()

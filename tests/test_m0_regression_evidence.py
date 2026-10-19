@@ -4,11 +4,12 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from m0_historical_sources import SOURCES as M0_SOURCES
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from flowpilot.check_model import sha256
-from flowpilot.engine_fingerprint import engine_fingerprint
+from flowpilot.engine_fingerprint import fingerprint_from_sources
 from flowpilot.regression_family import SPECS
 
 FIXTURE = ROOT / "data/fixtures/m0_regression.json"
@@ -20,7 +21,7 @@ BASELINE_SOURCES = {
 
 
 class M0RegressionEvidenceTest(unittest.TestCase):
-    def test_current_sources_twenty_matches_and_honest_origins(self):
+    def test_frozen_m0_sources_twenty_matches_and_honest_origins(self):
         spec = importlib.util.spec_from_file_location("m0_regression_verifier", ROOT / "scripts/verify_m0_regression.py")
         verifier = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(verifier)
@@ -29,8 +30,8 @@ class M0RegressionEvidenceTest(unittest.TestCase):
         self.assertEqual(evidence["status"], "passed")
         self.assertEqual(evidence["baseline_commit"], "1241c27")
         self.assertEqual(evidence["baseline_source_sha256"], BASELINE_SOURCES)
-        self.assertEqual(evidence["implementation_sha256"], {name: sha256(ROOT / name) for name in verifier.SOURCES})
-        self.assertEqual(evidence["rule_engine_sha256"], engine_fingerprint())
+        self.assertEqual(evidence["implementation_sha256"], {name: M0_SOURCES[name] for name in verifier.SOURCES if name not in {"src/flowpilot/diagnostic_modules/flow_3d.py", "src/flowpilot/diagnostic_modules/flow_scope.py", "src/flowpilot/diagnostic_modules/heat.py", "src/flowpilot/diagnostic_modules/thermal_coupling.py"}})
+        self.assertEqual(evidence["rule_engine_sha256"], fingerprint_from_sources(M0_SOURCES))
         self.assertEqual((evidence["case_count"], evidence["fresh_cli_inventory_count"],
                           evidence["historical_inventory_replay_count"]), (20, 6, 14))
         for field in ("new_comsol_execution", "solved", "independent_acceptance_set", "expert_review"):

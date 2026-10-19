@@ -174,12 +174,12 @@ def read_outcome(directory, case, threshold):
         if (metadata.get("schema_version") != "check-run-0.1" or metadata.get("status") != "completed"
                 or metadata.get("source", {}).get("sha256", "").lower() != case["sha256"].lower()
                 or not is_finite_number(recorded_threshold) or recorded_threshold <= 0 or recorded_threshold != threshold
-                or metadata.get("rule_engine_sha256") != (engine_fingerprint() if report.get("schema_version") == "diagnosis-0.2" else sha256(RULE_SOURCE))
+                or metadata.get("rule_engine_sha256") != (engine_fingerprint() if report.get("schema_version") in ("diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4") else sha256(RULE_SOURCE))
                 or metadata.get("inventory_source_sha256") != sha256(INVENTORY_SOURCE)
                 or metadata.get("diagnosis_sha256") != loaded["diagnosis_sha256"]):
             raise ValueError("Source hash, rule source, inventory source, settings or completion state mismatch")
         status = report.get("status")
-        if (report.get("schema_version") not in ("diagnosis-0.1", "diagnosis-0.2") or status not in ("checked", "partial", "unsupported")
+        if (report.get("schema_version") not in ("diagnosis-0.1", "diagnosis-0.2", "diagnosis-0.3", "diagnosis-0.4") or status not in ("checked", "partial", "unsupported")
                 or metadata.get("diagnosis_status") != status or not isinstance(report.get("findings"), list)):
             raise ValueError("Malformed diagnosis or status mismatch")
         codes = [finding["code"] for finding in report["findings"]]
